@@ -5,3 +5,7 @@ export const SET_USER = (state, user) => {
 export const TOGGLE_LOGIN_STATE = (state, user) => {
     state.isLoggedIn = !state.isLoggedIn
 }
+
+export const UPDATE_USER = (state, user) => {
+    state.user = { ...user.attributes }
+}
