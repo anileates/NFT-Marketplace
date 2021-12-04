@@ -8,9 +8,9 @@ nav.navbar
     ul.flex-row.flex-jc-sa
       li
         a Explore
-      li(@click="loginx")
+      li(@click="login")
         a Sign In
-      li(@click="logoutX")
+      li(@click="logout")
         a Sign Out
       li
         a Profile
@@ -20,11 +20,18 @@ nav.navbar
 
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   name: "Header",
   data() {
     return {};
-  }
+  },
+  methods: {
+    ...mapActions(['initAuth', 'logout']),
+    async login() {
+      await this.initAuth()
+    },
+  },
 };
 </script>
 
