@@ -1,7 +1,8 @@
 <template lang="pug">
 .avatar-container(@mouseover="isHover=true" @mouseleave="isHover=false")
   .hover.flex-col.flex-ai-c.flex-jc-c(v-show="isEditable && isHover" @click="triggerInput")
-    input(ref="inputImageUpload" type="file" @change="uploadImage" @click="this.click")
+    input(ref="inputImageUpload" type="file" @change="uploadImage")
+    | EDIT
   img(:src='imgUrl')
 </template>
 
@@ -15,8 +16,7 @@ export default {
     },
     imgUrl: {
       type: String,
-      required: true,
-      default: 'default_profile.jpg'
+      required: true
     }
   },
   data() {
@@ -62,6 +62,8 @@ input {
   border-radius: inherit;
 
   position: absolute;
+  color: #ffffff;
+  font-size: 1.3rem;
 }
 
 img {

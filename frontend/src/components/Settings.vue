@@ -22,12 +22,12 @@
         .section.flex-col.flex-ai-fs.flex-jc-sa
           label Profile Image
           .image-box-profile(style="border-radius: 50%")
-            app-avatar(:imgUrl="getCurrentUser.avatar" @uploaded="changeAvatar")
+            app-avatar(:imgUrl="getCurrentUser.avatar && getCurrentUser.avatar._url" @uploaded="changeAvatar")
 
         .section.flex-col.flex-ai-fs.flex-jc-sa
           label Cover Image
           .image-box-cover(style="border-radius: 5%")
-            app-avatar(:imgUrl="getCurrentUser.avatar" @uploaded="changeCover")
+            app-avatar(:imgUrl="getCurrentUser.cover && getCurrentUser.cover._url" @uploaded="changeCover")
 </template>
 
 <script>
