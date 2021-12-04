@@ -7,16 +7,16 @@
       .information-section.flex-col.flex-ai-fs.flex-jc-sa
         .info.flex-col.flex-ai-fs.flex-jc-sa
           label Username*
-          input(id="username")
+          input(id="username" v-model="getCurrentUser.username")
         .info.flex-col.flex-ai-fs.flex-jc-sa
           label Bio
-          input(id="biography")
+          input(id="biography" v-model="getCurrentUser.biography")
         .info.flex-col.flex-ai-fs.flex-jc-sa
           label Email address
-          input(id="email")
+          input(id="email" v-model="getCurrentUser.email")
         .info.flex-col.flex-ai-fs.flex-jc-sa
           label Wallet address
-          input(id="wallet-input" type="text" readonly).readonly
+          input(id="wallet-input" type="text"  v-model="getCurrentUser.ethAddress" readonly).readonly
         button() Save
       .image-section.flex-col.flex-ai-fs.flex-jc-sa
         .section.flex-col.flex-ai-fs.flex-jc-sa
@@ -29,11 +29,16 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
+
 export default {
   name: "Settings",
   data() {
     return {};
   },
+  computed: {
+    ...mapGetters(['getCurrentUser'])
+  }
 };
 </script>
 
