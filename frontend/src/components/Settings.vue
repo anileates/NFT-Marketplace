@@ -22,7 +22,6 @@
         .section.flex-col.flex-ai-fs.flex-jc-sa
           label Profile Image
           .image-box-profile(style="border-radius: 50%")
-
         .section.flex-col.flex-ai-fs.flex-jc-sa
           label Cover Image
           .image-box-cover(style="border-radius: 5%")
