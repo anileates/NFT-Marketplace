@@ -10,7 +10,7 @@ nav.navbar
         a Explore
       li(@click="login")
         a Sign In
-      li(@click="logout")
+      li(@click="_logout")
         a Sign Out
       li
         a Profile
@@ -31,6 +31,9 @@ export default {
     async login() {
       await this.initAuth()
     },
+    async _logout() {
+      this.logout()
+    }
   },
 };
 </script>
