@@ -22,5 +22,16 @@ export const logout = async ({ commit, dispatch }) => {
     commit('SET_USER', null)
     dispatch('toggleLoginStatus')
     
-    router.push('/')
+    await router.push('/')
+}
+
+export const updateUser = async({ commit }, updatedUser) => {
+    let user = Moralis.User.current();
+
+    for(let [key, value] of Object.entries(updatedUser)){
+        user.set(key, value)
+    }
+
+    let newUser = await user.save()
+    commit('UPDATE_USER', newUser)
 }

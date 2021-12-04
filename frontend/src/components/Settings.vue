@@ -17,7 +17,7 @@
         .info.flex-col.flex-ai-fs.flex-jc-sa
           label Wallet address
           input(id="wallet-input" type="text"  v-model="getCurrentUser.ethAddress" readonly).readonly
-        button() Save
+        button(@click="saveUserInfo") Save
       .image-section.flex-col.flex-ai-fs.flex-jc-sa
         .section.flex-col.flex-ai-fs.flex-jc-sa
           label Profile Image
@@ -29,15 +29,29 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
 
 export default {
   name: "Settings",
   data() {
-    return {};
+    return {
+      updatedUser: {}
+    };
   },
   computed: {
     ...mapGetters(['getCurrentUser'])
+  },
+  methods: {
+    ...mapActions(['updateUser']),
+    async saveUserInfo() {
+      this.updatedUser.username = document.getElementById('username').value
+      this.updatedUser.biography = document.getElementById('biography').value
+      this.updatedUser.email = document.getElementById('email').value
+      this.updatedUser.ethAddress = document.getElementById('wallet-input').value
+
+      await this.updateUser(this.updatedUser)
+      alert('Informations has been changed') // TODO will be changed with SweetAlert
+    }
   }
 };
 </script>

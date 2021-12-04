@@ -6,11 +6,18 @@
 
 <script>
 import Navbar from "./components/shared/Navbar";
+import { mapActions} from "vuex";
 
 export default {
   components: {
     appNavbar: Navbar,
-  } 
+  },
+  methods: {
+    ...mapActions(['initAuth'])
+  },
+  created() {
+    this.initAuth()
+  }
 };
 </script>
 
