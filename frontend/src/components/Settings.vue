@@ -22,16 +22,23 @@
         .section.flex-col.flex-ai-fs.flex-jc-sa
           label Profile Image
           .image-box-profile(style="border-radius: 50%")
+            app-avatar(:imgUrl="getCurrentUser.avatar" @uploaded="changeAvatar")
+
         .section.flex-col.flex-ai-fs.flex-jc-sa
           label Cover Image
           .image-box-cover(style="border-radius: 5%")
+            app-avatar(:imgUrl="getCurrentUser.avatar" @uploaded="changeCover")
 </template>
 
 <script>
 import {mapGetters, mapActions} from 'vuex'
+import Avatar from "./shared/Avatar";
 
 export default {
   name: "Settings",
+  components: {
+    appAvatar: Avatar
+  },
   data() {
     return {
       updatedUser: {}
@@ -50,6 +57,14 @@ export default {
 
       await this.updateUser(this.updatedUser)
       alert('Informations has been changed') // TODO will be changed with SweetAlert
+    },
+    changeAvatar(file){
+      const moralisFile = new Moralis.File('avatar.jpg', file)
+      this.updateUser({ avatar: moralisFile })
+    },
+    changeCover(file) {
+      const moralisFile = new Moralis.File('cover.jpg', file);
+      this.updateUser({ cover: moralisFile })
     }
   }
 };

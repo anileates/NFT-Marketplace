@@ -1,8 +1,8 @@
 <template lang="pug">
-  .avatar-container(@mouseover="isHover=true" @mouseleave="isHover=false")
-    .hover.flex-col.flex-ai-c.flex-jc-c(v-show="isEditable && isHover" @click="triggerInput")
-      input(class="inputImageUpload" type="file" @change="uploadImage")
-    img(:src='imgUrl' )
+.avatar-container(@mouseover="isHover=true" @mouseleave="isHover=false")
+  .hover.flex-col.flex-ai-c.flex-jc-c(v-show="isEditable && isHover" @click="triggerInput")
+    input(ref="inputImageUpload" type="file" @change="uploadImage" @click="this.click")
+  img(:src='imgUrl')
 </template>
 
 <script>
@@ -10,7 +10,7 @@ export default {
   name: 'Avatar',
   props: {
     isEditable: {
-      type: boolean,
+      type: Boolean,
       default: true
     },
     imgUrl: {
@@ -26,11 +26,12 @@ export default {
   },
   methods: {
     triggerInput() {
-      document.getElementsByClassName('inputImageUpload').click()
+      this.$refs.inputImageUpload.click()
+      // document.getElementById('inputImageUpload').click()
     },
     uploadImage() {
-      if(document.getElementsByClassName('inputImageUpload').files.length > 0){
-        const file = document.getElementsByClassName('inputImageUpload').files[0]
+      if(this.$refs.inputImageUpload.files.length > 0){
+        const file = this.$refs.inputImageUpload.files[0]
         this.$emit('uploaded', file)
       }
     }
