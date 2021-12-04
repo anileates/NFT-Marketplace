@@ -1,9 +1,11 @@
 <template lang="pug">
 .avatar-container(@mouseover="isHover=true" @mouseleave="isHover=false")
-  .hover.flex-col.flex-ai-c.flex-jc-c(v-show="isEditable && isHover" @click="triggerInput")
+  .hover.flex-col.flex-ai-c.flex-jc-c(v-show="(isEditable && isHover) || !imgUrl" @click="triggerInput")
     input(ref="inputImageUpload" type="file" @change="uploadImage")
-    | EDIT
-  img(:src='imgUrl')
+    // TODO Will be changed with fa icons
+    p(v-if="imgUrl") EDIT
+    p(v-else) Upload An Image
+  img(:src='imgUrl' v-show="imgUrl")
 </template>
 
 <script>
@@ -71,5 +73,9 @@ img {
   height: 100%;
   border-radius: inherit;
   object-fit: cover
+}
+
+p{
+  font-size: 1rem;
 }
 </style>

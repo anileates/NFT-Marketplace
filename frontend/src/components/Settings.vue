@@ -120,7 +120,7 @@ label {
 }
 
 .image-box {
-  background-color: red;
+  background-color: #d5d5d5;
   position: relative;
 
   &-profile {
