@@ -7,16 +7,16 @@
       .information-section.flex-col.flex-ai-fs.flex-jc-sa
         .info.flex-col.flex-ai-fs.flex-jc-sa
           label Username*
-          input(id="username" v-model="getCurrentUser.username")
+          appInputBox(id="username" :value="getCurrentUser.username")
         .info.flex-col.flex-ai-fs.flex-jc-sa
           label Bio
-          input(id="biography" v-model="getCurrentUser.biography")
+          appInputBox(id="biography" :value="getCurrentUser.biography")
         .info.flex-col.flex-ai-fs.flex-jc-sa
           label Email address
-          input(id="email" v-model="getCurrentUser.email")
+          appInputBox(id="email" :value="getCurrentUser.email")
         .info.flex-col.flex-ai-fs.flex-jc-sa
           label Wallet address
-          input(id="wallet-input" type="text"  v-model="getCurrentUser.ethAddress" readonly).readonly
+          appInputBox(id="wallet-input" type="text" :value="getCurrentUser.ethAddress" :isReadOnly="true")
         button(@click="saveUserInfo") Save
       .image-section.flex-col.flex-ai-fs.flex-jc-sa
         .section.flex-col.flex-ai-fs.flex-jc-sa
@@ -33,11 +33,13 @@
 <script>
 import {mapGetters, mapActions} from 'vuex'
 import Avatar from "./shared/Avatar";
+import InputBox from './shared/InputBox'
 
 export default {
   name: "Settings",
   components: {
-    appAvatar: Avatar
+    appAvatar: Avatar,
+    appInputBox: InputBox
   },
   data() {
     return {
@@ -103,15 +105,6 @@ label {
   input {
     height: 2.5rem;
     width: 26rem;
-    border: 1px solid #C5C5C5;
-    font-size: 1rem;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    outline: none;
-
-    &:focus {
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
-    }
   }
 }
 
@@ -136,15 +129,6 @@ label {
     width: 14rem;
     border-radius: 5%;
   }
-}
-
-// TODO input boxes will be a component. So, we will get rid of this foolish structure
-#wallet-input:focus {
-  box-shadow: none;
-}
-
-.readonly {
-  background-color: #F0F0F0
 }
 
 button {
