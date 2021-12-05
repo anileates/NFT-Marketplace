@@ -6,7 +6,8 @@ import * as getters from './getters'
 export default createStore({
   state: {
     isLoggedIn: false,
-    user: null
+    user: null,
+    foundUser: null
   },
   mutations,
   actions,

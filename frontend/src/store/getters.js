@@ -5,3 +5,7 @@ export const getCurrentUser = (state) => {
 export const isAuthenticated = (state) => {
     return state.isLoggedIn
 }
+
+export const getFoundUser = (state) => {
+    return state.foundUser
+}

@@ -35,3 +35,11 @@ export const updateUser = async({ commit }, updatedUser) => {
     let newUser = await user.save()
     commit('UPDATE_USER', newUser)
 }
+
+export const fetchUser = async ({ commit }, username) => {
+    const query = new Moralis.Query('User')
+    query.equalTo('username', username)
+
+    const results = await query.find()
+    commit('SET_FOUND_USER', results[0])
+}

@@ -7,5 +7,11 @@ export const TOGGLE_LOGIN_STATE = (state, user) => {
 }
 
 export const UPDATE_USER = (state, user) => {
-    state.user = { ...user.attributes }
+    state.user = {...user.attributes}
+}
+
+export const SET_FOUND_USER = (state, user) => {
+    if (user) {
+        state.foundUser = {...user.attributes}
+    }
 }

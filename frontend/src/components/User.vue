@@ -1,0 +1,119 @@
+<template lang="pug">
+.user-page-container
+  .profile-header.flex-col.flex-jc-c.flex-ai-c
+    .pp-layer
+      app-avatar(:imgUrl="getFoundUser.avatar._url" :isEditable="false")
+    .other-layer
+      .cover-image
+        app-avatar(:imgUrl="getFoundUser.cover._url" :isEditable="false")
+      .bio-section.flex-col.flex-jc-c.flex-ai-c
+        h3 {{ getFoundUser.username }}
+        p {{ getFoundUser.biography }}
+
+  .showroom.flex-row.flex-jc-c
+    .card-layout
+      .card
+      .card
+      .card
+      .card
+      .card
+      .card
+      .card
+      .card
+      .card
+      .card
+</template>
+
+<script>
+import Avatar from "./shared/Avatar";
+import {mapGetters} from "vuex";
+
+export default {
+  name: 'UserPage',
+  components: {
+    appAvatar: Avatar
+  },
+  data(){
+    return {
+      url: 'https:///i.pinimg.com/736x/02/70/6c/02706c93c5f630d1e1ae987c15ae7f53.jpg'
+    }
+  },
+  computed: {
+    ...mapGetters(['getFoundUser'])
+  },
+  methods: {
+  },
+  created() {
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.profile-header {
+  height: 30rem;
+  border-bottom: 1px solid #C2C2C2;
+
+  .pp-layer {
+    background-color: red;
+    position: absolute;
+    width: 8rem;
+    height: 8rem;
+
+    border-radius: 50%;
+  }
+}
+
+.other-layer {
+  display: inline;
+  height: 100%;
+  width: 100%;
+
+  .cover-image {
+    background-color: #E5E8EB;
+    width: 100%;
+    height: 50%;
+  }
+
+  .bio-section {
+    width: 100%;
+    height: 50%;
+
+    h3 {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      margin-top: 1rem;
+    }
+
+    p {
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: #707A9F;
+    }
+  }
+}
+
+.showroom {
+  width: 100%;
+  margin-top: 1rem;
+
+  .card-layout {
+    width: 88rem;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+
+    .card {
+      background-color: black;
+      box-sizing: border-box;
+      margin: 0.5rem 1rem;
+
+      width: 20rem;
+      height: 30rem;
+      border-radius: 5%
+    }
+  }
+}
+
+</style>
