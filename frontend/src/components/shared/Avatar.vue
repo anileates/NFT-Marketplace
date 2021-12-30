@@ -1,44 +1,47 @@
 <template lang="pug">
-.avatar-container(@mouseover="isHover=true" @mouseleave="isHover=false")
-  .hover.flex-col.flex-ai-c.flex-jc-c(v-show="(isEditable && isHover) || !imgUrl" @click="triggerInput")
-    input(ref="inputImageUpload" type="file" @change="uploadImage")
-    // TODO Will be changed with fa icons
-    p(v-if="imgUrl") EDIT
-    p(v-else) Upload An Image
-  img(:src='imgUrl' v-show="imgUrl")
+.avatar-container(@mouseover="isHover = true", @mouseleave="isHover = false")
+  .hover.flex-col.flex-ai-c.flex-jc-c(
+    v-show="(isEditable && isHover) || !imgUrl",
+    @click="triggerInput"
+  )
+    input(ref="inputImageUpload", type="file", @change="uploadImage")
+    i.far.fa-edit(v-if="imgUrl")
+    i.far.fa-edit(v-else)
+    span
+  img(:src="imgUrl", v-show="imgUrl")
 </template>
 
 <script>
 export default {
-  name: 'Avatar',
+  name: "Avatar",
   props: {
     isEditable: {
       type: Boolean,
-      default: true
+      default: true,
     },
     imgUrl: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      isHover: false
-    }
+      isHover: false,
+    };
   },
   methods: {
     triggerInput() {
-      this.$refs.inputImageUpload.click()
+      this.$refs.inputImageUpload.click();
       // document.getElementById('inputImageUpload').click()
     },
     uploadImage() {
-      if(this.$refs.inputImageUpload.files.length > 0){
-        const file = this.$refs.inputImageUpload.files[0]
-        this.$emit('uploaded', file)
+      if (this.$refs.inputImageUpload.files.length > 0) {
+        const file = this.$refs.inputImageUpload.files[0];
+        this.$emit("uploaded", file);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -46,14 +49,14 @@ export default {
   width: 100%;
   height: 100%;
 
-  border-radius: inherit
+  border-radius: inherit;
 }
 
 input {
   display: none;
 }
 
-.hover{
+.hover {
   width: 100%;
   height: 100%;
 
@@ -72,10 +75,10 @@ img {
   width: 100%;
   height: 100%;
   border-radius: inherit;
-  object-fit: cover
+  object-fit: cover;
 }
 
-p{
+p {
   font-size: 1rem;
 }
 </style>
