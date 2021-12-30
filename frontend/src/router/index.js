@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Settings from "../components/Settings";
 import store from '../store/index'
 import Homepage from "../components/Homepage";
@@ -19,13 +19,13 @@ const routes = [
         }
     },
     {
-        path: '/user/:username',
+        path: '/users/:username',
         component: User,
-        async beforeEnter(to, from, next){
+        async beforeEnter(to, from, next) {
             await store.dispatch('fetchUser', to.params.username)
-            if(store.getters.getFoundUser){
+            if (store.getters.getFoundUser) {
                 next()
-            }else {
+            } else {
                 await router.push('/not-found')
             }
         }

@@ -1,11 +1,19 @@
 <template lang="pug">
 .user-page-container
   .profile-header.flex-col.flex-jc-c.flex-ai-c
-    .pp-layer
-      app-avatar(:imgUrl="getFoundUser.avatar._url" :isEditable="false")
+    .pp-layer(:style="randomColor")
+      app-avatar(
+        v-if="getFoundUser.avatar",
+        :imgUrl="getFoundUser.avatar._url",
+        :isEditable="false"
+      )
     .other-layer
       .cover-image
-        app-avatar(:imgUrl="getFoundUser.cover._url" :isEditable="false")
+        app-avatar(
+          v-if="getFoundUser.cover",
+          :imgUrl="getFoundUser.cover._url",
+          :isEditable="false"
+        )
       .bio-section.flex-col.flex-jc-c.flex-ai-c
         h3 {{ getFoundUser.username }}
         p {{ getFoundUser.biography }}
@@ -26,35 +34,39 @@
 
 <script>
 import Avatar from "./shared/Avatar";
-import {mapGetters} from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'UserPage',
+  name: "UserPage",
   components: {
-    appAvatar: Avatar
+    appAvatar: Avatar,
   },
-  data(){
+  data() {
     return {
-      url: 'https:///i.pinimg.com/736x/02/70/6c/02706c93c5f630d1e1ae987c15ae7f53.jpg'
-    }
+      url: "https:///i.pinimg.com/736x/02/70/6c/02706c93c5f630d1e1ae987c15ae7f53.jpg",
+    };
   },
   computed: {
-    ...mapGetters(['getFoundUser'])
+    ...mapGetters(["getFoundUser"]),
+    randomColor() {
+      let random = Math.floor(Math.random() * 16777215).toString(16);
+      return {
+        backgroundColor: "#" + random,
+      };
+    },
   },
-  methods: {
-  },
-  created() {
-  }
-}
+  methods: {},
+  created() {},
+};
 </script>
 
 <style lang="scss" scoped>
 .profile-header {
   height: 30rem;
-  border-bottom: 1px solid #C2C2C2;
+  border-bottom: 1px solid #c2c2c2;
 
   .pp-layer {
-    background-color: red;
+    // background-color: red;
     position: absolute;
     width: 8rem;
     height: 8rem;
@@ -69,7 +81,7 @@ export default {
   width: 100%;
 
   .cover-image {
-    background-color: #E5E8EB;
+    background-color: #e5e8eb;
     width: 100%;
     height: 50%;
   }
@@ -87,7 +99,7 @@ export default {
     p {
       font-size: 1.2rem;
       font-weight: 500;
-      color: #707A9F;
+      color: #707a9f;
     }
   }
 }
@@ -111,9 +123,8 @@ export default {
 
       width: 20rem;
       height: 30rem;
-      border-radius: 5%
+      border-radius: 5%;
     }
   }
 }
-
 </style>
