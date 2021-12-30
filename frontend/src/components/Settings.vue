@@ -49,6 +49,7 @@
 import { mapGetters, mapActions } from "vuex";
 import Avatar from "./shared/Avatar";
 import InputBox from "./shared/InputBox";
+import { Toast } from "../SweetAlert";
 
 export default {
   name: "Settings",
@@ -74,7 +75,10 @@ export default {
         document.getElementById("wallet-input").value;
 
       await this.updateUser(this.updatedUser);
-      alert("Informations has been changed"); // TODO will be changed with SweetAlert
+      Toast.fire({
+        icon: "success",
+        title: "Informations was changed successfully",
+      });
     },
     changeAvatar(file) {
       const moralisFile = new Moralis.File("avatar.jpg", file);
@@ -88,6 +92,11 @@ export default {
       let copyText = document.getElementById("wallet-input");
       copyText.select();
       navigator.clipboard.writeText(copyText.value);
+
+      Toast.fire({
+        icon: "success",
+        title: "Wallet adress copied to clipboard",
+      });
     },
   },
 };
