@@ -40,6 +40,10 @@ export default {
         this.$emit("uploaded", file);
       }
     },
+    // There is a webpack issue. So, dynamic img url does not work without require() statement in the 'src'
+    // getImgUrl(pic){
+    //   return require('../../../assets/'+pic)
+    // }
   },
 };
 </script>
