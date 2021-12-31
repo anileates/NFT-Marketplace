@@ -90,7 +90,7 @@ export default {
     },
     copyWalletAdress() {
       let copyText = document.getElementById("wallet-input");
-      copyText.select();
+      // copyText.select();
       navigator.clipboard.writeText(copyText.value);
 
       Toast.fire({

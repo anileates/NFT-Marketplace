@@ -2,8 +2,9 @@
 nav.navbar
   .navbar-left.flex-row.flex-ai-c.flex-jc-sa
     router-link(to="/") LOGO IS HERE
-  .navbar-middle
-    | Search Bar Is Here
+  .navbar-middle.flex-row.flex-ai-c
+    .searchbox-wrapper
+      app-search-box
   .navbar-items.flex-col.flex-jc-c
     ul.flex-row.flex-jc-sa
       li
@@ -21,8 +22,13 @@ nav.navbar
 
 <script>
 import { mapActions } from 'vuex'
+import SearchBox from "./SearchBox";
+
 export default {
   name: "Header",
+  components: {
+    appSearchBox: SearchBox
+  },
   data() {
     return {};
   },
@@ -63,7 +69,10 @@ export default {
   }
 
   &-middle {
-    width: 36rem;
+    .searchbox-wrapper {
+      width: 36rem;
+      height: 70%;
+    }
   }
 
   &-items {
