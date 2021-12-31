@@ -21,25 +21,34 @@
   .showroom.flex-row.flex-jc-c
     .card-layout
       .card
+        app-nft-card
       .card
+        app-nft-card
       .card
+        app-nft-card
       .card
+        app-nft-card
       .card
+        app-nft-card
       .card
+        app-nft-card
       .card
+        app-nft-card
       .card
-      .card
-      .card
+        app-nft-card
+
 </template>
 
 <script>
 import Avatar from "./shared/Avatar";
+import NftCard from "./shared/NftCard";
 import { mapGetters } from "vuex";
 
 export default {
   name: "UserPage",
   components: {
     appAvatar: Avatar,
+    appNftCard: NftCard
   },
   data() {
     return {
@@ -117,13 +126,9 @@ export default {
     flex-wrap: wrap;
 
     .card {
-      background-color: black;
-      box-sizing: border-box;
       margin: 0.5rem 1rem;
-
       width: 20rem;
-      height: 30rem;
-      border-radius: 5%;
+      height: 29rem;
     }
   }
 }

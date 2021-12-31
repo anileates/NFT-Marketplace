@@ -67,6 +67,8 @@ i {
   max-height: 40rem;
   overflow: auto;
   overflow-x: hidden;
+  position: relative;
+  z-index: 1;
 
   background-color: white;
 
