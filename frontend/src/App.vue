@@ -64,5 +64,9 @@ export default {
   &-ai-fs {
     align-items: flex-start;
   }
+
+  &-ai-fe {
+    align-items: flex-end;
+  }
 }
 </style>

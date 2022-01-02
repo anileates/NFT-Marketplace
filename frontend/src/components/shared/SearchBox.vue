@@ -3,7 +3,7 @@
   .flex-row.flex-jc-c.flex-ai-c
     i.fas.fa-search
     input(placeholder="Search user, collection or NFT")
-  .dropdown-results
+  .dropdown-results(v-show="false" )
     ul.flex-col.flex-ai-c.flex-jc-sb
       li
         app-search-result-item
