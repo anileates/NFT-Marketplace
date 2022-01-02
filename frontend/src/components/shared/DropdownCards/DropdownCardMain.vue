@@ -49,8 +49,8 @@ export default {
     padding: 0 1rem;
 
     border-bottom: 1px solid rgb(229, 232, 235);
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
+    //border-top-left-radius: 1rem !important;
+    //border-top-right-radius: 1rem !important;
 
     i{
       margin-right: 0.5rem;

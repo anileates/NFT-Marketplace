@@ -1,14 +1,19 @@
 <template lang="pug">
 .nft-page-container.flex-col.flex-ai-c.flex-jc-c
-  .sell-cancel-bar
+  .sell-cancel-bar.flex-row.flex-jc-c
+    .inner
+      .btn-wrapper
+        app-custom-button(buttonText="Cancel Listing")
+      .btn-wrapper
+        app-custom-button(buttonText="Lower Price")
   .center-box.flex-row.flex-jc-sb
     .left-box.flex-col.flex-ai-c.flex-jc-sb
       .image-wrapper
         img(style="width: 100%; height: 100%; object-fit: contain" src="https://lh3.googleusercontent.com/_LHbh5VQhb0IGu1kAfLjEgFu02CYcWyj2cOeoPrvAOCm-2Y-X4FXXrH8VrdxM36DcrC0JkTrCup3gON21BNXkwzJ756jaUJ2zrb0-Q=s0")
       .detailed-information-section(style="margin-top: 1rem")
         app-description-card
-        .token-details
-          app-details-card
+        app-details-card
+        app-details-card
 
     .right-box
       .info-preview.flex-col.flex-ai-sb.flex-jc-sa
@@ -32,6 +37,7 @@ import SaleCard from "./shared/DropdownCards/SaleCard";
 import DropdownCardMain from "./shared/DropdownCards/DropdownCardMain";
 import DescriptionCard from "./shared/DropdownCards/DescriptionCard";
 import DetailsCard from "./shared/DropdownCards/DetailsCard";
+import CustomButton from "./shared/Buttons/CustomButton";
 
 export default {
   name: 'NFTPage',
@@ -39,7 +45,8 @@ export default {
     appSaleCard: SaleCard,
     appDropdownCardMain:DropdownCardMain,
     appDescriptionCard: DescriptionCard,
-    appDetailsCard: DetailsCard
+    appDetailsCard: DetailsCard,
+    appCustomButton: CustomButton
   },
   data() {
     return {}
@@ -55,9 +62,27 @@ export default {
 
 .sell-cancel-bar {
   width: 100%;
-  height: 4.5rem;
+  height: 4.2rem;
 
   background-color: aliceblue;
+
+
+  .inner {
+    width: 82%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .btn-wrapper {
+    width: 10rem;
+    height: 3rem;
+
+    margin-right: 0.5rem;
+  }
 }
 
 .center-box {
@@ -76,17 +101,27 @@ export default {
       height: 34.5rem;
 
       border-radius: 0.6rem;
-
-
     }
 
     .detailed-information-section {
       width: 100%;
       height: 30.3125rem;
 
-      //background-color: green;
-      //margin-top: 15rem;
+      & > .dropdown-card {
+        border-radius: 0;
+        border-width: 1px;
+        border-bottom: 0;
+      }
 
+      .dropdown-card:first-child {
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+      }
+
+      .dropdown-card:last-child {
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+      }
     }
   }
 
@@ -159,7 +194,4 @@ a {
   }
 }
 
-.token-details {
-  width: 100%;
-}
 </style>
