@@ -10,6 +10,11 @@ export default {
   },
   data() {
     return {}
+  },
+  computed: {
+    hasDefaultSlot (){
+      return !!this.$slots.default;
+    }
   }
 }
 </script>
@@ -17,7 +22,7 @@ export default {
 <template lang="pug">
 button
   slot
-  span {{ this.buttonText }}
+  span(:class="{ iconExists: hasDefaultSlot }") {{ this.buttonText }}
 </template>
 
 <style scoped lang="scss">
@@ -35,14 +40,13 @@ button {
   font-weight: 600;
   letter-spacing: 0.06rem;
 
-  span {
-    margin-left: 0.8rem;
-    margin-top: 0.2rem;
-  }
-
   &:hover {
     cursor: pointer;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
   }
+}
+
+.iconExists {
+  margin-left: 0.8rem;
 }
 </style>
