@@ -15,7 +15,7 @@ export default {
 </script>
 
 <template lang="pug">
-app-dropdown-card(:isCollapsible="true")
+app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
   template(v-slot:dropdownCardHeader)
     .header-wrapper.flex-row.flex-ai-c.flex-jc-fs
       i.fas.fa-info-circle

@@ -6,11 +6,15 @@ export default {
       type: Boolean,
       required: true,
       default: true
+    },
+    collapseByDefault: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      isCollapsed: false
+      isCollapsed: this.$props.collapseByDefault
     }
   },
   computed: {
@@ -29,7 +33,7 @@ export default {
     slot(name="dropdownCardHeader")
     i.fas.fa-chevron-down(v-show="isCollapsible && isCollapsed")
     i.fas.fa-chevron-up(v-show="isCollapsible && !isCollapsed")
-  .body(v-show="!isCollapsed")
+  .body(v-show="!isCollapsible || !isCollapsed")
     slot(name="dropdownCardBody")
 </template>
 
