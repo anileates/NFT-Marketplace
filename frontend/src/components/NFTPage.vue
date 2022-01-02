@@ -2,9 +2,11 @@
 .nft-page-container.flex-col.flex-ai-c.flex-jc-c
   .sell-cancel-bar
   .center-box.flex-row.flex-jc-sb
-    .left-box
+    .left-box.flex-col.flex-ai-c.flex-jc-sb
       .image-wrapper
       .detailed-information-section
+        app-description-card
+
     .right-box
       .info-preview.flex-col.flex-ai-sb.flex-jc-sa
         .first-line.flex-row.flex-ai-c.flex-jc-sb
@@ -25,12 +27,14 @@
 <script>
 import SaleCard from "./shared/DropdownCards/SaleCard";
 import DropdownCardMain from "./shared/DropdownCards/DropdownCardMain";
+import DescriptionCard from "./shared/DropdownCards/DescriptionCard";
 
 export default {
   name: 'NFTPage',
   components: {
     appSaleCard: SaleCard,
-    appDropdownCardMain:DropdownCardMain
+    appDropdownCardMain:DropdownCardMain,
+    appDescriptionCard: DescriptionCard
   },
   data() {
     return {}
@@ -57,7 +61,7 @@ export default {
   padding-top: 2rem;
 
   .left-box {
-    background-color: green;
+    //background-color: green;
     width: 42%;
     height: 100%;
 
@@ -71,7 +75,9 @@ export default {
       width: 100%;
       height: 30.3125rem;
 
-      background-color: green;
+      //background-color: green;
+      //margin-top: 15rem;
+
     }
   }
 

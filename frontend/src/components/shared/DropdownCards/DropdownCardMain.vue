@@ -53,7 +53,7 @@ export default {
     border-top-right-radius: 1rem;
 
     i{
-      margin-right: 0.3rem;
+      margin-right: 0.5rem;
       color: rgb(112, 122, 131);
     }
   }

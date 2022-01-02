@@ -1,0 +1,48 @@
+<script>
+export default {
+  name: 'CustomButton',
+  props: {
+    buttonText: {
+      type: String,
+      required: true,
+      default: ''
+    }
+  },
+  data() {
+    return {}
+  }
+}
+</script>
+
+<template lang="pug">
+button
+  slot
+  span {{ this.buttonText }}
+</template>
+
+<style scoped lang="scss">
+button {
+  height: 100%;
+  width: 100%;
+
+  background-color: rgb(32, 129, 226);
+  color: white;
+
+  border: none;
+  border-radius: 0.5rem;
+
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06rem;
+
+  span {
+    margin-left: 0.8rem;
+    margin-top: 0.2rem;
+  }
+
+  &:hover {
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  }
+}
+</style>

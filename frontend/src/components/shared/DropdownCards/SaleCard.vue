@@ -1,10 +1,14 @@
 <script>
 import DropdownCardMain from "./DropdownCardMain";
+import CustomButton from "../Buttons/CustomButton";
+import MakeOfferButton from "../Buttons/MakeOfferButton";
 
 export default {
   name: 'SaleCard',
   components: {
-    appDropdownCard: DropdownCardMain
+    appDropdownCard: DropdownCardMain,
+    appCustomButton: CustomButton,
+    appMakeOfferButton: MakeOfferButton
   },
   data() {
     return {}
@@ -27,13 +31,13 @@ app-dropdown-card
         span.eth-price 0.44
         .fiat-equivalent-wrapper
           p ($1,638.61)
-      .actions-button-wrapper
-        button
-          i.fas.fa-wallet
-          span Buy now
-        button
-          i.fas.fa-tag
-          span Make offer
+      .actions-button-wrapper.flex-row.flex-ai-c.flex-jc-fs
+        .btn-wrapper
+          app-custom-button(buttonText="Buy Now")
+            i.fas.fa-wallet(style="color: white")
+        .btn-wrapper
+          app-custom-button(buttonText="Make Offer")
+            i.fas.fa-tag(style="color: white")
 </template>
 
 <style scoped lang="scss">
@@ -91,28 +95,14 @@ app-dropdown-card
 .actions-button-wrapper {
   width: 100%;
 
-  button {
-    width: 13.125rem;
-    height: 3rem;
-    margin-right: 0.5rem;
-    margin-top: -1rem;
+}
 
-    background-color: rgb(32, 129, 226);
-    color: white;
+.btn-wrapper {
+  width: 13.125rem;
+  height: 3rem;
 
-    border: none;
-    border-radius: 0.5rem;
-
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 0.06rem;
-
-    i {
-      color: white;
-      margin-right: 0.8rem;
-      margin-top: 0.2rem;
-    }
-  }
+  margin-right: 0.5rem;
+  margin-top: -1rem;
 }
 
 </style>
