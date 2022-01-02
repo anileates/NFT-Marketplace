@@ -1,0 +1,117 @@
+<script>
+import DropdownCardMain from "./DropdownCardMain";
+
+export default {
+  name: 'SaleCard',
+  components: {
+    appDropdownCard: DropdownCardMain
+  },
+  data() {
+    return {}
+  }
+}
+</script>
+
+<template lang="pug">
+app-dropdown-card
+  template(v-slot:dropdownCardHeader)
+    .header-wrapper.flex-row.flex-ai-c.flex-jc-fs
+      i.far.fa-clock.fa-lg
+      p Sale ends May 21, 2022 at 12:30am +03
+  template(v-slot:dropdownCardBody)
+    .body-wrapper.flex-col.flex-ai-fs.flex-jc-sa
+      .title-wrapper
+        p Current Price
+      .price-wrapper.flex-row.flex-ai-c.flex-jc-fs
+        img(src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg")
+        span.eth-price 0.44
+        .fiat-equivalent-wrapper
+          p ($1,638.61)
+      .actions-button-wrapper
+        button
+          i.fas.fa-wallet
+          span Buy now
+        button
+          i.fas.fa-tag
+          span Make offer
+</template>
+
+<style scoped lang="scss">
+.body-wrapper {
+  width: 100%;
+  height: 100%;
+
+  padding: 0 1rem;
+}
+
+.header-wrapper > * {
+  color: rgb(112, 122, 131);
+}
+
+.title-wrapper {
+  p {
+    color: rgb(112, 122, 131);
+
+    font-size: 0.9025rem;
+    line-height: 1.3rem;
+    margin-bottom: -1rem;
+  }
+}
+
+.price-wrapper {
+  margin-top: -1rem;
+
+  img {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .eth-price {
+    color: rgb(53, 56, 64);
+
+    font-size: 1.875rem;
+    font-weight: 600;
+    line-height: 2.8125rem;
+
+    margin-left: 0.5625rem;
+  }
+
+  .fiat-equivalent-wrapper {
+    color: rgb(112, 122, 131);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.40625rem;
+
+    margin-top: 0.625rem;
+    margin-left: 0.5rem;
+  }
+}
+
+.actions-button-wrapper {
+  width: 100%;
+
+  button {
+    width: 13.125rem;
+    height: 3rem;
+    margin-right: 0.5rem;
+    margin-top: -1rem;
+
+    background-color: rgb(32, 129, 226);
+    color: white;
+
+    border: none;
+    border-radius: 0.5rem;
+
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.06rem;
+
+    i {
+      color: white;
+      margin-right: 0.8rem;
+      margin-top: 0.2rem;
+    }
+  }
+}
+
+</style>
