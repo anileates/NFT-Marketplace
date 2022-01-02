@@ -4,8 +4,11 @@
   .center-box.flex-row.flex-jc-sb
     .left-box.flex-col.flex-ai-c.flex-jc-sb
       .image-wrapper
-      .detailed-information-section
+        img(style="width: 100%; height: 100%; object-fit: contain" src="https://lh3.googleusercontent.com/_LHbh5VQhb0IGu1kAfLjEgFu02CYcWyj2cOeoPrvAOCm-2Y-X4FXXrH8VrdxM36DcrC0JkTrCup3gON21BNXkwzJ756jaUJ2zrb0-Q=s0")
+      .detailed-information-section(style="margin-top: 1rem")
         app-description-card
+        .token-details
+          app-details-card
 
     .right-box
       .info-preview.flex-col.flex-ai-sb.flex-jc-sa
@@ -28,13 +31,15 @@
 import SaleCard from "./shared/DropdownCards/SaleCard";
 import DropdownCardMain from "./shared/DropdownCards/DropdownCardMain";
 import DescriptionCard from "./shared/DropdownCards/DescriptionCard";
+import DetailsCard from "./shared/DropdownCards/DetailsCard";
 
 export default {
   name: 'NFTPage',
   components: {
     appSaleCard: SaleCard,
     appDropdownCardMain:DropdownCardMain,
-    appDescriptionCard: DescriptionCard
+    appDescriptionCard: DescriptionCard,
+    appDetailsCard: DetailsCard
   },
   data() {
     return {}
@@ -66,9 +71,13 @@ export default {
     height: 100%;
 
     .image-wrapper {
-      background-color: orange;
+      //background-color: orange;
       width: 100%;
       height: 34.5rem;
+
+      border-radius: 0.6rem;
+
+
     }
 
     .detailed-information-section {
@@ -150,4 +159,7 @@ a {
   }
 }
 
+.token-details {
+  width: 100%;
+}
 </style>

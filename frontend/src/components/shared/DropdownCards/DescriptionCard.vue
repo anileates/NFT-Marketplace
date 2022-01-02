@@ -9,6 +9,8 @@ export default {
     return {}
   }
 }
+
+// TODO add max-height for descripiton card and overflow auto
 </script>
 
 <template lang="pug">
