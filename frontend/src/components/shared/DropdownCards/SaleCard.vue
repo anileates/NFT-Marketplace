@@ -40,6 +40,7 @@ app-dropdown-card
 .body-wrapper {
   width: 100%;
   height: 100%;
+  min-height: 10rem;
 
   padding: 0 1rem;
 }
