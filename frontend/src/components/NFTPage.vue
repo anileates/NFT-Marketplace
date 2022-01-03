@@ -43,7 +43,7 @@ export default {
   name: 'NFTPage',
   components: {
     appSaleCard: SaleCard,
-    appDropdownCardMain:DropdownCardMain,
+    appDropdownCardMain: DropdownCardMain,
     appDescriptionCard: DescriptionCard,
     appDetailsCard: DetailsCard,
     appCustomButton: CustomButton
@@ -63,14 +63,11 @@ export default {
 .sell-cancel-bar {
   width: 100%;
   height: 4.2rem;
-
   background-color: aliceblue;
-
 
   .inner {
     width: 82%;
     height: 100%;
-
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -80,7 +77,6 @@ export default {
   .btn-wrapper {
     width: 10rem;
     height: 3rem;
-
     margin-right: 0.5rem;
   }
 }
@@ -99,7 +95,6 @@ export default {
       //background-color: orange;
       width: 100%;
       height: 34.5rem;
-
       border-radius: 0.6rem;
     }
 
@@ -110,7 +105,6 @@ export default {
       & > .dropdown-card {
         border-radius: 0;
         border-width: 1px;
-        border-bottom: 0;
       }
 
       .dropdown-card:first-child {
@@ -128,7 +122,6 @@ export default {
   .right-box {
     width: 58%;
     height: 100%;
-
     padding-left: 1rem;
 
     .info-preview {
@@ -168,11 +161,10 @@ a {
 .actions {
   button {
     background-color: transparent;
-
     border: solid rgb(229, 232, 235);
     border-width: 2px 2px 2px 0;
-
     cursor: pointer;
+
     &:hover {
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
     }
@@ -193,5 +185,4 @@ a {
     }
   }
 }
-
 </style>

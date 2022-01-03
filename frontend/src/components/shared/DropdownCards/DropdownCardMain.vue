@@ -17,11 +17,10 @@ export default {
       isCollapsed: this.$props.collapseByDefault
     }
   },
-  computed: {
-  },
+  computed: {},
   methods: {
-    minimizeCard () {
-      if(this.isCollapsible) this.isCollapsed = !this.isCollapsed
+    minimizeCard() {
+      if (this.isCollapsible) this.isCollapsed = !this.isCollapsed
     }
   }
 }
@@ -41,7 +40,6 @@ export default {
 .dropdown-card {
   width: 100%;
   min-width: 28rem;
-
   border-radius: 1rem;
   border: 2px solid rgb(229, 232, 235);
 
@@ -49,14 +47,9 @@ export default {
     width: 100%;
     height: 28%;
     min-height: 4rem;
-
     padding: 0 1rem;
 
-    border-bottom: 1px solid rgb(229, 232, 235);
-    //border-top-left-radius: 1rem !important;
-    //border-top-right-radius: 1rem !important;
-
-    i{
+    i {
       margin-right: 0.5rem;
       color: rgb(112, 122, 131);
     }
@@ -65,8 +58,9 @@ export default {
   .body {
     width: 100%;
     padding: 0.3rem 0;
-
     background-color: rgb(251, 253, 255);
+
+    border-top: 1px solid rgb(229, 232, 235);
 
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
@@ -76,5 +70,4 @@ export default {
 .collapsibleCard {
   cursor: pointer;
 }
-
 </style>
