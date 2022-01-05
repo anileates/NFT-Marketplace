@@ -1,22 +1,20 @@
 <template lang="pug">
 .searchBox-container
-  .flex-row.flex-jc-c.flex-ai-c
-    i.fas.fa-search
-    input(placeholder="Search user, collection or NFT")
-  .dropdown-results(v-show="false" )
-    ul.flex-col.flex-ai-c.flex-jc-sb
-      li
-        app-search-result-item
-      li
-        app-search-result-item
-      li
-        app-search-result-item
+  .flex-row.flex-jc-c.flex-ai-c(style="height: 100%")
+    i.fas.fa-search(@click="search")
+    input(placeholder="Search user, collection or NFT" v-model="searchText")
+  .dropdown-results(v-if="showResult")
+    ul.flex-col.flex-ai-c.flex-jc-sb(v-if="users && users.length != 0")
+      li(v-for="user in users")
+        app-search-result-item(:resultItem="user")
+    p(v-else).flex-col.flex-jc-sb(style="color: black; padding: 0.5rem 1rem; font-size: 0.8rem") No items found...
 </template>
 
 <script>
 import inputBox from "./InputBox";
 import Avatar from "./Avatar";
 import SearchResultItem from "./SearchResultItem";
+import {mapActions} from "vuex";
 
 export default {
   name: "SearchBox",
@@ -27,7 +25,17 @@ export default {
   },
   data() {
     return {
-      imageUrl: 'https://lh3.googleusercontent.com/xVyUwQMXGvCha3V8UQ1laIx5tfwpmR76Bu1L0oaNKHfxz0FS_t5Y6wRlXBTFqZNlGb0ixL4_TSifMtjQUgv25ZPuTHaFVNitFGf4Dw=s0'
+      imageUrl: 'https://lh3.googleusercontent.com/xVyUwQMXGvCha3V8UQ1laIx5tfwpmR76Bu1L0oaNKHfxz0FS_t5Y6wRlXBTFqZNlGb0ixL4_TSifMtjQUgv25ZPuTHaFVNitFGf4Dw=s0',
+      searchText: '',
+      users: [],
+      showResult: false
+    }
+  },
+  methods: {
+    ...mapActions(['searchUser']),
+    async search() {
+      this.users = await this.searchUser(this.searchText)
+      this.showResult = true
     }
   }
 }
@@ -50,7 +58,7 @@ export default {
 }
 
 input {
-  height: 90%;
+  height: 80%;
   width: 90%;
   border: none;
   font-size: 1rem;

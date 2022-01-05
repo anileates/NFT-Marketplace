@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import router from '../router/index'
 
 export const initAuth = async ({ commit, dispatch }) => {
@@ -52,4 +51,11 @@ export const fetchUser = async ({ commit }, username) => {
     const results = await query.find()
     console.log(results[0])
     commit('SET_FOUND_USER', results[0])
+}
+
+export const searchUser = async ({ commit }, text) => {
+    const query = new Moralis.Query('User')
+    query.fullText('username', text)
+
+    return await query.find()
 }

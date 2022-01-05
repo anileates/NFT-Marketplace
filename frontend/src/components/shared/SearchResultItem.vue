@@ -1,8 +1,8 @@
 <template lang="pug">
 a.search-result-item.flex-row.flex-ai-c
   .avatar-wrapper
-    app-avatar(:imgUrl="imageUrl"  :isEditable="false")
-  p User or collection name here
+    app-avatar(:imgUrl="resultItem.attributes.avatar._url" :isEditable="false")
+  p {{ resultItem.attributes.username }}
 </template>
 
 <script>
@@ -10,12 +10,14 @@ import Avatar from "./Avatar";
 
 export default {
   name: "SearchResultItem",
+  props: {
+    resultItem: {}
+  },
   components: {
     appAvatar: Avatar
   },
   data() {
     return {
-      imageUrl: 'https://lh3.googleusercontent.com/xVyUwQMXGvCha3V8UQ1laIx5tfwpmR76Bu1L0oaNKHfxz0FS_t5Y6wRlXBTFqZNlGb0ixL4_TSifMtjQUgv25ZPuTHaFVNitFGf4Dw=s0'
     }
   }
 }
