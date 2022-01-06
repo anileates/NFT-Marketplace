@@ -13,7 +13,7 @@
       .detailed-information-section(style="margin-top: 1rem")
         app-description-card
         app-details-card
-        app-details-card
+        app-traits-card
 
     .right-box
       .info-preview.flex-col.flex-ai-sb.flex-jc-sa
@@ -38,6 +38,7 @@ import DropdownCardMain from "./shared/DropdownCards/DropdownCardMain";
 import DescriptionCard from "./shared/DropdownCards/DescriptionCard";
 import DetailsCard from "./shared/DropdownCards/DetailsCard";
 import CustomButton from "./shared/Buttons/CustomButton";
+import TraitsCard from "./shared/DropdownCards/TraitsCard";
 
 export default {
   name: 'NFTPage',
@@ -46,7 +47,8 @@ export default {
     appDropdownCardMain: DropdownCardMain,
     appDescriptionCard: DescriptionCard,
     appDetailsCard: DetailsCard,
-    appCustomButton: CustomButton
+    appCustomButton: CustomButton,
+    appTraitsCard: TraitsCard
   },
   data() {
     return {}
@@ -57,7 +59,7 @@ export default {
 <style scoped lang="scss">
 .nft-page-container {
   width: 100%;
-  padding-bottom: 3rem;
+  margin-bottom: 5rem;
 }
 
 .sell-cancel-bar {

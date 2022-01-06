@@ -36,7 +36,8 @@
         app-nft-card
       .card
         app-nft-card
-
+      .card
+        app-nft-card
 </template>
 
 <script>
