@@ -1,6 +1,6 @@
 import router from '../router/index'
 
-export const initAuth = async ({ commit, dispatch }) => {
+export const initAuth = async ({commit, dispatch}) => {
     let user = Moralis.User.current();
 
     if (!user) {
@@ -16,15 +16,15 @@ export const initAuth = async ({ commit, dispatch }) => {
         await user.save();
     }
 
-    commit('SET_USER', { ...user.attributes })
+    commit('SET_USER', {...user.attributes})
     dispatch('toggleLoginStatus')
 }
 
-export const toggleLoginStatus = ({ state, commit }) => {
+export const toggleLoginStatus = ({state, commit}) => {
     commit('TOGGLE_LOGIN_STATE')
 }
 
-export const logout = async ({ commit, dispatch }) => {
+export const logout = async ({commit, dispatch}) => {
     await Moralis.User.logOut()
 
     commit('SET_USER', null)
@@ -33,7 +33,7 @@ export const logout = async ({ commit, dispatch }) => {
     await router.push('/')
 }
 
-export const updateUser = async ({ commit }, updatedUser) => {
+export const updateUser = async ({commit}, updatedUser) => {
     let user = Moralis.User.current();
 
     for (let [key, value] of Object.entries(updatedUser)) {
@@ -44,7 +44,7 @@ export const updateUser = async ({ commit }, updatedUser) => {
     commit('UPDATE_USER', newUser)
 }
 
-export const fetchUser = async ({ commit }, username) => {
+export const fetchUser = async ({commit}, username) => {
     const query = new Moralis.Query('User')
     query.equalTo('username', username)
 
@@ -53,9 +53,15 @@ export const fetchUser = async ({ commit }, username) => {
     commit('SET_FOUND_USER', results[0])
 }
 
-export const searchUser = async ({ commit }, text) => {
+export const searchUser = async ({commit}, text) => {
     const query = new Moralis.Query('User')
     query.fullText('username', text)
 
     return await query.find()
+}
+
+export const searchNFT = async ({commit}, text) => {
+    const options =  { q: text, chain: "eth", filter: "name", limit: 10}; // TODO limit value will be changed
+
+    return await Moralis.Web3API.token.searchNFTs(options)
 }

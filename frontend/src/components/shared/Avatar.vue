@@ -22,6 +22,7 @@ export default {
     imgUrl: {
       type: String,
       required: true,
+      default: 'https://yt3.ggpht.com/QwDAGLiT46yS0U4CZfcrVgGaUH8K3VcCeXjWdn9YBTGnZAZOEbRSClI9qC3LQUNuYolRlZCc=s900-c-k-c0x00ffffff-no-rj'
     },
   },
   data() {
