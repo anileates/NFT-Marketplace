@@ -7,8 +7,8 @@ nav.navbar
       app-search-box
   .navbar-items.flex-col.flex-jc-c
     ul.flex-row.flex-jc-sa
-      li
-        a Explore
+      router-link(to="/create-new-item")
+        a Create
       li(@click="login")
         a Sign In
       li(@click="_logout")
@@ -21,25 +21,25 @@ nav.navbar
 
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 import SearchBox from "./SearchBox";
 
 export default {
   name: "Header",
   components: {
-    appSearchBox: SearchBox
+    appSearchBox: SearchBox,
   },
   data() {
     return {};
   },
   methods: {
-    ...mapActions(['initAuth', 'logout']),
+    ...mapActions(["initAuth", "logout"]),
     async login() {
-      await this.initAuth()
+      await this.initAuth();
     },
     async _logout() {
-      this.logout()
-    }
+      this.logout();
+    },
   },
 };
 </script>

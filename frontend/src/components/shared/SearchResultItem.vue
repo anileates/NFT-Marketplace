@@ -97,7 +97,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 a {
   text-decoration: none;
   /* Make text not selectable */
