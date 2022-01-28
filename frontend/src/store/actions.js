@@ -61,7 +61,21 @@ export const searchUser = async ({commit}, text) => {
 }
 
 export const searchNFT = async ({commit}, text) => {
-    const options =  { q: text, chain: "eth", filter: "name", limit: 10}; // TODO limit value will be changed
+    const options = {q: text, chain: "eth", filter: "name", limit: 10}; // TODO limit value will be changed
 
     return await Moralis.Web3API.token.searchNFTs(options)
+}
+
+// GET NFT METHOD
+export const fetchNFT = async ({commit}, payload) => {
+    const options = {
+        address: payload.token_address,
+        token_id: payload.token_id,
+        chain: 'eth'
+    };
+
+    const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
+
+    console.log(tokenIdMetadata)
+    return tokenIdMetadata
 }

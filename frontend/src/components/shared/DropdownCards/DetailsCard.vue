@@ -2,6 +2,9 @@
 import DropdownCardMain from "./DropdownCardMain";
 export default {
   name: 'DetailsCard',
+  props: {
+    nft: {}
+  },
   components: {
     appDropdownCard: DropdownCardMain
   },
@@ -24,16 +27,16 @@ app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
     .body-wrapper.flex-col.flex-ai-fs
       .token-info-line
         p.title Contract Address
-        p.value 0x120983
+        p.value {{ this.nft.token_address }}
       .token-info-line
         p.title Token ID
-        p.value 4515
+        p.value {{ this.nft.token_id }}
       .token-info-line
         p.title Token Standart
-        p.value ERC-721
+        p.value {{ this.nft.contract_type }}
       .token-info-line
         p.title Blockchain
-        p.value Ethereum
+        p.value ETH
 </template>
 
 <style scoped lang="scss">

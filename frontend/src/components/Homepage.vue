@@ -1,15 +1,15 @@
 <template lang="pug">
 .homepage-container
   | this is homepage
-  button(@click="getNFT")  Get NFT
+  button(@click="getNFT") Get NFT
   button Get User
 </template>
 
 <script>
 export default {
   name: "Homepage",
-  data () {
-    return {}
+  data() {
+    return {};
   },
   methods: {
     async getNFT() {
@@ -18,16 +18,22 @@ export default {
 
       // const nftOwners = await Moralis.Web3API.token.getNFTOwners(options);
 
-      const options =  { q: "Ninja #4515", chain: "eth", filter: "name"};
+      const options = { q: "Ninja #4515", chain: "eth", filter: "name" };
       const NFTs = await Moralis.Web3API.token.searchNFTs(options);
 
       //
-      const options2 = { address: "0x97e41d5ce9c8cb1f83947ef82a86e345aed673f3", token_id: "4515", chain: "eth" };
-      const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options2);
+      const options2 = {
+        address: "0x97e41d5ce9c8cb1f83947ef82a86e345aed673f3",
+        token_id: "2518",
+        chain: "eth",
+      };
+      const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(
+        options2
+      );
 
-      console.log(NFTs)
-      console.log(tokenIdMetadata)
-    }
-  }
-}
+      console.log(NFTs);
+      console.log(tokenIdMetadata);
+    },
+  },
+};
 </script>

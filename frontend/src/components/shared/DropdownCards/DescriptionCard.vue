@@ -2,11 +2,17 @@
 import DropdownCardMain from "./DropdownCardMain";
 export default {
   name: 'Description',
+  props: {
+    description: String
+  },
   components: {
     appDropdownCard: DropdownCardMain
   },
   data() {
     return {}
+  },
+  created() {
+    console.log(this.description)
   }
 }
 
@@ -21,10 +27,8 @@ app-dropdown-card(:isCollapsible="false")
       p Description
   template(v-slot:dropdownCardBody)
     .body-wrapper.flex-col.flex-ai-fs.flex-jc-sa
-      p.creator Created by -
-        a(href="/creator") NinjaSquadNFT_
-      br
-      p Ninja Squad is a collection of 8,888 randomly generated NFTs on the Ethereum Blockchain. With your Ninja comes a global crypto & NFT community, utility, education, games and friends from across the globe... Join the squad.
+      span(v-html="this.description" v-if="this.description")
+      p.creator(v-else) No description found
 </template>
 
 <style scoped lang="scss">

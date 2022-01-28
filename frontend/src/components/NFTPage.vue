@@ -9,25 +9,25 @@
   .center-box.flex-row.flex-jc-sb
     .left-box.flex-col.flex-ai-c.flex-jc-sb
       .image-wrapper
-        img(style="width: 100%; height: 100%; object-fit: contain" src="https://lh3.googleusercontent.com/_LHbh5VQhb0IGu1kAfLjEgFu02CYcWyj2cOeoPrvAOCm-2Y-X4FXXrH8VrdxM36DcrC0JkTrCup3gON21BNXkwzJ756jaUJ2zrb0-Q=s0")
+        img(style="width: 100%; height: 100%; object-fit: contain" :src="getNFTMetadata.image")
       .detailed-information-section(style="margin-top: 1rem")
-        app-description-card
-        app-details-card
-        app-traits-card
+        app-description-card(:description="JSON.parse(this.nft.metadata).description")
+        app-details-card(:nft="this.nft")
+        app-traits-card(:attributes="getNFTMetadata.attributes")
 
     .right-box
       .info-preview.flex-col.flex-ai-sb.flex-jc-sa
         .first-line.flex-row.flex-ai-c.flex-jc-sb
-          a(href="/collection-21321") Collection Name Here
+          a(:href="getCollectionRedirectUrl") {{ nft.name }}
           .actions
             button
               i.fas.fa-redo-alt.fa-lg
             button
               i.fas.fa-share-alt.fa-lg
-        h1 Ninja #4515
+        h1 {{ getNFTMetadata.name }}
         .third-line
           span Owned by
-          a(href="/profile-link-of-owner") X
+          a.owner-of(:href="getProfileRedirectUrl") {{ nft.owner_of }}
       .sale-information
         app-sale-card
 </template>
@@ -51,7 +51,29 @@ export default {
     appTraitsCard: TraitsCard
   },
   data() {
-    return {}
+    return {
+      nft: this.$route.params.nftMetadata
+    }
+  },
+  computed: {
+    getNFTMetadata() {
+      // NFT Metadata format is not parsable when it comes first. So, parse and return it via this method
+      return JSON.parse(this.nft.metadata)
+    },
+    getCollectionRedirectUrl () {
+      return `/collections/${this.nft.token_address}`
+    },
+    getProfileRedirectUrl () {
+      return `/users/${this.nft.owner_of}`
+    }
+  },
+  created() {
+    // console.log('HERE => ', this.$route.params.nftMetadata)
+    console.log(this.nft)
+    console.log(this.nft.name)
+    console.log("DESCR: ",JSON.parse(this.nft.metadata).description)
+    console.log("X:", JSON.parse(this.nft.metadata).name)
+    console.log("Attributes:", JSON.parse(this.nft.metadata).attributes)
   }
 }
 </script>
@@ -186,5 +208,9 @@ a {
       margin: 1rem;
     }
   }
+}
+
+.owner-of {
+  margin-left: 0.5rem;
 }
 </style>

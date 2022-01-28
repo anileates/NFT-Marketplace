@@ -4,6 +4,9 @@ import DropdownCardMain from "./DropdownCardMain";
 
 export default {
   name: 'TraitsCard',
+  props: {
+    attributes: []
+  },
   components: {
     appDropdownCard: DropdownCardMain
   },
@@ -21,12 +24,10 @@ app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
       p Traits
   template(v-slot:dropdownCardBody)
     .body-wrapper
-      p Trait 1
-      p Trait 1
-      p Trait 1
-      p Trait 1
-      p Trait 1
-      p Trait 1
+      .trait-line.flex-row.flex-ai-c.flex-jc-sb(v-if="attributes.length != 0" v-for="attribute in attributes")
+        span {{ attribute.trait_type }}
+        span {{ attribute.value }}
+      p(v-else) No trait found
 </template>
 
 <style scoped lang="scss">
