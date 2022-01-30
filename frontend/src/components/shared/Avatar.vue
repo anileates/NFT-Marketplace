@@ -1,14 +1,14 @@
 <template lang="pug">
 .avatar-container(@mouseover="isHover = true", @mouseleave="isHover = false")
   .hover.flex-col.flex-ai-c.flex-jc-c(
-    v-show="(isEditable && isHover) || !imgUrl",
+    v-show="(isEditable && isHover) || !imgUrl ",
     @click="triggerInput"
   )
     input(ref="inputImageUpload", type="file", @change="uploadImage")
     i.far.fa-edit(v-if="imgUrl")
     i.far.fa-edit(v-else)
     span
-  img(:src="imgUrl", v-show="imgUrl")
+  img#image(:src="imgUrl", v-show="imgUrl || isUploaded")
 </template>
 
 <script>
@@ -22,22 +22,27 @@ export default {
     imgUrl: {
       type: String,
       required: true,
-      default: 'https://yt3.ggpht.com/QwDAGLiT46yS0U4CZfcrVgGaUH8K3VcCeXjWdn9YBTGnZAZOEbRSClI9qC3LQUNuYolRlZCc=s900-c-k-c0x00ffffff-no-rj'
+      default: null,
     },
   },
   data() {
     return {
       isHover: false,
+      isUploaded: false
     };
   },
   methods: {
     triggerInput() {
       this.$refs.inputImageUpload.click();
-      // document.getElementById('inputImageUpload').click()
     },
     uploadImage() {
       if (this.$refs.inputImageUpload.files.length > 0) {
         const file = this.$refs.inputImageUpload.files[0];
+
+        let image = document.getElementById("image");
+        image.src = URL.createObjectURL(this.$refs.inputImageUpload.files[0]);
+        this.isUploaded = true;
+
         this.$emit("uploaded", file);
       }
     },
