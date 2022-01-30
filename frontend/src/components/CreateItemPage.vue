@@ -1,19 +1,26 @@
 <template lang="pug">
-.create-item-page
-  input(v-model="this.asset.name", placeholder="Asset Name")
-  input(v-model="this.asset.description", placeholder="Asset Description")
-  input(v-model="this.asset.price", placeholder="Asset Price")
-  input(type="file", ref="inputImageUpload")
-  button(@click="this.createAsset") Create
+.create-item-page-container.flex-col.flex-ai-c.flex-jc-c
+  .create-item-page-body
+    .page-header
+      h2 Create Your Own Asset
+    .create-item-page-content.flex-row.flex-ai-fs.flex-jc-sb
+      .information-section.flex-col.flex-ai-fs.flex-jc-sa
+        .info.flex-col.flex-ai-fs.flex-jc-sa
+          label Asset Name*
+          appInputBox#assetName(placeholder="Asset Name")
+        .info.flex-col.flex-ai-fs.flex-jc-sa
+          label Asset Description*
+          appInputBox#assetDescription(placeholder="Asset Description")
+        .info.flex-col.flex-ai-fs.flex-jc-sa
+          label Asset Price*
+          appInputBox#assetPrice(placeholder="Asset Price")
+        button(@click="createAsset") Create Asset
 
-  br
-  br
-  br
-  button(@click="this.getUserTokens") Get Your Tokens
-  br
-  br
-  br
-  button(@click="this.loadNFTs") Get NFTs
+      .image-section.flex-col.flex-ai-c.flex-jc-fs
+        .section.flex-col.flex-ai-fs.flex-jc-sa
+          label Upload Your Asset 👇
+          .image-box-asset
+            app-avatar(@uploaded="uploadFile" :imgUrl="asset.fileUrl")
 </template>
 
 <script>
@@ -25,10 +32,17 @@ import NFTContract from "../../../Contracts/NFT.json";
 import NFTMarket from "../../../Contracts/NFTMarket.json";
 import Secrets from "../../../secrets.json";
 
+import InputBox from "../components/shared/InputBox.vue";
+import Avatar from "../components/shared/Avatar.vue";
+
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
 export default {
   name: "CreateItemPage",
+  components: {
+    appInputBox: InputBox,
+    appAvatar: Avatar,
+  },
   data() {
     return {
       asset: {
@@ -37,18 +51,20 @@ export default {
         price: undefined,
         fileUrl: undefined,
       },
+      file: undefined,
     };
   },
   methods: {
     async createAsset() {
-      const file = this.$refs.inputImageUpload.files[0];
+      const file = this.file;
+      console.log("file,", file)
 
-      if (
-        !this.asset.name ||
-        !this.asset.description ||
-        !this.asset.price ||
-        this.asset.fileUrl
-      ) {
+      this.asset.name = document.getElementById("assetName").value;
+      this.asset.description =
+        document.getElementById("assetDescription").value;
+      this.asset.price = document.getElementById("assetPrice").value;
+
+      if (!this.asset.name || !this.asset.description || !this.asset.price || !this.file) {
         return Toast.fire({
           icon: "error",
           title: "Please fill the given places to create an asset.",
@@ -106,9 +122,11 @@ export default {
       let tokenId = value.toNumber();
       const price = ethers.utils.parseUnits(this.asset.price, "ether");
 
-      transaction = await contract.approveFor(Secrets.third_market_contract_address, tokenId);
+      transaction = await contract.approveFor(
+        Secrets.third_market_contract_address,
+        tokenId
+      );
       tx = await transaction.wait();
-
 
       /* then list the item for sale on the marketplace */
       contract = new ethers.Contract(
@@ -138,7 +156,7 @@ export default {
 
       const options = {
         chain: "rinkeby",
-        address: Secrets.wallets.new_wallet_address,
+        address: Secrets.wallets.old_wallet_address,
       };
       const polygonNFTs = await Moralis.Web3API.account.getNFTs(options);
       console.log(polygonNFTs);
@@ -181,9 +199,78 @@ export default {
 
       console.log("ITEMs 👉", items);
     },
+    uploadFile(file) {
+      this.file = file;
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.create-item-page {
+  &-body {
+    width: 60rem;
+    height: 100%;
+  }
+
+  &-content {
+    margin-top: 2rem;
+  }
+}
+
+h2 {
+  font-size: 2.5rem;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.info {
+  height: 4rem;
+  margin-bottom: 1rem;
+
+  input {
+    height: 2.5rem;
+    width: 26rem;
+  }
+}
+
+.section {
+  margin-bottom: 0.5rem;
+}
+
+.image-section {
+  // background-color: gray;
+  height: 26rem;
+  width: 30rem;
+  margin-right: 2rem;
+}
+
+.image-box {
+  background-color: #d5d5d5;
+  position: relative;
+
+  &-asset {
+    @extend .image-box;
+    height: 20rem;
+    width: 20rem;
+    border-radius: 5%;
+  }
+}
+
+button {
+  width: 8rem;
+  height: 3rem;
+  cursor: pointer;
+  background-color: #2081e2;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  float: bottom;
+  margin-top: 0.5rem;
+}
 </style>
