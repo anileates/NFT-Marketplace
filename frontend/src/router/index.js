@@ -1,14 +1,15 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Settings from "../components/Settings";
 import store from '../store/index'
 import Homepage from "../components/Homepage";
 import User from "../components/User";
 import NotFound from "../components/NotFound";
 import NFTPage from "../components/NFTPage";
+import CreateItemPage from "../components/CreateItemPage";
 import InternalErrorPage from "../components/InternalErrorPage";
 
 const routes = [
-    {path: '/', component: Homepage},
+    { path: '/', component: Homepage },
     {
         path: '/settings',
         component: Settings,
@@ -50,9 +51,13 @@ const routes = [
             }
         }
     },
-    {path: '/not-found', component: NotFound},
-    {path: '/sth-went-wrong', component: InternalErrorPage},
-    {path: '/:pathMatch(.*)*', component: NotFound},
+    {
+        path: '/create-new-item',
+        component: CreateItemPage,
+    },
+    { path: '/not-found', component: NotFound },
+    { path: '/sth-went-wrong', component: InternalErrorPage },
+    { path: '/:pathMatch(.*)*', component: NotFound },
 ]
 
 const router = createRouter({

@@ -1,3 +1,5 @@
 **/node_modules
 **/.env
 **/.idea
+**/secrets.json
+**/build/contracts
