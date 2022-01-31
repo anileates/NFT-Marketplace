@@ -52,6 +52,25 @@ const routes = [
         }
     },
     {
+        path: '/testnet-tokens/:tokenAddress/:tokenId',
+        component: NFTPage,
+        async beforeEnter(to, from, next) {
+            if (to.params.tokenAddress && to.params.tokenId) {
+                const nft = await store.dispatch('fetchNFT', {
+                    token_address: to.params.tokenAddress,
+                    token_id: to.params.tokenId,
+                    chain: 'rinkeby'
+                })
+                if (!nft) return await router.push('/not-found')
+
+                to.params.nftMetadata = nft
+                return next()
+            } else {
+                await router.push('/sth-went-wrong')
+            }
+        }
+    },
+    {
         path: '/create-new-item',
         component: CreateItemPage,
     },

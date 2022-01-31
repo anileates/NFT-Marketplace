@@ -71,11 +71,10 @@ export const fetchNFT = async ({commit}, payload) => {
     const options = {
         address: payload.token_address,
         token_id: payload.token_id,
-        chain: 'eth'
+        chain: payload.chain || 'eth'
     };
 
     const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
 
-    console.log(tokenIdMetadata)
     return tokenIdMetadata
 }
