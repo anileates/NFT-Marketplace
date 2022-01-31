@@ -24,7 +24,7 @@ app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
       p Traits
   template(v-slot:dropdownCardBody)
     .body-wrapper
-      .trait-line.flex-row.flex-ai-c.flex-jc-sb(v-if="attributes.length != 0" v-for="attribute in attributes")
+      .trait-line.flex-row.flex-ai-c.flex-jc-sb(v-if="attributes && attributes.length != 0" v-for="attribute in attributes")
         span {{ attribute.trait_type }}
         span {{ attribute.value }}
       p(v-else) No trait found
