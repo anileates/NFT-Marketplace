@@ -1,17 +1,22 @@
 <template lang="pug">
 .nft-page-container.flex-col.flex-ai-c.flex-jc-c
-  .sell-cancel-bar.flex-row.flex-jc-c
+  .sell-cancel-bar.flex-row.flex-jc-c(v-show="isOwner")
     .inner
       .btn-wrapper
-        app-custom-button(buttonText="Cancel Listing")
-      .btn-wrapper
-        app-custom-button(buttonText="Lower Price")
+        app-custom-button(buttonText="Cancel Listing", @click="cancelListing")
+      //- .btn-wrapper
+      //-   app-custom-button(buttonText="Lower Price")
   .center-box.flex-row.flex-jc-sb
     .left-box.flex-col.flex-ai-c.flex-jc-sb
       .image-wrapper
-        img(style="width: 100%; height: 100%; object-fit: contain" :src="getNFTMetadata.image")
+        img(
+          style="width: 100%; height: 100%; object-fit: contain",
+          :src="getNFTMetadata.image"
+        )
       .detailed-information-section(style="margin-top: 1rem")
-        app-description-card(:description="JSON.parse(this.nft.metadata).description")
+        app-description-card(
+          :description="JSON.parse(this.nft.metadata).description"
+        )
         app-details-card(:nft="this.nft")
         app-traits-card(:attributes="getNFTMetadata.attributes")
 
@@ -27,9 +32,9 @@
         h1 {{ getNFTMetadata.name }}
         .third-line
           span Owned by
-          a.owner-of(:href="getProfileRedirectUrl") {{ nft.owner_of }}
+          a.owner-of(:href="getProfileRedirectUrl") {{ itemFound.seller || nft.owner_of }}
       .sale-information
-        app-sale-card
+        app-sale-card(:isForSale="this.isForSale" :price="itemFound.price" :disableButtons="true")
 </template>
 
 <script>
@@ -40,42 +45,135 @@ import DetailsCard from "./shared/DropdownCards/DetailsCard";
 import CustomButton from "./shared/Buttons/CustomButton";
 import TraitsCard from "./shared/DropdownCards/TraitsCard";
 
+import Secrets from "../../../secrets.json";
+import NFTMarket from "../../../Contracts/NFTMarket.json";
+import NFT from "../../../Contracts/NFT.json";
+import { ethers } from "ethers";
+import Web3Modal from "web3modal";
+import { mapGetters } from "vuex";
+import axios from "axios";
+
 export default {
-  name: 'NFTPage',
+  name: "NFTPage",
   components: {
     appSaleCard: SaleCard,
     appDropdownCardMain: DropdownCardMain,
     appDescriptionCard: DescriptionCard,
     appDetailsCard: DetailsCard,
     appCustomButton: CustomButton,
-    appTraitsCard: TraitsCard
+    appTraitsCard: TraitsCard,
   },
   data() {
     return {
-      nft: this.$route.params.nftMetadata
-    }
+      nft: this.$route.params.nftMetadata,
+      itemFound: {}
+    };
+  },
+  methods: {
+    async cancelListing() {
+      console.log("Cancel Listin 🔥");
+      console.log(
+        "Params:",
+        typeof this.$route.params.tokenId.toString(),
+        this.$route.params.tokenId.toString()
+      );
+      console.log(this.getCurrentUser);
+
+      const web3Modal = new Web3Modal();
+      const connection = await web3Modal.connect();
+      const provider = new ethers.providers.Web3Provider(connection);
+      const signer = provider.getSigner();
+
+      let contract = new ethers.Contract(
+        Secrets.third_market_contract_address,
+        NFTMarket.abi,
+        signer
+      );
+
+      let cancellingPrice = await contract.getCancellingPrice();
+      cancellingPrice = cancellingPrice.toString();
+
+      let transaction = await contract.cancelSale(
+        Secrets.third_nft_contract_address,
+        this.$route.params.tokenId.toString(),
+        { value: cancellingPrice }
+      );
+      await transaction.wait();
+    },
+    async getItemFromContract() {
+      const web3Modal = new Web3Modal();
+      const connection = await web3Modal.connect();
+      const provider = new ethers.providers.Web3Provider(connection);
+      const signer = provider.getSigner();
+
+      const marketContract = new ethers.Contract(
+        Secrets.third_market_contract_address,
+        NFTMarket.abi,
+        signer
+      );
+
+      const tokenContract = new ethers.Contract(
+        Secrets.third_nft_contract_address,
+        NFT.abi,
+        provider
+      );
+      const data = await marketContract.fetchItemsCreated();
+
+      const items = await Promise.all(
+        data.map(async (i) => {
+          const tokenUri = await tokenContract.tokenURI(i.tokenId);
+          const meta = await axios.get(tokenUri);
+          let price = ethers.utils.formatUnits(i.price.toString(), "ether");
+          let item = {
+            price,
+            tokenId: i.tokenId.toNumber(),
+            seller: i.seller,
+            owner: i.owner,
+            image: meta.data.image,
+          };
+
+          return item;
+        })
+      );
+
+      items.forEach((item) => {
+        if (item.tokenId == this.$route.params.tokenId) {
+          this.itemFound = item;
+        }
+      });
+
+      console.log(this.itemFound)
+    },
   },
   computed: {
+    ...mapGetters(["getCurrentUser"]),
     getNFTMetadata() {
       // NFT Metadata format is not parsable when it comes first. So, parse and return it via this method
-      return JSON.parse(this.nft.metadata)
+      return JSON.parse(this.nft.metadata);
     },
-    getCollectionRedirectUrl () {
-      return `/collections/${this.nft.token_address}`
+    getCollectionRedirectUrl() {
+      return `/collections/${this.nft.token_address}`;
     },
-    getProfileRedirectUrl () {
-      return `/users/${this.nft.owner_of}`
+    getProfileRedirectUrl() {
+      return `/users/${this.nft.owner_of}`;
+    },
+    isOwner () {
+      if(this.getCurrentUser.ethAddress.toString().toLowerCase() === this.nft.owner_of.toString().toLowerCase()) return true
+      else if (this.itemFound.seller && this.itemFound.seller.toLowerCase() === this.getCurrentUser.ethAddress.toString().toLowerCase()) return true
+      else return false 
+    },
+    isForSale() {
+      if(this.nft.owner_of.toString().toLowerCase() === Secrets.third_market_contract_address.toString().toLowerCase()){
+        return true
+      }else {
+        return false
+      }
     }
   },
   created() {
-    // console.log('HERE => ', this.$route.params.nftMetadata)
-    console.log(this.nft)
-    console.log(this.nft.name)
-    console.log("DESCR: ",JSON.parse(this.nft.metadata).description)
-    console.log("X:", JSON.parse(this.nft.metadata).name)
-    console.log("Attributes:", JSON.parse(this.nft.metadata).attributes)
-  }
-}
+    this.getItemFromContract()
+  },
+};
 </script>
 
 <style scoped lang="scss">
