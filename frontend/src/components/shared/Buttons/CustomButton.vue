@@ -1,26 +1,30 @@
 <script>
 export default {
-  name: 'CustomButton',
+  name: "CustomButton",
   props: {
     buttonText: {
       type: String,
       required: true,
-      default: ''
-    }
+      default: "",
+    },
+    disableButton: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
-    return {}
+    return {};
   },
   computed: {
-    hasDefaultSlot (){
+    hasDefaultSlot() {
       return !!this.$slots.default;
     }
-  }
-}
+  },
+};
 </script>
 
 <template lang="pug">
-button
+button(:class="{disable: disableButton}")
   slot
   span(:class="{ iconExists: hasDefaultSlot }") {{ this.buttonText }}
 </template>
@@ -43,6 +47,15 @@ button {
   &:hover {
     cursor: pointer;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.disable {
+    background-color: rgb(177, 197, 218);
+
+  &:hover {
+    cursor: default;
+    box-shadow: none;
   }
 }
 
