@@ -34,6 +34,7 @@ import Secrets from "../../../secrets.json";
 
 import InputBox from "../components/shared/InputBox.vue";
 import Avatar from "../components/shared/Avatar.vue";
+import router from '../router/index'
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
