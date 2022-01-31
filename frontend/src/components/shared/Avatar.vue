@@ -1,7 +1,7 @@
 <template lang="pug">
 .avatar-container(@mouseover="isHover = true", @mouseleave="isHover = false")
   .hover.flex-col.flex-ai-c.flex-jc-c(
-    v-show="(isEditable && isHover) || !imgUrl ",
+    v-show="(isEditable && isHover) || (!imgUrl && isEditable) ",
     @click="triggerInput"
   )
     input(ref="inputImageUpload", type="file", @change="uploadImage")
