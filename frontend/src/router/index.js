@@ -9,7 +9,7 @@ import CreateItemPage from "../components/CreateItemPage";
 import InternalErrorPage from "../components/InternalErrorPage";
 
 const routes = [
-    { path: '/', component: Homepage },
+    { path: '/', component: Homepage, meta: { title: 'Home' } },
     {
         path: '/settings',
         component: Settings,
@@ -19,6 +19,9 @@ const routes = [
             } else {
                 next('/')
             }
+        },
+        meta: {
+            title: 'Settings'
         }
     },
     {
@@ -27,6 +30,7 @@ const routes = [
         async beforeEnter(to, from, next) {
             await store.dispatch('fetchUser', to.params.username)
             if (store.getters.getFoundUser) {
+                to.params.pageTitle = to.params.username + ' - Profile'
                 next()
             } else {
                 await router.push('/not-found')
@@ -45,6 +49,8 @@ const routes = [
                 if (!nft) return await router.push('/not-found')
 
                 to.params.nftMetadata = nft
+                to.params.pageTitle = JSON.parse(to.params.nftMetadata.metadata).name
+
                 return next()
             } else {
                 await router.push('/sth-went-wrong')
@@ -64,6 +70,8 @@ const routes = [
                 if (!nft) return await router.push('/not-found')
 
                 to.params.nftMetadata = nft
+                to.params.pageTitle = JSON.parse(to.params.nftMetadata.metadata).name
+
                 return next()
             } else {
                 await router.push('/sth-went-wrong')
@@ -73,15 +81,34 @@ const routes = [
     {
         path: '/create-new-item',
         component: CreateItemPage,
+        meta: {
+            title: `Create Asset`
+        }
     },
-    { path: '/not-found', component: NotFound },
-    { path: '/sth-went-wrong', component: InternalErrorPage },
-    { path: '/:pathMatch(.*)*', component: NotFound },
+    {
+        path: '/not-found', component: NotFound,
+        meta: {
+            title: `404 Not Found`
+        }
+    },
+    {
+        path: '/sth-went-wrong', component: InternalErrorPage,
+        meta: { title: 'Ooopppss.' }
+    },
+    {
+        path: '/:pathMatch(.*)*', component: NotFound,
+        meta: { title: `404 Not Found` }
+    },
 ]
 
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
     routes
+})
+
+router.afterEach((to, from, next) => {
+    document.title = `${to.meta.title || to.params.pageTitle} | MyMarketPlace`
+    next()
 })
 
 export default router
