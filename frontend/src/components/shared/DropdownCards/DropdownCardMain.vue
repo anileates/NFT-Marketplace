@@ -1,39 +1,43 @@
 <script>
 export default {
-  name: 'DropdownCard',
+  name: "DropdownCard",
   props: {
     isCollapsible: {
       type: Boolean,
       required: true,
-      default: true
+      default: true,
     },
     collapseByDefault: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
-      isCollapsed: this.$props.collapseByDefault
-    }
+      isCollapsed: this.$props.collapseByDefault,
+    };
   },
   computed: {},
   methods: {
     minimizeCard() {
-      if (this.isCollapsible) this.isCollapsed = !this.isCollapsed
-    }
-  }
-}
+      if (this.isCollapsible) this.isCollapsed = !this.isCollapsed;
+    },
+  },
+};
 </script>
 
 <template lang="pug">
 .dropdown-card
-  .header.flex-row.flex-ai-c.flex-jc-sb(:class="{collapsibleCard: isCollapsible}" @click="minimizeCard")
+  .header.flex-row.flex-ai-c.flex-jc-sb(
+    :class="{ collapsibleCard: isCollapsible }",
+    @click="minimizeCard"
+  )
     slot(name="dropdownCardHeader")
     i.fas.fa-chevron-down(v-show="isCollapsible && isCollapsed")
     i.fas.fa-chevron-up(v-show="isCollapsible && !isCollapsed")
-  .body(v-show="!isCollapsible || !isCollapsed")
-    slot(name="dropdownCardBody")
+  transition(name="slide" type="animation")
+    .body(v-show="!isCollapsible || !isCollapsed")
+      slot(name="dropdownCardBody")
 </template>
 
 <style lang="scss">
@@ -42,6 +46,7 @@ export default {
   min-width: 28rem;
   border-radius: 1rem;
   border: 2px solid rgb(229, 232, 235);
+  transition: height 5s;
 
   .header {
     width: 100%;
@@ -69,5 +74,42 @@ export default {
 
 .collapsibleCard {
   cursor: pointer;
+}
+
+/** Animations & Transitions **/
+.slide-enter {
+  opacity: 0;
+}
+.slide-enter-active {
+  animation: slide-in .4s ease-out forwards;
+  transition: opacity .4s;
+  opacity: 1;
+}
+.slide-leave {
+}
+.slide-leave-active {
+  animation: slide-out .4s ease-out forwards;
+  transition: opacity .4s;
+  opacity: 0;
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateY(0px);
+  }
+
+  to {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(-20px);
+  }
+
+  to {
+    transform: translateY(0px);
+  }
 }
 </style>
