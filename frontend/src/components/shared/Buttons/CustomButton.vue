@@ -44,6 +44,8 @@ button {
   font-weight: 600;
   letter-spacing: 0.06rem;
 
+  transition: box-shadow .4s;
+
   &:hover {
     cursor: pointer;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
