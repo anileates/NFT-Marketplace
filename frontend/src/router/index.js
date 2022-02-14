@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Settings from "../components/Settings";
+import Settings from "../views/Settings";
 import store from '../store/index'
-import Homepage from "../components/Homepage";
-import User from "../components/User";
-import NotFound from "../components/NotFound";
-import NFTPage from "../components/NFTPage";
-import CreateItemPage from "../components/CreateItemPage";
-import InternalErrorPage from "../components/InternalErrorPage";
+import Homepage from "../views/Homepage";
+import User from "../views/User";
+import NotFound from "../views/NotFound";
+import NFTPage from "../views/NFTPage";
+import CreateItemPage from "../views/CreateItemPage";
+import InternalErrorPage from "../views/InternalErrorPage";
 
 const routes = [
     { path: '/', component: Homepage, meta: { title: 'Home' } },
@@ -108,7 +108,6 @@ const router = createRouter({
 
 router.afterEach((to, from, next) => {
     document.title = `${to.meta.title || to.params.pageTitle} | MyMarketPlace`
-    next()
 })
 
 export default router
