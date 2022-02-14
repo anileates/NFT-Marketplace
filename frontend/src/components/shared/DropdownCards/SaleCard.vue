@@ -1,14 +1,12 @@
 <script>
 import DropdownCardMain from "./DropdownCardMain";
 import CustomButton from "../Buttons/CustomButton";
-import MakeOfferButton from "../Buttons/MakeOfferButton";
 
 export default {
   name: 'SaleCard',
   components: {
     appDropdownCard: DropdownCardMain,
     appCustomButton: CustomButton,
-    appMakeOfferButton: MakeOfferButton
   },
   props: {
     isForSale: {

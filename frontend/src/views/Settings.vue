@@ -42,7 +42,7 @@ export default {
       const moralisFile = new Moralis.File("cover.jpg", file);
       this.updateUser({ cover: moralisFile });
     },
-    copyWalletAdress() {
+    copyWalletAddress() {
       let copyText = document.getElementById("wallet-input");
       navigator.clipboard.writeText(copyText.value);
 
@@ -51,7 +51,7 @@ export default {
         title: "Wallet adress copied to clipboard",
       });
     },
-  }
+  },
 };
 </script>
 
@@ -81,7 +81,7 @@ export default {
             )
             i.far.fa-clipboard.fa-1x(
               style="position: absolute; margin-left: 24.8rem; cursor: pointer",
-              @click="copyWalletAdress"
+              @click="copyWalletAddress"
             )
         button(@click="saveUserInfo") Save
       .image-section.flex__col.flex__ai-fs.flex__jc-sa

@@ -10,6 +10,7 @@ export default {
     disableButton: {
       type: Boolean,
       required: true,
+      default: false
     },
   },
   data() {
@@ -24,25 +25,23 @@ export default {
 </script>
 
 <template lang="pug">
-button(:class="{disable: disableButton}")
+button(:class="{ disable: disableButton }" @click="$emit('buttonClicked')")
   slot
-  span(:class="{ iconExists: hasDefaultSlot }") {{ this.buttonText }}
+  span(:class="{ iconMargin: hasDefaultSlot }") {{ this.buttonText }}
 </template>
 
 <style scoped lang="scss">
 button {
   height: 100%;
   width: 100%;
-
-  background-color: rgb(32, 129, 226);
-  color: white;
-
-  border: none;
-  border-radius: 0.5rem;
-
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.06rem;
+
+  background-color: rgb(32, 129, 226);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
 
   transition: box-shadow .4s;
 
@@ -61,7 +60,7 @@ button {
   }
 }
 
-.iconExists {
+.iconMargin {
   margin-left: 0.8rem;
 }
 </style>
