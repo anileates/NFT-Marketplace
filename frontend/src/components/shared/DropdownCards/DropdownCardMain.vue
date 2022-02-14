@@ -28,7 +28,7 @@ export default {
 
 <template lang="pug">
 .dropdown-card
-  .header.flex-row.flex-ai-c.flex-jc-sb(
+  .header.flex__row.flex__ai-c.flex__jc-sb(
     :class="{ collapsibleCard: isCollapsible }",
     @click="minimizeCard"
   )

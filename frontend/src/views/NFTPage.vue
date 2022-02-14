@@ -1,13 +1,13 @@
 <template lang="pug">
-.nft-page-container.flex-col.flex-ai-c.flex-jc-c
-  .sell-cancel-bar.flex-row.flex-jc-c(v-show="isOwner")
+.nft-page-container.flex__col.flex__ai-c.flex__jc-c
+  .sell-cancel-bar.flex__row.flex__jc-c(v-show="isOwner")
     .inner
       .btn-wrapper
         app-custom-button(buttonText="Cancel Listing", @click="cancelListing")
       //- .btn-wrapper
       //-   app-custom-button(buttonText="Lower Price")
-  .center-box.flex-row.flex-jc-sb
-    .left-box.flex-col.flex-ai-c.flex-jc-sb
+  .center-box.flex__row.flex__jc-sb
+    .left-box.flex__col.flex__ai-c.flex__jc-sb
       .image-wrapper
         img(
           style="width: 100%; height: 100%; object-fit: contain",
@@ -21,8 +21,8 @@
         app-traits-card(:attributes="getNFTMetadata.attributes")
 
     .right-box
-      .info-preview.flex-col.flex-ai-sb.flex-jc-sa
-        .first-line.flex-row.flex-ai-c.flex-jc-sb
+      .info-preview.flex__col.flex__ai-sb.flex__jc-sa
+        .first-line.flex__row.flex__ai-c.flex__jc-sb
           a(:href="getCollectionRedirectUrl") {{ nft.name }}
           .actions
             button
@@ -38,12 +38,12 @@
 </template>
 
 <script>
-import SaleCard from "./shared/DropdownCards/SaleCard";
-import DropdownCardMain from "./shared/DropdownCards/DropdownCardMain";
-import DescriptionCard from "./shared/DropdownCards/DescriptionCard";
-import DetailsCard from "./shared/DropdownCards/DetailsCard";
-import CustomButton from "./shared/Buttons/CustomButton";
-import TraitsCard from "./shared/DropdownCards/TraitsCard";
+import SaleCard from "../components/shared/DropdownCards/SaleCard";
+import DropdownCardMain from "../components/shared/DropdownCards/DropdownCardMain";
+import DescriptionCard from "../components/shared/DropdownCards/DescriptionCard";
+import DetailsCard from "../components/shared/DropdownCards/DetailsCard";
+import CustomButton from "../components/shared/Buttons/CustomButton";
+import TraitsCard from "../components/shared/DropdownCards/TraitsCard";
 
 import Secrets from "../../../secrets.json";
 import NFTMarket from "../../../Contracts/NFTMarket.json";
@@ -191,9 +191,9 @@ export default {
     width: 82%;
     height: 100%;
     display: flex;
-    flex-direction: row;
+    flex__direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex__end;
   }
 
   .btn-wrapper {

@@ -1,54 +1,8 @@
-<template lang="pug">
-.settings-page-container.flex-col.flex-ai-c.flex-jc-c
-  .settings-page-body
-    .page-header
-      h2 Profile Setting
-    .settings-page-content.flex-row.flex-ai-fs.flex-jc-sb
-      .information-section.flex-col.flex-ai-fs.flex-jc-sa
-        .info.flex-col.flex-ai-fs.flex-jc-sa
-          label Username*
-          appInputBox#username(:value="getCurrentUser.username")
-        .info.flex-col.flex-ai-fs.flex-jc-sa
-          label Bio
-          appInputBox#biography(:value="getCurrentUser.biography")
-        .info.flex-col.flex-ai-fs.flex-jc-sa
-          label Email address
-          appInputBox#email(:value="getCurrentUser.email")
-        .info.flex-col.flex-ai-fs.flex-jc-sa
-          label Wallet address
-          .flex-row.flex-ai-c
-            appInputBox#wallet-input(
-              type="text",
-              :value="getCurrentUser.ethAddress",
-              :isReadOnly="true"
-            )
-            i.far.fa-clipboard.fa-1x(
-              style="position: absolute; margin-left: 24.5rem; cursor: pointer",
-              @click="copyWalletAdress"
-            )
-        button(@click="saveUserInfo") Save
-      .image-section.flex-col.flex-ai-fs.flex-jc-sa
-        .section.flex-col.flex-ai-fs.flex-jc-sa
-          label Profile Image
-          .image-box-profile(style="border-radius: 50%")
-            app-avatar(
-              :imgUrl="getCurrentUser.avatar && getCurrentUser.avatar._url",
-              @uploaded="changeAvatar"
-            )
-
-        .section.flex-col.flex-ai-fs.flex-jc-sa
-          label Cover Image
-          .image-box-cover(style="border-radius: 5%")
-            app-avatar(
-              :imgUrl="getCurrentUser.cover && getCurrentUser.cover._url",
-              @uploaded="changeCover"
-            )
-</template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import Avatar from "./shared/Avatar";
-import InputBox from "./shared/InputBox";
+import { mapActions, mapGetters } from "vuex";
+import Avatar from "../components/shared/Avatar";
+import InputBox from "../components/shared/InputBox";
 import { Toast } from "../SweetAlert";
 
 export default {
@@ -63,7 +17,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getCurrentUser"]),
+    ...mapGetters({ user: 'getCurrentUser' })
   },
   methods: {
     ...mapActions(["updateUser"]),
@@ -90,7 +44,6 @@ export default {
     },
     copyWalletAdress() {
       let copyText = document.getElementById("wallet-input");
-      // copyText.select();
       navigator.clipboard.writeText(copyText.value);
 
       Toast.fire({
@@ -98,9 +51,56 @@ export default {
         title: "Wallet adress copied to clipboard",
       });
     },
-  },
+  }
 };
 </script>
+
+<template lang="pug">
+.settings-page-container.flex__col.flex__ai-c.flex__jc-c
+  .settings-page-body
+    .page-header
+      h2 Profile Setting
+    .settings-page-content.flex__row.flex__ai-fs.flex__jc-sb
+      .information-section.flex__col.flex__ai-fs.flex__jc-sa
+        .info.flex__col.flex__ai-fs.flex__jc-sa
+          label Username*
+          appInputBox#username(:value="user.username")
+        .info.flex__col.flex__ai-fs.flex__jc-sa
+          label Bio
+          appInputBox#biography(:value="user.biography")
+        .info.flex__col.flex__ai-fs.flex__jc-sa
+          label Email address
+          appInputBox#email(:value="user.email")
+        .info.flex__col.flex__ai-fs.flex__jc-sa
+          label Wallet address
+          .flex__row.flex__ai-c
+            appInputBox#wallet-input(
+              type="text",
+              :value="user.ethAddress",
+              :isReadOnly="true"
+            )
+            i.far.fa-clipboard.fa-1x(
+              style="position: absolute; margin-left: 24.8rem; cursor: pointer",
+              @click="copyWalletAdress"
+            )
+        button(@click="saveUserInfo") Save
+      .image-section.flex__col.flex__ai-fs.flex__jc-sa
+        .section.flex__col.flex__ai-fs.flex__jc-sa
+          label Profile Image
+          .image-box-profile(style="border-radius: 50%")
+            app-avatar(
+              :imgUrl="user.avatar && user.avatar._url",
+              @uploaded="changeAvatar"
+            )
+
+        .section.flex__col.flex__ai-fs.flex__jc-sa
+          label Cover Image
+          .image-box-cover(style="border-radius: 5%")
+            app-avatar(
+              :imgUrl="user.cover && user.cover._url",
+              @uploaded="changeCover"
+            )
+</template>
 
 <style lang="scss" scoped>
 .settings-page {

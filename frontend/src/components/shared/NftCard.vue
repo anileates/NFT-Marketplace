@@ -2,14 +2,14 @@
 a(href="/collection-item-1234")
   .card-container
       .image-section
-      .info-section.flex-col.flex-jc-fs
-        .title-line.flex-row.flex-jc-sb.flex-ai-c
+      .info-section.flex__col.flex__jc-fs
+        .title-line.flex__row.flex__jc-sb.flex__ai-c
           a(href="/collection-3123") Ninja Squad Official
           .wrapper
             a Price
-        .value-line.flex-row.flex-jc-sb.flex-ai-c
+        .value-line.flex__row.flex__jc-sb.flex__ai-c
           a(href="/collection-item-1234") Ninja #4515
-          .price-label.flex-row.flex-jc-sb.flex-ai-c
+          .price-label.flex__row.flex__jc-sb.flex__ai-c
             img(src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg")
             p 0.44
 

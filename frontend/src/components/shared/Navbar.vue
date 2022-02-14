@@ -1,12 +1,12 @@
 <template lang="pug">
 nav.navbar
-  .navbar-left.flex-row.flex-ai-c.flex-jc-sa
+  .navbar-left.flex__row.flex__ai-c.flex__jc-sa
     router-link(to="/") LOGO IS HERE
-  .navbar-middle.flex-row.flex-ai-c
+  .navbar-middle.flex__row.flex__ai-c
     .searchbox-wrapper
       app-search-box
-  .navbar-items.flex-col.flex-jc-c
-    ul.flex-row.flex-jc-sa
+  .navbar-items.flex__col.flex__jc-c
+    ul.flex__row.flex__jc-sa
       router-link(to="/create-new-item")
         a Create
       li(@click="login")

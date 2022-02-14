@@ -19,12 +19,12 @@ export default {
 <template lang="pug">
 app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
   template(v-slot:dropdownCardHeader)
-    .header-wrapper.flex-row.flex-ai-c.flex-jc-fs
+    .header-wrapper.flex__row.flex__ai-c.flex__jc-fs
       i.fas.fa-tags
       p Traits
   template(v-slot:dropdownCardBody)
     .body-wrapper
-      .trait-line.flex-row.flex-ai-c.flex-jc-sb(v-if="attributes && attributes.length != 0" v-for="attribute in attributes")
+      .trait-line.flex__row.flex__ai-c.flex__jc-sb(v-if="attributes && attributes.length != 0" v-for="attribute in attributes")
         span {{ attribute.trait_type }}
         span {{ attribute.value }}
       p(v-else) No trait found

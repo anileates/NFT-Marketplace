@@ -1,16 +1,16 @@
 <template lang="pug">
 .searchBox-container
-  .flex-row.flex-jc-c.flex-ai-c(style="height: 100%")
+  .flex__row.flex__jc-c.flex__ai-c(style="height: 100%")
     i.fas.fa-search(@click="search")
     input(placeholder="Search user, collection or NFT", v-model="searchText")
   .dropdown-results(v-if="showResult")
-    ul.flex-col.flex-ai-c.flex-jc-sb(v-if="users.length != 0")
+    ul.flex__col.flex__ai-c.flex__jc-sb(v-if="users.length != 0")
       li(v-for="user in users")
         app-search-result-item(:userItem="{ imageUrl: user.attributes.avatar._url, title: user.attributes.username}")
-    ul.flex-col.flex-ai-c.flex-jc-sb(v-if="items.length != 0")
+    ul.flex__col.flex__ai-c.flex__jc-sb(v-if="items.length != 0")
       li(v-for="item in items")
         app-search-result-item(:assetItem="convertItemToProp(item)")
-    p.flex-col.flex-jc-sb(v-else)(
+    p.flex__col.flex__jc-sb(v-else)(
       style="color: black; padding: 0.5rem 1rem; font-size: 0.8rem"
     ) No items found...
 </template>
@@ -109,7 +109,7 @@ i {
 
   ul {
     list-style-type: none;
-    flex-wrap: wrap;
+    flex__wrap: wrap;
   }
 
   li {

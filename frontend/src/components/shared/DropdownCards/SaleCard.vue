@@ -34,21 +34,21 @@ export default {
 <template lang="pug">
 app-dropdown-card(:collapseByDefault="false")
   template(v-slot:dropdownCardHeader)
-    .header-wrapper.flex-row.flex-ai-c.flex-jc-fs
+    .header-wrapper.flex__row.flex__ai-c.flex__jc-fs
       i.far.fa-clock.fa-lg
       p(v-if="isForSale") On Sale
       p(v-else) Not For Sale
   template(v-slot:dropdownCardBody)
-    .body-wrapper.flex-col.flex-ai-fs.flex-jc-sa
+    .body-wrapper.flex__col.flex__ai-fs.flex__jc-sa
       .title-wrapper
         p Current Price
-      .price-wrapper.flex-row.flex-ai-c.flex-jc-fs
+      .price-wrapper.flex__row.flex__ai-c.flex__jc-fs
         img(src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg")
         span.eth-price(v-if="isForSale") {{ price }}
         span.eth-price(v-else) --
         //- .fiat-equivalent-wrapper
         //-   p ($1,638.61)
-      .actions-button-wrapper.flex-row.flex-ai-c.flex-jc-fs
+      .actions-button-wrapper.flex__row.flex__ai-c.flex__jc-fs
         .btn-wrapper
           app-custom-button(buttonText="Buy Now" :disableButton="disableButtons")
             i.fas.fa-wallet(style="color: white")

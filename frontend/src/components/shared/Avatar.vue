@@ -1,6 +1,6 @@
 <template lang="pug">
 .avatar-container(@mouseover="isHover = true", @mouseleave="isHover = false")
-  .hover.flex-col.flex-ai-c.flex-jc-c(
+  .hover.flex__col.flex__ai-c.flex__jc-c(
     v-show="(isEditable && isHover) || (!imgUrl && isEditable) ",
     @click="triggerInput"
   )

@@ -1,6 +1,6 @@
 <template lang="pug">
 .user-page-container
-  .profile-header.flex-col.flex-jc-c.flex-ai-c
+  .profile-header.flex__col.flex__jc-c.flex__ai-c
     .pp-layer(:style="randomColor")
       app-avatar(
         v-if="getFoundUser.avatar",
@@ -14,11 +14,11 @@
           :imgUrl="getFoundUser.cover._url",
           :isEditable="false"
         )
-      .bio-section.flex-col.flex-jc-c.flex-ai-c
+      .bio-section.flex__col.flex__jc-c.flex__ai-c
         h3 {{ getFoundUser.username }}
         p {{ getFoundUser.biography }}
 
-  .showroom.flex-row.flex-jc-c
+  .showroom.flex__row.flex__jc-c
     .card-layout
       .card
         app-nft-card
@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import Avatar from "./shared/Avatar";
-import NftCard from "./shared/NftCard";
+import Avatar from "../components/shared/Avatar";
+import NftCard from "../components/shared/NftCard";
 import { mapGetters } from "vuex";
 
 export default {
@@ -122,9 +122,9 @@ export default {
     width: 88rem;
 
     display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    flex-wrap: wrap;
+    flex__direction: row;
+    justify-content: flex__start;
+    flex__wrap: wrap;
 
     .card {
       margin: 0.5rem 1rem;

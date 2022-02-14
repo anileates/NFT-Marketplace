@@ -363,7 +363,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
+  flex__direction: column;
 }
 .error-title {
   max-width: 529px;

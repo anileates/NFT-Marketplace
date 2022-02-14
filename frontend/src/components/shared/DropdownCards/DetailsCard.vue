@@ -20,11 +20,11 @@ export default {
 <template lang="pug">
 app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
   template(v-slot:dropdownCardHeader)
-    .header-wrapper.flex-row.flex-ai-c.flex-jc-fs
+    .header-wrapper.flex__row.flex__ai-c.flex__jc-fs
       i.fas.fa-info-circle
       p Details
   template(v-slot:dropdownCardBody)
-    .body-wrapper.flex-col.flex-ai-fs
+    .body-wrapper.flex__col.flex__ai-fs
       .token-info-line
         p.title Contract Address
         p.value {{ this.nft.token_address }}
@@ -64,7 +64,7 @@ app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
 
 .token-info-line {
   display: flex;
-  flex-direction: row;
+  flex__direction: row;
   justify-content: space-between;
 
   width: 100%;

@@ -1,5 +1,5 @@
 <template lang="pug">
-a.search-result-item.flex-row.flex-ai-c(:href="getRedirectUrl")
+a.search-result-item.flex__row.flex__ai-c(:href="getRedirectUrl")
   .avatar-wrapper
     app-avatar(:imgUrl="getGivenItem.imageUrl" :isEditable="false")
   p {{ getGivenItem.title }}

@@ -22,11 +22,11 @@ export default {
 <template lang="pug">
 app-dropdown-card(:isCollapsible="false")
   template(v-slot:dropdownCardHeader)
-    .header-wrapper.flex-row.flex-ai-c.flex-jc-fs
+    .header-wrapper.flex__row.flex__ai-c.flex__jc-fs
       i.fas.fa-align-left
       p Description
   template(v-slot:dropdownCardBody)
-    .body-wrapper.flex-col.flex-ai-fs.flex-jc-sa
+    .body-wrapper.flex__col.flex__ai-fs.flex__jc-sa
       span(v-html="this.description" v-if="this.description")
       p.creator(v-else) No description found
 </template>

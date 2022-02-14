@@ -1,23 +1,23 @@
 <template lang="pug">
-.create-item-page-container.flex-col.flex-ai-c.flex-jc-c
+.create-item-page-container.flex__col.flex__ai-c.flex__jc-c
   .create-item-page-body
     .page-header
       h2 Create Your Own Asset
-    .create-item-page-content.flex-row.flex-ai-fs.flex-jc-sb
-      .information-section.flex-col.flex-ai-fs.flex-jc-sa
-        .info.flex-col.flex-ai-fs.flex-jc-sa
+    .create-item-page-content.flex__row.flex__ai-fs.flex__jc-sb
+      .information-section.flex__col.flex__ai-fs.flex__jc-sa
+        .info.flex__col.flex__ai-fs.flex__jc-sa
           label Asset Name*
           appInputBox#assetName(placeholder="Asset Name")
-        .info.flex-col.flex-ai-fs.flex-jc-sa
+        .info.flex__col.flex__ai-fs.flex__jc-sa
           label Asset Description*
           appInputBox#assetDescription(placeholder="Asset Description")
-        .info.flex-col.flex-ai-fs.flex-jc-sa
+        .info.flex__col.flex__ai-fs.flex__jc-sa
           label Asset Price*
           appInputBox#assetPrice(placeholder="Asset Price")
         button(@click="createAsset") Create Asset
 
-      .image-section.flex-col.flex-ai-c.flex-jc-fs
-        .section.flex-col.flex-ai-fs.flex-jc-sa
+      .image-section.flex__col.flex__ai-c.flex__jc-fs
+        .section.flex__col.flex__ai-fs.flex__jc-sa
           label Upload Your Asset 👇
           .image-box-asset
             app-avatar(@uploaded="uploadFile" :imgUrl="asset.fileUrl")
@@ -34,7 +34,7 @@ import Secrets from "../../../secrets.json";
 
 import InputBox from "../components/shared/InputBox.vue";
 import Avatar from "../components/shared/Avatar.vue";
-import router from '../router/index'
+import router from '../router'
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
