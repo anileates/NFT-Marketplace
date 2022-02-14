@@ -35,37 +35,37 @@ export default {
 .flex {
   display: flex;
 
-  &-row {
+  &__row {
     @extend .flex;
     flex-direction: row;
   }
 
-  &-col {
+  &__col {
     @extend .flex;
     flex-direction: column;
   }
 
-  &-jc-c {
+  &__jc-c {
     justify-content: center;
   }
 
-  &-jc-sa {
+  &__jc-sa {
     justify-content: space-around;
   }
 
-  &-jc-sb {
+  &__jc-sb {
     justify-content: space-between;
   }
 
-  &-ai-c {
+  &__ai-c {
     align-items: center;
   }
 
-  &-ai-fs {
+  &__ai-fs {
     align-items: flex-start;
   }
 
-  &-ai-fe {
+  &__ai-fe {
     align-items: flex-end;
   }
 }
