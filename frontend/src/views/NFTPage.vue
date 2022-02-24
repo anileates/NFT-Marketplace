@@ -1,42 +1,3 @@
-<template lang="pug">
-.nft-page-container.flex__col.flex__ai-c.flex__jc-c
-  .sell-cancel-bar.flex__row.flex__jc-c(v-show="isOwner")
-    .inner
-      .btn-wrapper
-        app-custom-button(buttonText="Cancel Listing", @click="cancelListing")
-      //- .btn-wrapper
-      //-   app-custom-button(buttonText="Lower Price")
-  .center-box.flex__row.flex__jc-sb
-    .left-box.flex__col.flex__ai-c.flex__jc-sb
-      .image-wrapper
-        img(
-          style="width: 100%; height: 100%; object-fit: contain",
-          :src="getNFTMetadata.image"
-        )
-      .detailed-information-section(style="margin-top: 1rem")
-        app-description-card(
-          :description="JSON.parse(this.nft.metadata).description"
-        )
-        app-details-card(:nft="this.nft")
-        app-traits-card(:attributes="getNFTMetadata.attributes")
-
-    .right-box
-      .info-preview.flex__col.flex__ai-sb.flex__jc-sa
-        .first-line.flex__row.flex__ai-c.flex__jc-sb
-          a(:href="getCollectionRedirectUrl") {{ nft.name }}
-          .actions
-            button
-              i.fas.fa-redo-alt.fa-lg
-            button
-              i.fas.fa-share-alt.fa-lg
-        h1 {{ getNFTMetadata.name }}
-        .third-line
-          span Owned by
-          a.owner-of(:href="getProfileRedirectUrl") {{ itemFound.seller || nft.owner_of }}
-      .sale-information
-        app-sale-card(:isForSale="this.isForSale" :price="itemFound.price" :disableButtons="true")
-</template>
-
 <script>
 import SaleCard from "../components/shared/DropdownCards/SaleCard";
 import DropdownCardMain from "../components/shared/DropdownCards/DropdownCardMain";
@@ -44,14 +5,8 @@ import DescriptionCard from "../components/shared/DropdownCards/DescriptionCard"
 import DetailsCard from "../components/shared/DropdownCards/DetailsCard";
 import CustomButton from "../components/shared/Buttons/CustomButton";
 import TraitsCard from "../components/shared/DropdownCards/TraitsCard";
-
-import Secrets from "../../../secrets.json";
-import NFTMarket from "../../../Contracts/NFTMarket.json";
-import NFT from "../../../Contracts/NFT.json";
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
-import { mapGetters } from "vuex";
-import axios from "axios";
+import {mapActions, mapGetters} from "vuex";
+import router from '../router/index'
 
 export default {
   name: "NFTPage",
@@ -65,116 +20,119 @@ export default {
   },
   data() {
     return {
-      nft: this.$route.params.nftMetadata,
-      itemFound: {}
+      isLoading: true,
+      nft: {
+        metadata: {},
+        saleInformations: {}
+      }
     };
   },
-  methods: {
-    async cancelListing() {
-      console.log("Cancel Listin 🔥");
-      console.log(
-        "Params:",
-        typeof this.$route.params.tokenId.toString(),
-        this.$route.params.tokenId.toString()
-      );
-      console.log(this.getCurrentUser);
-
-      const web3Modal = new Web3Modal();
-      const connection = await web3Modal.connect();
-      const provider = new ethers.providers.Web3Provider(connection);
-      const signer = provider.getSigner();
-
-      let contract = new ethers.Contract(
-        Secrets.third_market_contract_address,
-        NFTMarket.abi,
-        signer
-      );
-
-      let cancellingPrice = await contract.getCancellingPrice();
-      cancellingPrice = cancellingPrice.toString();
-
-      let transaction = await contract.cancelSale(
-        Secrets.third_nft_contract_address,
-        this.$route.params.tokenId.toString(),
-        { value: cancellingPrice }
-      );
-      await transaction.wait();
-    },
-    async getItemFromContract() {
-      const web3Modal = new Web3Modal();
-      const connection = await web3Modal.connect();
-      const provider = new ethers.providers.Web3Provider(connection);
-      const signer = provider.getSigner();
-
-      const marketContract = new ethers.Contract(
-        Secrets.third_market_contract_address,
-        NFTMarket.abi,
-        signer
-      );
-
-      const tokenContract = new ethers.Contract(
-        Secrets.third_nft_contract_address,
-        NFT.abi,
-        provider
-      );
-      const data = await marketContract.fetchItemsCreated();
-
-      const items = await Promise.all(
-        data.map(async (i) => {
-          const tokenUri = await tokenContract.tokenURI(i.tokenId);
-          const meta = await axios.get(tokenUri);
-          let price = ethers.utils.formatUnits(i.price.toString(), "ether");
-          let item = {
-            price,
-            tokenId: i.tokenId.toNumber(),
-            seller: i.seller,
-            owner: i.owner,
-            image: meta.data.image,
-          };
-
-          return item;
-        })
-      );
-
-      items.forEach((item) => {
-        if (item.tokenId == this.$route.params.tokenId) {
-          this.itemFound = item;
-        }
-      });
-
-      console.log(this.itemFound)
-    },
-  },
   computed: {
-    ...mapGetters(["getCurrentUser"]),
-    getNFTMetadata() {
-      // NFT Metadata format is not parsable when it comes first. So, parse and return it via this method
-      return JSON.parse(this.nft.metadata);
-    },
+    ...mapGetters({getCurrentUser: "getCurrentUser"}),
     getCollectionRedirectUrl() {
       return `/collections/${this.nft.token_address}`;
     },
     getProfileRedirectUrl() {
       return `/users/${this.nft.owner_of}`;
     },
-    isOwner () {
-      if(this.getCurrentUser.ethAddress.toString().toLowerCase() === this.nft.owner_of.toString().toLowerCase()) return true
-      else if (this.itemFound.seller && this.itemFound.seller.toLowerCase() === this.getCurrentUser.ethAddress.toString().toLowerCase()) return true
-      else return false 
-    },
-    isForSale() {
-      if(this.nft.owner_of.toString().toLowerCase() === Secrets.third_market_contract_address.toString().toLowerCase()){
-        return true
-      }else {
-        return false
-      }
-    }
+    // isOwner() {
+    //   // TODO This might be built in a different way.
+    //   if (
+    //       this.getCurrentUser.ethAddress.toString().toLowerCase() ===
+    //       this.nft.owner_of.toString().toLowerCase()
+    //   )
+    //     return true;
+    //   else if (
+    //       this.itemFound.seller &&
+    //       this.itemFound.seller.toLowerCase() ===
+    //       this.getCurrentUser.ethAddress.toString().toLowerCase()
+    //   )
+    //     return true;
+    //   else return false;
+    // },
+    // isForSale() {
+    //   // TODO This might be built in a different way.
+    //   if (
+    //       this.nft.owner_of.toString().toLowerCase() ===
+    //       Secrets.third_market_contract_address.toString().toLowerCase()
+    //   ) {
+    //     return true;
+    //   } else {
+    //     return false;
+    //   }
+    // },
   },
-  created() {
-    this.getItemFromContract()
+  methods: {
+    ...mapActions({fetchNFT: 'fetchNFT', getItemFromContract: 'getItemFromContract' })
+  },
+  async created() {
+    const tokenAddress = this.$route.params.tokenAddress;
+    const tokenId = this.$route.params.tokenId;
+
+    try {
+      this.nft = await this.fetchNFT({
+        token_address: tokenAddress,
+        token_id: tokenId,
+      });
+
+      this.nft.metadata = JSON.parse(this.nft.metadata);
+      document.title = this.nft.metadata.name;
+      this.isLoading = false;
+    } catch (err) {
+      await router.push('/not-found')
+    }
+
+    this.nft.saleInfo = this.getItemFromContract();
   },
 };
 </script>
+
+<template lang="html">
+  <div class="nft-page-container flex__col flex__ai-c flex__jc-c">
+    <h1 v-if="isLoading">Loading.........</h1>
+
+    <div v-else class="sell-cancel-bar flex__row flex__jc-c" v-show="true">
+      <div class="inner">
+        <div class="btn-wrapper">
+          <app-custom-button buttonText="Cancel Listing" @click="cancelListing"></app-custom-button>
+        </div>
+      </div>
+    </div>
+    <div v-else class="center-box flex__row flex__jc-sb">
+      <div class="left-box flex__col flex__ai-c flex__jc-sb">
+        <div class="image-wrapper"><img style="width: 100%; height: 100%; object-fit: contain"
+                                        :src="this.nft.metadata.image"/></div>
+        <div class="detailed-information-section" style="margin-top: 1rem">
+          <app-description-card :description="nft.metadata.description"></app-description-card>
+          <app-details-card :nft="this.nft"></app-details-card>
+          <app-traits-card :attributes="nft.metadata.attributes"></app-traits-card>
+        </div>
+      </div>
+      <div class="right-box">
+        <div class="info-preview flex__col flex__ai-sb flex__jc-sa">
+          <div class="first-line flex__row flex__ai-c flex__jc-sb"><a :href="getCollectionRedirectUrl">{{
+              nft.name
+            }}</a>
+            <div class="actions">
+              <button><i class="fas fa-redo-alt fa-lg"></i></button>
+              <button><i class="fas fa-share-alt fa-lg"></i></button>
+            </div>
+          </div>
+
+
+          <!-- TODO: Change nft... places in here -->
+          <h1>{{ nft.name }}</h1>
+          <div class="third-line"><span>Owned by</span><a class="owner-of" :href="getProfileRedirectUrl">{{
+              nft.seller || nft.owner_of
+            }}</a></div>
+        </div>
+        <div class="sale-information">
+          <app-sale-card :isForSale="this.isForSale" :price="nft.saleInfo.price" :disableButtons="true"></app-sale-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped lang="scss">
 .nft-page-container {
@@ -191,7 +149,7 @@ export default {
     width: 82%;
     height: 100%;
     display: flex;
-    flex__direction: row;
+    flex-direction: row;
     align-items: center;
     justify-content: flex__end;
   }
@@ -201,6 +159,11 @@ export default {
     height: 3rem;
     margin-right: 0.5rem;
   }
+}
+
+.center-box-wrapper {
+  width: 100%;
+  height: 100%;
 }
 
 .center-box {

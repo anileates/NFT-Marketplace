@@ -2,7 +2,7 @@
 input(:class="{ readOnly: isReadOnly }" :value="value" :readonly="isReadOnly")
 </template>
 
-<script >
+<script>
 export default {
   name: 'InputBox',
   props: {
@@ -27,6 +27,7 @@ input {
   padding: 1rem;
   border-radius: 0.5rem;
   outline: none;
+  transition: box-shadow .4s;
 
   &:focus {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);

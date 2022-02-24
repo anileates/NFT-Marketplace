@@ -42,19 +42,9 @@ const routes = [
         component: NFTPage,
         async beforeEnter(to, from, next) {
             if (to.params.tokenAddress && to.params.tokenId) {
-                const nft = await store.dispatch('fetchNFT', {
-                    token_address: to.params.tokenAddress,
-                    token_id: to.params.tokenId
-                })
-                if (!nft) return await router.push('/not-found')
-
-                to.params.nftMetadata = nft
-                to.params.pageTitle = JSON.parse(to.params.nftMetadata.metadata).name
-
-                return next()
-            } else {
-                await router.push('/sth-went-wrong')
+                return next();
             }
+            await router.push('/sth-went-wrong');
         }
     },
     {

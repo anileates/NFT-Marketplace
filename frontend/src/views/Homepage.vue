@@ -3,11 +3,23 @@
   | this is homepage
   button(@click="getNFT") Get NFT
   button Get User
+
+  br
+  br
+  br
+
+  app-custom-button(@buttonClicked="btn1Clicked" buttonText="bsatn" disableButton=false)
+  app-custom-button(@buttonClicked="btn2Clicked" buttonText="btnasd2" disableButton=false)
 </template>
 
 <script>
+import CustomButton from "../components/shared/Buttons/CustomButton";
+
 export default {
   name: "Homepage",
+  components: {
+    appCustomButton: CustomButton
+  },
   data() {
     return {};
   },
@@ -34,6 +46,12 @@ export default {
       console.log(NFTs);
       console.log(tokenIdMetadata);
     },
+    btn1Clicked(){
+      console.log('btn1')
+    },
+    btn2Clicked(){
+      console.log('btn2')
+    }
   },
 };
 </script>
