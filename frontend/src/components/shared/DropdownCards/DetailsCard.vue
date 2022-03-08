@@ -1,24 +1,29 @@
 <script>
 import DropdownCardMain from "./DropdownCardMain";
+
 export default {
-  name: 'DetailsCard',
+  name: "DetailsCard",
   props: {
-    nft: {}
+    nft: {},
   },
   components: {
-    appDropdownCard: DropdownCardMain
+    appDropdownCard: DropdownCardMain,
   },
   data() {
-    return {}
-  }
-}
-
-// TODO in the html template contract address will be formatted and redirect to etherscan for contract adress. Like 0x8c18....0d17
-// TODO make contract address and token id copiable
+    return {
+      active: false,
+    };
+  },
+  computed: {
+    getContractEtherScanAddress() {
+      return "https://etherscan.io/address/" + this.nft.token_address;
+    },
+  },
+};
 </script>
 
 <template lang="pug">
-app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
+app-dropdown-card(:isCollapsible="true", :collapseByDefault="true")
   template(v-slot:dropdownCardHeader)
     .header-wrapper.flex__row.flex__ai-c.flex__jc-fs
       i.fas.fa-info-circle
@@ -27,7 +32,7 @@ app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
     .body-wrapper.flex__col.flex__ai-fs
       .token-info-line
         p.title Contract Address
-        p.value {{ this.nft.token_address }}
+        a.value(:href="getContractEtherScanAddress") {{ $filters.minimizeEthAddress(this.nft.token_address) }}
       .token-info-line
         p.title Token ID
         p.value {{ this.nft.token_id }}
@@ -40,6 +45,17 @@ app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
 </template>
 
 <style scoped lang="scss">
+a,
+a:link,
+a:visited {
+  color: #2081e2;
+  text-decoration: none;
+
+  &:visited {
+    color: #2081e2;
+  }
+}
+
 .header-wrapper {
   color: black;
   font-size: 1rem;
@@ -47,7 +63,7 @@ app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
   letter-spacing: 0.03rem;
 
   i {
-    color: black
+    color: black;
   }
 }
 
@@ -59,12 +75,12 @@ app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
 
 .creator {
   font-size: 1rem;
-  color: rgb(138, 147, 155)
+  color: rgb(138, 147, 155);
 }
 
 .token-info-line {
   display: flex;
-  flex__direction: row;
+  flex-direction: row;
   justify-content: space-between;
 
   width: 100%;
@@ -80,7 +96,7 @@ app-dropdown-card(:isCollapsible="true" :collapseByDefault="true")
     font-size: 0.9375rem;
     line-height: 1.3125rem;
     font-weight: 500;
-    color: rgb(112, 122, 131)
+    color: rgb(112, 122, 131);
   }
 }
 </style>

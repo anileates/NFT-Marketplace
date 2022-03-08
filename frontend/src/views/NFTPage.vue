@@ -94,7 +94,7 @@ export default {
     <div v-else class="sell-cancel-bar flex__row flex__jc-c" v-show="true">
       <div class="inner">
         <div class="btn-wrapper">
-          <app-custom-button buttonText="Cancel Listing" @click="cancelListing"></app-custom-button>
+          <app-custom-button buttonText="Cancel Listing" @click="cancelListing" />
         </div>
       </div>
     </div>
@@ -103,9 +103,9 @@ export default {
         <div class="image-wrapper"><img style="width: 100%; height: 100%; object-fit: contain"
                                         :src="this.nft.metadata.image"/></div>
         <div class="detailed-information-section" style="margin-top: 1rem">
-          <app-description-card :description="nft.metadata.description"></app-description-card>
-          <app-details-card :nft="this.nft"></app-details-card>
-          <app-traits-card :attributes="nft.metadata.attributes"></app-traits-card>
+          <app-description-card :description="nft.metadata.description" />
+          <app-details-card :nft="this.nft" />
+          <app-traits-card :attributes="nft.metadata.attributes" />
         </div>
       </div>
       <div class="right-box">
@@ -119,7 +119,6 @@ export default {
             </div>
           </div>
 
-
           <!-- TODO: Change nft... places in here -->
           <h1>{{ nft.name }}</h1>
           <div class="third-line"><span>Owned by</span><a class="owner-of" :href="getProfileRedirectUrl">{{
@@ -127,7 +126,7 @@ export default {
             }}</a></div>
         </div>
         <div class="sale-information">
-          <app-sale-card :isForSale="this.isForSale" :price="nft.saleInfo.price" :disableButtons="true"></app-sale-card>
+          <app-sale-card :isForSale="this.isForSale" :price="nft.saleInfo.price" :disableButtons="true" />
         </div>
       </div>
     </div>
@@ -151,7 +150,7 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex__end;
+    justify-content: flex-end;
   }
 
   .btn-wrapper {
