@@ -5,8 +5,7 @@ import DescriptionCard from "../components/shared/DropdownCards/DescriptionCard"
 import DetailsCard from "../components/shared/DropdownCards/DetailsCard";
 import CustomButton from "../components/shared/Buttons/CustomButton";
 import TraitsCard from "../components/shared/DropdownCards/TraitsCard";
-import {mapActions, mapGetters} from "vuex";
-import router from '../router/index'
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "NFTPage",
@@ -23,66 +22,40 @@ export default {
       isLoading: true,
       nft: {
         metadata: {},
-        saleInformations: {}
-      }
+        saleInfo: {},
+      },
     };
   },
   computed: {
-    ...mapGetters({getCurrentUser: "getCurrentUser"}),
+    ...mapGetters({ getCurrentUser: "getCurrentUser" }),
     getCollectionRedirectUrl() {
       return `/collections/${this.nft.token_address}`;
     },
     getProfileRedirectUrl() {
       return `/users/${this.nft.owner_of}`;
     },
-    // isOwner() {
-    //   // TODO This might be built in a different way.
-    //   if (
-    //       this.getCurrentUser.ethAddress.toString().toLowerCase() ===
-    //       this.nft.owner_of.toString().toLowerCase()
-    //   )
-    //     return true;
-    //   else if (
-    //       this.itemFound.seller &&
-    //       this.itemFound.seller.toLowerCase() ===
-    //       this.getCurrentUser.ethAddress.toString().toLowerCase()
-    //   )
-    //     return true;
-    //   else return false;
-    // },
-    // isForSale() {
-    //   // TODO This might be built in a different way.
-    //   if (
-    //       this.nft.owner_of.toString().toLowerCase() ===
-    //       Secrets.third_market_contract_address.toString().toLowerCase()
-    //   ) {
-    //     return true;
-    //   } else {
-    //     return false;
-    //   }
-    // },
+    isOwner() {
+      
+    },
+    isForSale() {
+      // TODO gonna complete isOwner and isForSale in a different way. 
+    },
   },
   methods: {
-    ...mapActions({fetchNFT: 'fetchNFT', getItemFromContract: 'getItemFromContract' })
+    ...mapActions({
+      fetchNFT: "fetchNFT",
+      getItemFromContract: "getItemFromContract",
+    }),
   },
   async created() {
-    const tokenAddress = this.$route.params.tokenAddress;
-    const tokenId = this.$route.params.tokenId;
+    // Fetched the nft metadata at the beforeEnter route. Just assign to local state here.
+    this.nft = this.$route.params.nft;
+    this.nft.metadata = JSON.parse(this.nft.metadata);
+    this.nft.saleInfo = await this.getItemFromContract(this.nft.token_id);
 
-    try {
-      this.nft = await this.fetchNFT({
-        token_address: tokenAddress,
-        token_id: tokenId,
-      });
+    this.isLoading = false;
 
-      this.nft.metadata = JSON.parse(this.nft.metadata);
-      document.title = this.nft.metadata.name;
-      this.isLoading = false;
-    } catch (err) {
-      await router.push('/not-found')
-    }
-
-    this.nft.saleInfo = this.getItemFromContract();
+    console.log(this.nft)
   },
 };
 </script>
@@ -119,14 +92,13 @@ export default {
             </div>
           </div>
 
-          <!-- TODO: Change nft... places in here -->
-          <h1>{{ nft.name }}</h1>
+          <h1>{{ nft.metadata.name }}</h1>
           <div class="third-line"><span>Owned by</span><a class="owner-of" :href="getProfileRedirectUrl">{{
               nft.seller || nft.owner_of
             }}</a></div>
         </div>
         <div class="sale-information">
-          <app-sale-card :isForSale="this.isForSale" :price="nft.saleInfo.price" :disableButtons="true" />
+          <app-sale-card :isForSale="true" :price="nft.saleInfo.price" :disableButtons="true" />
         </div>
       </div>
     </div>

@@ -16,7 +16,6 @@ const app = createApp(App)
 app.config.globalProperties.$filters = {
     minimizeEthAddress(address_) {
         // This methods converts an address to this format => 0x12Ab...34Cd
-        console.log(address_)
         const address = address_.toString()
         if(!address.startsWith('0x')) return null 
 

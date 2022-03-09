@@ -41,30 +41,49 @@ const routes = [
         path: '/tokens/:tokenAddress/:tokenId',
         component: NFTPage,
         async beforeEnter(to, from, next) {
-            if (to.params.tokenAddress && to.params.tokenId) {
+            const tokenAddress = to.params.tokenAddress;
+            const tokenId = to.params.tokenId
+            if (!tokenAddress || !tokenId) return await router.push('/sth-went-wrong');
+
+            try {
+                const nft = await store.dispatch('fetchNFT', {
+                    token_address: tokenAddress,
+                    token_id: tokenId,
+                    chain: 'eth'
+                });
+
+                to.params.nft = nft;
+                to.params.pageTitle = JSON.parse(to.params.nft.metadata).name;
+
                 return next();
+            } catch (error) {
+                console.log(error)
+                await router.push('/sth-went-wrong')
             }
-            await router.push('/sth-went-wrong');
         }
     },
     {
         path: '/testnet-tokens/:tokenAddress/:tokenId',
         component: NFTPage,
         async beforeEnter(to, from, next) {
-            if (to.params.tokenAddress && to.params.tokenId) {
+            const tokenAddress = to.params.tokenAddress;
+            const tokenId = to.params.tokenId
+            if (!tokenAddress || !tokenId) return await router.push('/sth-went-wrong');
+
+            try {
                 const nft = await store.dispatch('fetchNFT', {
-                    token_address: to.params.tokenAddress,
-                    token_id: to.params.tokenId,
+                    token_address: tokenAddress,
+                    token_id: tokenId,
                     chain: 'rinkeby'
-                })
-                if (!nft) return await router.push('/not-found')
+                });
 
-                to.params.nftMetadata = nft
-                to.params.pageTitle = JSON.parse(to.params.nftMetadata.metadata).name
-
-                return next()
-            } else {
-                await router.push('/sth-went-wrong')
+                to.params.nft = nft;
+                to.params.pageTitle = JSON.parse(to.params.nft.metadata).name;
+                
+                return next();
+            } catch (error) {
+                console.log(error)
+                await router.push('/not-found')
             }
         }
     },

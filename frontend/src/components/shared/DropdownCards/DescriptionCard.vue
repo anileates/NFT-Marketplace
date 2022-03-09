@@ -1,5 +1,6 @@
 <script>
 import DropdownCardMain from "./DropdownCardMain";
+
 export default {
   name: 'Description',
   props: {
@@ -12,7 +13,6 @@ export default {
     return {}
   },
   created() {
-    console.log(this.description)
   }
 }
 
