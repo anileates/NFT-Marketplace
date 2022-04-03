@@ -11,32 +11,24 @@
         .info.flex__col.flex__ai-fs.flex__jc-sa
           label Asset Description*
           appInputBox#assetDescription(placeholder="Asset Description")
-        .info.flex__col.flex__ai-fs.flex__jc-sa
-          label Asset Price*
-          appInputBox#assetPrice(placeholder="Asset Price")
-        button(@click="createAsset") Create Asset
+        //- .info.flex__col.flex__ai-fs.flex__jc-sa
+        //-   label Asset Price*
+        //-   appInputBox#assetPrice(placeholder="Asset Price")
+        button(@click="createNFT") Create Asset
 
       .image-section.flex__col.flex__ai-c.flex__jc-fs
         .section.flex__col.flex__ai-fs.flex__jc-sa
           label Upload Your Asset 👇
           .image-box-asset
-            app-avatar(@uploaded="uploadFile" :imgUrl="asset.fileUrl")
+            app-avatar(@uploaded="uploadFile", :imgUrl="asset.fileUrl")
 </template>
 
 <script>
-import { Toast } from "../SweetAlert";
-import { create as ipfsHttpClient } from "ipfs-http-client";
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
-import NFTContract from "../../../Contracts/NFT.json";
-import NFTMarket from "../../../Contracts/NFTMarket.json";
-import Secrets from "../../../secrets.json";
 
 import InputBox from "../components/shared/InputBox.vue";
 import Avatar from "../components/shared/Avatar.vue";
-import router from '../router'
-
-const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
+import { mapActions } from "vuex";
+import { Toast } from '../SweetAlert'
 
 export default {
   name: "CreateItemPage",
@@ -49,110 +41,44 @@ export default {
       asset: {
         name: undefined,
         description: undefined,
-        price: undefined,
         fileUrl: undefined,
       },
       file: undefined,
     };
   },
   methods: {
-    async createAsset() {
-      const file = this.file;
-      console.log("file,", file)
-
+    ...mapActions({ mintToken: "mintToken" }),
+    uploadFile(file) {
+      // Set the file as a data. So other methods can access file
+      this.file = file;
+    },
+    /**
+       * This method gets the NFT information from inputs
+       * Then, calls the mintToken action 
+       */
+    async createNFT() {
+      // Get the infos
       this.asset.name = document.getElementById("assetName").value;
       this.asset.description =
         document.getElementById("assetDescription").value;
-      this.asset.price = document.getElementById("assetPrice").value;
 
-      if (!this.asset.name || !this.asset.description || !this.asset.price || !this.file) {
+      if (
+        !this.asset.name ||
+        !this.asset.description ||
+        !this.file
+      ) {
         return Toast.fire({
           icon: "error",
           title: "Please fill the given places to create an asset.",
         });
       }
 
-      try {
-        const added = await client.add(file, {
-          progress: (prog) => console.log(`received: ${prog}`),
-        });
-        this.asset.fileUrl = `https://ipfs.infura.io/ipfs/${added.path}`;
-      } catch (err) {
-        console.log(err);
-      }
-
-      /* first, upload the metadata to IPFS */
-      const data = JSON.stringify({
+      // Then call the action
+      await this.mintToken({
+        file: this.file,
         name: this.asset.name,
-        description: this.asset.description,
-        image: this.asset.fileUrl,
+        description: this.asset.description
       });
-
-      try {
-        const added = await client.add(data);
-        const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-
-        /* after file is uploaded to IPFS, pass the URL to save it on Polygon */
-        await this.createSale(url);
-      } catch (error) {
-        console.log("Error uploading file: ", error);
-      }
-    },
-    async createSale(url) {
-      console.log(url);
-      const web3Modal = new Web3Modal();
-      const connection = await web3Modal.connect();
-      const provider = new ethers.providers.Web3Provider(connection);
-      const signer = provider.getSigner();
-
-      /* next, create the item */
-      let contract = new ethers.Contract(
-        Secrets.third_nft_contract_address,
-        NFTContract.abi,
-        signer
-      );
-      let transaction = await contract.createToken(url);
-      let tx = await transaction.wait();
-
-      let event = tx.events[0];
-      let value = event.args[2];
-      console.log("Event 👉", event);
-      console.log("Value 👉", value);
-      console.log("Value ToNumber 👉", value.toNumber());
-
-      let tokenId = value.toNumber();
-      const price = ethers.utils.parseUnits(this.asset.price, "ether");
-
-      transaction = await contract.approveFor(
-        Secrets.third_market_contract_address,
-        tokenId
-      );
-      tx = await transaction.wait();
-
-      /* then list the item for sale on the marketplace */
-      contract = new ethers.Contract(
-        Secrets.third_market_contract_address,
-        NFTMarket.abi,
-        signer
-      );
-      let listingPrice = await contract.getListingPrice();
-      listingPrice = listingPrice.toString();
-
-      console.log("Price 👉", price);
-      console.log("Listin Price 👉", listingPrice);
-
-      transaction = await contract.createMarketItem(
-        Secrets.third_nft_contract_address,
-        tokenId,
-        price,
-        { value: listingPrice }
-      );
-      const lastRes = await transaction.wait();
-      console.log(lastRes);
-      await router.push('/')
-    },
-    uploadFile(file) {
-      this.file = file;
     },
   },
 };

@@ -1,9 +1,12 @@
 import Secrets from "../../../../secrets.json";
-import NFTMarket from "../../../../Contracts/NFTMarket.json";
-import NFT from "../../../../Contracts/NFT.json";
+import MarketContract from "../../../Contracts/Market.json";
+import NFTContract from "../../../Contracts/CustomNFT.json";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import axios from "axios";
+import { create as ipfsHttpClient } from "ipfs-http-client";
+
+const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
 
 const state = {}
@@ -18,6 +21,82 @@ const actions = {
     const options = { q: text, chain: "eth", filter: "name", limit: 10 }; // TODO limit value will be changed
 
     return await Moralis.Web3API.token.searchNFTs(options)
+  },
+  async mintToken({ }, payload) {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    let asset = payload;
+
+    // Upload the media to the IPFS
+    try {
+      const added = await client.add(asset.file, {
+        progress: (prog) => console.log(`received: ${prog}`),
+      });
+      asset.fileUrl = `https://ipfs.infura.io/ipfs/${added.path}`;
+    } catch (err) {
+      console.log(err);
+    }
+
+    const data = JSON.stringify({
+      name: asset.name,
+      description: asset.description,
+      imageUrl: asset.fileUrl,
+    });
+
+
+    /* upload the metadata to IPFS */
+    try {
+      const added = await client.add(data);
+      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+
+      /* next connect to contract and mint the item */
+      let contract = new ethers.Contract(
+        Secrets.NFT_CONTRACT_ADDRESS,
+        NFTContract.abi,
+        signer
+      );
+
+      let transaction = await contract.mintToken(url);
+      let tx = await transaction.wait();
+    } catch (error) {
+      console.log("Error uploading file: ", error);
+    }
+  },
+  async createSale(url) {
+    let tokenId = value.toNumber();
+    // TODO Not this.asset
+    const price = ethers.utils.parseUnits(this.asset.price, "ether");
+
+    transaction = await contract.approveFor(
+      Secrets.MARKET_CONTRACT_ADDRESS,
+      tokenId
+    );
+    tx = await transaction.wait();
+
+    /* then list the item for sale on the marketplace */
+    contract = new ethers.Contract(
+      Secrets.MARKET_CONTRACT_ADDRESS,
+      NFTMarket.abi,
+      signer
+    );
+    let listingPrice = await contract.getListingPrice();
+    listingPrice = listingPrice.toString();
+
+    console.log("Price 👉", price);
+    console.log("Listin Price 👉", listingPrice);
+
+    transaction = await contract.createMarketItem(
+      Secrets.NFT_CONTRACT_ADDRESS,
+      tokenId,
+      price,
+      { value: listingPrice }
+    );
+    const lastRes = await transaction.wait();
+    console.log(lastRes);
+    await router.push('/')
   },
   async fetchNFT({ }, payload) {
     // TODO add a select box next to search box and search by chain option
@@ -37,13 +116,13 @@ const actions = {
     const signer = provider.getSigner();
 
     const marketContract = new ethers.Contract(
-      Secrets.third_market_contract_address,
+      Secrets.MARKET_CONTRACT_ADDRESS,
       NFTMarket.abi,
       signer
     );
 
     const tokenContract = new ethers.Contract(
-      Secrets.third_nft_contract_address,
+      Secrets.NFT_CONTRACT_ADDRESS,
       NFT.abi,
       provider
     );
@@ -83,7 +162,7 @@ const actions = {
     const signer = provider.getSigner();
 
     let contract = new ethers.Contract(
-      Secrets.third_market_contract_address,
+      Secrets.MARKET_CONTRACT_ADDRESS,
       NFTMarket.abi,
       signer
     );
@@ -93,100 +172,15 @@ const actions = {
 
     // TODO remove this.$route....
     let transaction = await contract.cancelSale(
-      Secrets.third_nft_contract_address,
+      Secrets.NFT_CONTRACT_ADDRESS,
       this.$route.params.tokenId.toString(),
       { value: cancellingPrice }
     );
 
     await transaction.wait();
   },
-  async createAsset({ }, payload) {
-    // { file, assetName, assetDesc, assetPrice }
 
-    // Bu degiskenler zaten component icerisinde kontrol edilecek. Buraya gerek yok
-    if (!this.asset.name || !this.asset.description || !this.asset.price || !this.file) {
-      return Toast.fire({
-        icon: "error",
-        title: "Please fill the given places to create an asset.",
-      });
-    }
 
-    try {
-      const added = await client.add(file, {
-        progress: (prog) => console.log(`received: ${prog}`),
-      });
-      this.asset.fileUrl = `https://ipfs.infura.io/ipfs/${added.path}`;
-    } catch (err) {
-      console.log(err);
-    }
-
-    const data = JSON.stringify({
-      name: this.asset.name,
-      description: this.asset.description,
-      image: this.asset.fileUrl,
-    });
-
-    /* first, upload the metadata to IPFS */
-    try {
-      const added = await client.add(data);
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-
-      /* after file is uploaded to IPFS, pass the URL to save it on Rinkeby */
-      await this.createSale(url);
-    } catch (error) {
-      console.log("Error uploading file: ", error);
-    }
-  },
-  async createSale(url) {
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.providers.Web3Provider(connection);
-    const signer = provider.getSigner();
-
-    /* next, create the item */
-    let contract = new ethers.Contract(
-      Secrets.third_nft_contract_address,
-      NFTContract.abi,
-      signer
-    );
-    let transaction = await contract.createToken(url);
-    let tx = await transaction.wait();
-
-    let event = tx.events[0];
-    let value = event.args[2];
-
-    let tokenId = value.toNumber();
-    // TODO Not this.asset
-    const price = ethers.utils.parseUnits(this.asset.price, "ether");
-
-    transaction = await contract.approveFor(
-      Secrets.third_market_contract_address,
-      tokenId
-    );
-    tx = await transaction.wait();
-
-    /* then list the item for sale on the marketplace */
-    contract = new ethers.Contract(
-      Secrets.third_market_contract_address,
-      NFTMarket.abi,
-      signer
-    );
-    let listingPrice = await contract.getListingPrice();
-    listingPrice = listingPrice.toString();
-
-    console.log("Price 👉", price);
-    console.log("Listin Price 👉", listingPrice);
-
-    transaction = await contract.createMarketItem(
-      Secrets.third_nft_contract_address,
-      tokenId,
-      price,
-      { value: listingPrice }
-    );
-    const lastRes = await transaction.wait();
-    console.log(lastRes);
-    await router.push('/')
-  },
 }
 
 export default {
