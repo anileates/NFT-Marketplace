@@ -61,8 +61,11 @@ const actions = {
 
       let transaction = await contract.mintToken(url);
       let tx = await transaction.wait();
+
+      return true
     } catch (error) {
       console.log("Error uploading file: ", error);
+      return false
     }
   },
   async createSale({ }, payload) {

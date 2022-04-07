@@ -24,11 +24,11 @@
 </template>
 
 <script>
-
 import InputBox from "../components/shared/InputBox.vue";
 import Avatar from "../components/shared/Avatar.vue";
 import { mapActions } from "vuex";
-import { Toast } from '../SweetAlert'
+import { Toast } from "../SweetAlert";
+import router from "../router/index"
 
 export default {
   name: "CreateItemPage",
@@ -53,20 +53,16 @@ export default {
       this.file = file;
     },
     /**
-       * This method gets the NFT information from inputs
-       * Then, calls the mintToken action 
-       */
+     * This method gets the NFT information from inputs
+     * Then, calls the mintToken action
+     */
     async createNFT() {
       // Get the infos
       this.asset.name = document.getElementById("assetName").value;
       this.asset.description =
         document.getElementById("assetDescription").value;
 
-      if (
-        !this.asset.name ||
-        !this.asset.description ||
-        !this.file
-      ) {
+      if (!this.asset.name || !this.asset.description || !this.file) {
         return Toast.fire({
           icon: "error",
           title: "Please fill the given places to create an asset.",
@@ -74,11 +70,20 @@ export default {
       }
 
       // Then call the action
-      await this.mintToken({
+      const result = await this.mintToken({
         file: this.file,
         name: this.asset.name,
-        description: this.asset.description
+        description: this.asset.description,
       });
+
+      if (result) {
+         Toast.fire({
+          icon: "success",
+          title: "Congratz! You minted a stunning NFT 🎉",
+        });
+
+        return await router.push('/')
+      }
     },
   },
 };
