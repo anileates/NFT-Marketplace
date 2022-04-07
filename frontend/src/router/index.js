@@ -78,12 +78,19 @@ const routes = [
                 });
 
                 to.params.nft = nft;
-                to.params.pageTitle = JSON.parse(to.params.nft.metadata).name;
-                
+                if (nft.metadata) {
+                    to.params.pageTitle = JSON.parse(to.params.nft.metadata).name
+                } else if (nft.name) {
+                    to.params.pageTitle = nft.name;
+                } else {
+                    to.params.pageTitle = 'Unknown'
+                }
+                console.log(nft)
+
                 return next();
             } catch (error) {
                 console.log(error)
-                await router.push('/not-found')
+                await router.push('/sth-went-wrong')
             }
         }
     },

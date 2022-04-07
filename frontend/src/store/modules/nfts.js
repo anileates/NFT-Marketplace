@@ -1,6 +1,7 @@
 import Secrets from "../../../../secrets.json";
 import MarketContract from "../../../Contracts/Market.json";
 import NFTContract from "../../../Contracts/CustomNFT.json";
+import ERC721 from "../../../Contracts/ERC721.json";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import axios from "axios";
@@ -43,9 +44,8 @@ const actions = {
     const data = JSON.stringify({
       name: asset.name,
       description: asset.description,
-      imageUrl: asset.fileUrl,
+      image: asset.fileUrl,
     });
-
 
     /* upload the metadata to IPFS */
     try {
@@ -65,49 +65,69 @@ const actions = {
       console.log("Error uploading file: ", error);
     }
   },
-  async createSale(url) {
-    let tokenId = value.toNumber();
-    // TODO Not this.asset
-    const price = ethers.utils.parseUnits(this.asset.price, "ether");
+  async createSale({ }, payload) {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const signerAddress = await signer.getAddress()
 
-    transaction = await contract.approveFor(
-      Secrets.MARKET_CONTRACT_ADDRESS,
-      tokenId
-    );
-    tx = await transaction.wait();
+    let { tokenAddress, tokenId, price } = payload
+    let _price = ethers.utils.parseUnits(price, "ether");
 
-    /* then list the item for sale on the marketplace */
-    contract = new ethers.Contract(
-      Secrets.MARKET_CONTRACT_ADDRESS,
-      NFTMarket.abi,
-      signer
-    );
-    let listingPrice = await contract.getListingPrice();
-    listingPrice = listingPrice.toString();
+    try {
+      /* next connect to contract and mint the item */
+      let nftContract = new ethers.Contract(
+        tokenAddress,
+        ERC721.abi,
+        signer
+      );
 
-    console.log("Price 👉", price);
-    console.log("Listin Price 👉", listingPrice);
+      // Check if the market_contract is approved for user's tokens or not
+      let isApproved = await nftContract.isApprovedForAll(
+        signerAddress,
+        Secrets.MARKET_CONTRACT_ADDRESS
+      );
 
-    transaction = await contract.createMarketItem(
-      Secrets.NFT_CONTRACT_ADDRESS,
-      tokenId,
-      price,
-      { value: listingPrice }
-    );
-    const lastRes = await transaction.wait();
-    console.log(lastRes);
-    await router.push('/')
+      if(!isApproved) {
+        await nftContract.setApprovalForAll(Secrets.MARKET_CONTRACT_ADDRESS, true);
+      }
+
+      let marketContract = new ethers.Contract(
+        Secrets.MARKET_CONTRACT_ADDRESS,
+        MarketContract.abi,
+        signer
+      )
+
+      let transaction = await marketContract.putOnSale(
+        tokenAddress,
+        tokenId,
+        _price,
+        { value: "10000000000000000" }
+      )
+
+      let tx = await transaction.wait();
+
+      return true
+    } catch (error) {
+      console.log(error)
+      return false
+    }
   },
   async fetchNFT({ }, payload) {
-    // TODO add a select box next to search box and search by chain option
     const options = {
       address: payload.token_address,
       token_id: payload.token_id,
       chain: payload.chain || 'eth'
     };
 
-    const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
-    return tokenIdMetadata;
+    let tokenData = await Moralis.Web3API.token.getTokenIdMetadata(options);
+    if(!tokenData.metadata) {
+      let result = await axios.get(tokenData.token_uri)
+      tokenData.metadata = JSON.stringify(result.data)
+    }
+
+    return tokenData;
   },
   async getItemFromContract({ }, _tokenId) {
     const web3Modal = new Web3Modal();
@@ -117,13 +137,13 @@ const actions = {
 
     const marketContract = new ethers.Contract(
       Secrets.MARKET_CONTRACT_ADDRESS,
-      NFTMarket.abi,
+      MarketContract.abi,
       signer
     );
 
     const tokenContract = new ethers.Contract(
       Secrets.NFT_CONTRACT_ADDRESS,
-      NFT.abi,
+      NFTContract.abi,
       provider
     );
     const data = await marketContract.fetchItemsCreated();
@@ -179,8 +199,47 @@ const actions = {
 
     await transaction.wait();
   },
+  async getListedItem({ }, payload) {
+    const { nftContractAddress, tokenId } = payload
 
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
 
+    const marketContract = new ethers.Contract(
+      Secrets.MARKET_CONTRACT_ADDRESS,
+      MarketContract.abi,
+      signer
+    );
+
+    let item;
+    try {
+      item = await marketContract._getListedItem(nftContractAddress, tokenId)
+      return item
+    } catch (error) {
+      if (error.message.includes('Listing not found')) {
+        return null
+      } else {
+        console.log(error)
+      }
+    }
+  },
+
+  /**
+   * Test method - This method can be used to manually fetch tokenUri.
+   */
+  async getTokenUri({ }, tokenId) {
+    const options = {
+      address: '0x6D6b277478d23222a81e6De208bf332abb9fd697',
+      token_id: '4',
+      chain: 'rinkeby'
+    };
+
+    const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
+    console.log(tokenIdMetadata)
+    return tokenIdMetadata;
+  }
 }
 
 export default {

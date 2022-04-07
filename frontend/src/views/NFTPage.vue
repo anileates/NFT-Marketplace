@@ -5,7 +5,11 @@ import DescriptionCard from "../components/shared/DropdownCards/DescriptionCard"
 import DetailsCard from "../components/shared/DropdownCards/DetailsCard";
 import CustomButton from "../components/shared/Buttons/CustomButton";
 import TraitsCard from "../components/shared/DropdownCards/TraitsCard";
+import SellAsset from "../components/SellAsset.vue";
+
 import { mapActions, mapGetters } from "vuex";
+import { Toast } from "../SweetAlert";
+import { ethers } from "ethers";
 
 export default {
   name: "NFTPage",
@@ -16,10 +20,12 @@ export default {
     appDetailsCard: DetailsCard,
     appCustomButton: CustomButton,
     appTraitsCard: TraitsCard,
+    appSellAsset: SellAsset,
   },
   data() {
     return {
       isLoading: true,
+      isSellClicked: false,
       nft: {
         metadata: {},
         saleInfo: {},
@@ -34,44 +40,90 @@ export default {
     getProfileRedirectUrl() {
       return `/users/${this.nft.owner_of}`;
     },
-    isOwner() {
-      
-    },
     isForSale() {
-      // TODO gonna complete isOwner and isForSale in a different way. 
+      if (this.nft.saleInfo) return true;
+      else false;
+    },
+    getOwner() {
+      if (!this.isForSale) {
+        return this.nft.owner_of;
+      } else {
+        return this.nft.saleInfo.ownerAdd;
+      }
+    },
+    getPriceInEth() {
+      if (this.nft.saleInfo) {
+        return ethers.utils.formatUnits(this.nft.saleInfo.price.toString(), "ether");
+      } else {
+        return null;
+      }
+    },
+    isOwner() {
+      if (
+        !this.isForSale &&
+        this.nft.owner_of.toLowerCase() ==
+          this.getCurrentUser.ethAddress.toLowerCase()
+      ) {
+        return true;
+      } else if (
+        this.isForSale &&
+        this.nft.saleInfo.ownerAdd.toLowerCase() ==
+          this.getCurrentUser.ethAddress.toLowerCase()
+      ) {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
   methods: {
     ...mapActions({
       fetchNFT: "fetchNFT",
-      getItemFromContract: "getItemFromContract",
+      getListedItem: "getListedItem",
+      createSale: "createSale",
     }),
+    async putOnSale() {
+      this.toggleSellWindow();
+    },
+    toggleSellWindow() {
+      this.isSellClicked = !this.isSellClicked;
+    },
   },
   async created() {
     // Fetched the nft metadata at the beforeEnter route. Just assign to local state here.
     this.nft = this.$route.params.nft;
-    this.nft.metadata = JSON.parse(this.nft.metadata);
-    this.nft.saleInfo = await this.getItemFromContract(this.nft.token_id);
+    this.nft.metadata = JSON.parse(this.$route.params.nft.metadata);
+    this.nft.saleInfo = await this.getListedItem({
+      tokenId: this.nft.token_id,
+      nftContractAddress: this.nft.token_address,
+    });
 
     this.isLoading = false;
-
-    console.log(this.nft)
   },
 };
 </script>
 
 <template lang="html">
   <div class="nft-page-container flex__col flex__ai-c flex__jc-c">
-    <h1 v-if="isLoading">Loading.........</h1>
+    <h1 v-show="isLoading">Loading.........</h1>
 
-    <div v-else class="sell-cancel-bar flex__row flex__jc-c" v-show="true">
-      <div class="inner">
-        <div class="btn-wrapper">
-          <app-custom-button buttonText="Cancel Listing" @click="cancelListing" />
+  <div class="overlay" v-if="isSellClicked"> 
+   <appSellAsset id="appSellAsset" :nft="this.nft" @closed="toggleSellWindow" />
+  </div>
+
+    <div v-if="!isLoading && isOwner" class="sell-cancel-bar flex__row flex__jc-c" style="">
+      <div class="inner" style="">
+        <div class="btn-wrapper flex__row flex__jc-sb" >
+          <app-custom-button buttonText="Cancel Listing" @click="cancelListing" :disableButton="!isForSale"/>
+        </div>
+
+        <div class="btn-wrapper flex__row flex__jc-sb" >
+          <app-custom-button buttonText="Put On Sale" @click="putOnSale" :disableButton="isForSale" />
         </div>
       </div>
     </div>
-    <div v-else class="center-box flex__row flex__jc-sb">
+    
+    <div v-if="!isLoading" class="center-box flex__row flex__jc-sb">
       <div class="left-box flex__col flex__ai-c flex__jc-sb">
         <div class="image-wrapper"><img style="width: 100%; height: 100%; object-fit: contain"
                                         :src="this.nft.metadata.image"/></div>
@@ -94,11 +146,11 @@ export default {
 
           <h1>{{ nft.metadata.name }}</h1>
           <div class="third-line"><span>Owned by</span><a class="owner-of" :href="getProfileRedirectUrl">{{
-              nft.seller || nft.owner_of
+              getOwner
             }}</a></div>
         </div>
         <div class="sale-information">
-          <app-sale-card :isForSale="true" :price="nft.saleInfo.price" :disableButtons="true" />
+          <app-sale-card :isForSale="isForSale" :price="getPriceInEth" :disableButtons="true" />
         </div>
       </div>
     </div>
@@ -244,5 +296,28 @@ a {
 
 .owner-of {
   margin-left: 0.5rem;
+}
+
+.overlay {
+  position: fixed;
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  background-color: rgba(0, 0, 0, 0.75);
+
+  top: 0;
+  left: 0;
+}
+
+#appSellAsset {
+  position: absolute;
+
+  top: 50%;
+  right: 50%;
+  transform: translate(50%, -50%);
+
+  height: 25rem;
+  width: 40%;
 }
 </style>

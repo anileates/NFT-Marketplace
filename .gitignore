@@ -2,7 +2,6 @@
 **/.env
 **/.idea
 **/secrets.json
-**/build/contracts
-**/Contracts
 
 **/TODOS.md
+**/Notes.md
