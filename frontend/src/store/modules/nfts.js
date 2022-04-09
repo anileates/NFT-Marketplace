@@ -9,7 +9,6 @@ import { create as ipfsHttpClient } from "ipfs-http-client";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
-
 const state = {}
 
 const getters = {}
@@ -92,8 +91,10 @@ const actions = {
         Secrets.MARKET_CONTRACT_ADDRESS
       );
 
-      if(!isApproved) {
-        await nftContract.setApprovalForAll(Secrets.MARKET_CONTRACT_ADDRESS, true);
+      if (!isApproved) {
+        let transaction = await nftContract.setApprovalForAll(Secrets.MARKET_CONTRACT_ADDRESS, true);
+
+        await transaction.wait();
       }
 
       let marketContract = new ethers.Contract(
@@ -117,6 +118,28 @@ const actions = {
       return false
     }
   },
+  async cancelListing({ }, listingId) {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    try {
+      let marketContract = new ethers.Contract(
+        Secrets.MARKET_CONTRACT_ADDRESS,
+        MarketContract.abi,
+        signer
+      );
+
+      let transaction = await marketContract.cancelSale(listingId);
+
+      await transaction.wait();
+      return true
+    } catch (error) {
+      console.log(error)
+      return false
+    }
+  },
   async fetchNFT({ }, payload) {
     const options = {
       address: payload.token_address,
@@ -125,12 +148,19 @@ const actions = {
     };
 
     let tokenData = await Moralis.Web3API.token.getTokenIdMetadata(options);
-    if(!tokenData.metadata) {
-      let result = await axios.get(tokenData.token_uri)
-      tokenData.metadata = JSON.stringify(result.data)
+    console.log("jane", tokenData)
+
+    try {
+      if (!tokenData.metadata) {
+        let result = await axios.get(tokenData.token_uri)
+        tokenData.metadata = JSON.stringify(result.data)
+      }
+
+      return tokenData;
+    } catch (error) {
+      console.log(error)
     }
 
-    return tokenData;
   },
   async getItemFromContract({ }, _tokenId) {
     const web3Modal = new Web3Modal();
@@ -177,30 +207,6 @@ const actions = {
     });
 
     return item2;
-  },
-  async cancelListing() {
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.providers.Web3Provider(connection);
-    const signer = provider.getSigner();
-
-    let contract = new ethers.Contract(
-      Secrets.MARKET_CONTRACT_ADDRESS,
-      NFTMarket.abi,
-      signer
-    );
-
-    let cancellingPrice = await contract.getCancellingPrice();
-    cancellingPrice = cancellingPrice.toString();
-
-    // TODO remove this.$route....
-    let transaction = await contract.cancelSale(
-      Secrets.NFT_CONTRACT_ADDRESS,
-      this.$route.params.tokenId.toString(),
-      { value: cancellingPrice }
-    );
-
-    await transaction.wait();
   },
   async getListedItem({ }, payload) {
     const { nftContractAddress, tokenId } = payload

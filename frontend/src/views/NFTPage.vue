@@ -10,6 +10,7 @@ import SellAsset from "../components/SellAsset.vue";
 import { mapActions, mapGetters } from "vuex";
 import { Toast } from "../SweetAlert";
 import { ethers } from "ethers";
+import { confirmCancelListing } from "../SweetAlert"
 
 export default {
   name: "NFTPage",
@@ -81,9 +82,29 @@ export default {
       fetchNFT: "fetchNFT",
       getListedItem: "getListedItem",
       createSale: "createSale",
+      cancelListing: "cancelListing"
     }),
     async putOnSale() {
       this.toggleSellWindow();
+    },
+    async cancelSale() {
+      const result = await this.cancelListing(this.nft.saleInfo.listingId.toString())
+      
+      if (result) {
+        Toast.fire({
+          icon: "success",
+          title: "Listing Cancelled Succesfully",
+        });
+
+        await router.push("/");
+      } else {
+        Toast.fire({
+          icon: "error",
+          title: "Something went wrong.",
+        });
+
+        await router.push("/");
+      }
     },
     toggleSellWindow() {
       this.isSellClicked = !this.isSellClicked;
@@ -114,7 +135,7 @@ export default {
     <div v-if="!isLoading && isOwner" class="sell-cancel-bar flex__row flex__jc-c" style="">
       <div class="inner" style="">
         <div class="btn-wrapper flex__row flex__jc-sb" >
-          <app-custom-button buttonText="Cancel Listing" @click="cancelListing" :disableButton="!isForSale"/>
+          <app-custom-button buttonText="Cancel Listing" @click="cancelSale" :disableButton="!isForSale"/>
         </div>
 
         <div class="btn-wrapper flex__row flex__jc-sb" >
