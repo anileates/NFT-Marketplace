@@ -6,11 +6,12 @@ import DetailsCard from "../components/shared/DropdownCards/DetailsCard";
 import CustomButton from "../components/shared/Buttons/CustomButton";
 import TraitsCard from "../components/shared/DropdownCards/TraitsCard";
 import SellAsset from "../components/SellAsset.vue";
+import PurchaseAsset from "../components/PurchaseAsset.vue";
 
 import { mapActions, mapGetters } from "vuex";
 import { Toast } from "../SweetAlert";
 import { ethers } from "ethers";
-import { confirmCancelListing } from "../SweetAlert"
+import { confirmCancelListing } from "../SweetAlert";
 
 export default {
   name: "NFTPage",
@@ -22,11 +23,14 @@ export default {
     appCustomButton: CustomButton,
     appTraitsCard: TraitsCard,
     appSellAsset: SellAsset,
+    appPurchaseAsset: PurchaseAsset,
   },
   data() {
     return {
       isLoading: true,
       isSellClicked: false,
+      isBuyNowClicked: false,
+      isMakeOfferClicked: false,
       nft: {
         metadata: {},
         saleInfo: {},
@@ -54,7 +58,10 @@ export default {
     },
     getPriceInEth() {
       if (this.nft.saleInfo) {
-        return ethers.utils.formatUnits(this.nft.saleInfo.price.toString(), "ether");
+        return ethers.utils.formatUnits(
+          this.nft.saleInfo.price.toString(),
+          "ether"
+        );
       } else {
         return null;
       }
@@ -82,14 +89,16 @@ export default {
       fetchNFT: "fetchNFT",
       getListedItem: "getListedItem",
       createSale: "createSale",
-      cancelListing: "cancelListing"
+      cancelListing: "cancelListing",
     }),
     async putOnSale() {
       this.toggleSellWindow();
     },
     async cancelSale() {
-      const result = await this.cancelListing(this.nft.saleInfo.listingId.toString())
-      
+      const result = await this.cancelListing(
+        this.nft.saleInfo.listingId.toString()
+      );
+
       if (result) {
         Toast.fire({
           icon: "success",
@@ -108,6 +117,9 @@ export default {
     },
     toggleSellWindow() {
       this.isSellClicked = !this.isSellClicked;
+    },
+    togglePurchaseWindow() {
+      this.isBuyNowClicked = !this.isBuyNowClicked;
     },
   },
   async created() {
@@ -130,6 +142,10 @@ export default {
 
   <div class="overlay" v-if="isSellClicked"> 
    <appSellAsset id="appSellAsset" :nft="this.nft" @closed="toggleSellWindow" />
+  </div>
+
+  <div class="overlay" v-if="isBuyNowClicked"> 
+   <appPurchaseAsset id="appPurchaseAsset" :nft="this.nft" @closed="togglePurchaseWindow"/>
   </div>
 
     <div v-if="!isLoading && isOwner" class="sell-cancel-bar flex__row flex__jc-c" style="">
@@ -171,7 +187,13 @@ export default {
             }}</a></div>
         </div>
         <div class="sale-information">
-          <app-sale-card :isForSale="isForSale" :price="getPriceInEth" :disableButtons="true" />
+          <app-sale-card 
+          :isForSale="isForSale" 
+          :price="getPriceInEth" 
+          @buyNowClicked="togglePurchaseWindow" 
+          :makeOfferClicked="this.isMakeOfferClicked=true" 
+          :disablePurchaseButton="!isForSale || isOwner" 
+          :disableOfferButton="!isOwner"/>
         </div>
       </div>
     </div>
@@ -332,6 +354,17 @@ a {
 }
 
 #appSellAsset {
+  position: absolute;
+
+  top: 50%;
+  right: 50%;
+  transform: translate(50%, -50%);
+
+  height: 25rem;
+  width: 40%;
+}
+
+#appPurchaseAsset {
   position: absolute;
 
   top: 50%;

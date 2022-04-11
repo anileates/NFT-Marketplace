@@ -2,7 +2,7 @@
 .sell-card
   .sell-card__header
     .overlay.flex__row.flex__ai-c.flex__jc-c
-      h3 Complete Listing
+      h3 Complete Purchase
       .cross-wrapper.flex__row.flex__ai-c.flex__jc-c(@click="windowClosed")
         i.fas.fa-times.fa-2xl
   .sell-card__body
@@ -16,35 +16,32 @@
           a(:href="getCollectionRedirectUrl") {{ nft.name }}
           h4 # {{ nft.token_id }}
     hr
-    .section-price
+    .section-price.flex__row.flex__ai-fe.flex__jc-sb
       .header
         span.header Price
       .content.flex__row.flex__jc-fs.flex__ai-c
         img(
           src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg"
         )
-        appInputBox#price(
-          placeholder="Amount",
-          @keydown="checkValidPriceFormat"
-        )
+        span.price {{ $filters.getPriceInEth(nft.saleInfo.price) }}
   .sell-card__footer.flex__row.flex__jc-c.flex__ai-c
     .btn-wrapper
       appCustomButton(
         buttonText="Confirm",
-        @click="putOnSale",
+        @click="buyItem",
         :disableButton="buttonClicked"
       )
 </template>
 
 <script>
-import InputBox from "../components/shared/InputBox.vue";
+import InputBox from "./shared/InputBox.vue";
 import CustomButton from "../components/shared/Buttons/CustomButton";
 import { Toast } from "../SweetAlert";
 import { mapActions } from "vuex";
 import router from "../router/index";
 
 export default {
-  name: "SellAsset",
+  name: "PurchaseAsset",
   props: {
     nft: {},
     price: null,
@@ -66,27 +63,20 @@ export default {
   methods: {
     ...mapActions({
       createSale: "createSale",
+      buyNow: "buyNow"
     }),
-    async putOnSale() {
+    async buyItem () {
       const tokenAddress = this.$route.params.tokenAddress;
       const tokenId = this.$route.params.tokenId;
-      const price = document.getElementById("price").value;
-
-      if (!price || price <= 0) {
-        Toast.fire({
-          icon: "error",
-          title: "Price must be greater than 0",
-        });
-
-        return false;
-      }
+      const listingId = this.nft.saleInfo.listingId
+      const price = this.nft.saleInfo.price;
 
       this.buttonClicked = true;
-      const result = await this.createSale({ tokenAddress, tokenId, price });
+      const result = await this.buyNow({ tokenAddress, tokenId, price, listingId });
       if (result) {
         Toast.fire({
           icon: "success",
-          title: "Item listed.",
+          title: "Congratz! You purchased a stunning NFT! 🎉.",
         });
 
         await router.push("/");
@@ -101,25 +91,6 @@ export default {
     },
     windowClosed() {
       this.$emit("closed");
-    },
-    checkValidPriceFormat(event) {
-      let validChars = [
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "e",
-        ".",
-        "Backspace",
-      ];
-
-      if (!validChars.includes(event.key)) event.preventDefault();
     },
   },
 };
@@ -215,6 +186,13 @@ hr {
 
 span.header {
   font-weight: 600;
+}
+
+.price {
+  font-size: 1.4rem;
+  font-weight: 600;
+
+  color: rgb(32, 129, 226);
 }
 
 .overlay {

@@ -3,7 +3,7 @@ import DropdownCardMain from "./DropdownCardMain";
 import CustomButton from "../Buttons/CustomButton";
 
 export default {
-  name: 'SaleCard',
+  name: "SaleCard",
   components: {
     appDropdownCard: DropdownCardMain,
     appCustomButton: CustomButton,
@@ -12,21 +12,33 @@ export default {
     isForSale: {
       type: Boolean,
       required: false,
-      default: false
+      default: false,
     },
     price: {
       type: String,
-      required: false
+      required: false,
     },
-    disableButtons: {
+    disablePurchaseButton: {
       type: Boolean,
-      required: true
+      required: true,
+    },
+    disableOfferButton: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  methods: {
+    buyNow() {
+      this.$emit("buyNowClicked");
+    },
+    makeOffer() {
+      this.$emit("makeOfferClicked");
     },
   },
   data() {
-    return {}
-  }
-}
+    return {};
+  },
+};
 </script>
 
 <template lang="pug">
@@ -41,17 +53,27 @@ app-dropdown-card(:collapseByDefault="false")
       .title-wrapper
         p Current Price
       .price-wrapper.flex__row.flex__ai-c.flex__jc-fs
-        img(src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg")
+        img(
+          src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg"
+        )
         span.eth-price(v-if="isForSale") {{ price }}
         span.eth-price(v-else) --
         //- .fiat-equivalent-wrapper
         //-   p ($1,638.61)
       .actions-button-wrapper.flex__row.flex__ai-c.flex__jc-fs
         .btn-wrapper
-          app-custom-button(buttonText="Buy Now" :disableButton="disableButtons")
+          app-custom-button(
+            buttonText="Buy Now",
+            @click="buyNow()",
+            :disableButton="this.disablePurchaseButton",
+          )
             i.fas.fa-wallet(style="color: white")
         .btn-wrapper
-          app-custom-button(buttonText="Make Offer" :disableButton="disableButtons")
+          app-custom-button(
+            buttonText="Make Offer",
+            @click="makeOffer()",
+            :disableButton="this.disableOfferButton",
+          )
             i.fas.fa-tag(style="color: white")
 </template>
 
@@ -109,7 +131,6 @@ app-dropdown-card(:collapseByDefault="false")
 
 .actions-button-wrapper {
   width: 100%;
-
 }
 
 .btn-wrapper {
@@ -119,5 +140,4 @@ app-dropdown-card(:collapseByDefault="false")
   margin-right: 0.5rem;
   margin-top: -1rem;
 }
-
 </style>

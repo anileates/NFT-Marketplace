@@ -140,6 +140,32 @@ const actions = {
       return false
     }
   },
+  async buyNow({ }, payload) {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    let _price = ethers.utils.formatUnits(payload.price.toString(), "wei");
+    try {
+      let marketContract = new ethers.Contract(
+        Secrets.MARKET_CONTRACT_ADDRESS,
+        MarketContract.abi,
+        signer
+      );
+
+      let transaction = await marketContract.buyNFT(
+        payload.listingId.toString(),
+        { value: _price.toString() }
+      )
+
+      await transaction.wait();
+      return true
+    } catch (error) {
+      console.log(error)
+      return false;
+    }
+  },
   async fetchNFT({ }, payload) {
     const options = {
       address: payload.token_address,
@@ -148,7 +174,6 @@ const actions = {
     };
 
     let tokenData = await Moralis.Web3API.token.getTokenIdMetadata(options);
-    console.log("jane", tokenData)
 
     try {
       if (!tokenData.metadata) {
