@@ -2,6 +2,7 @@ import Secrets from "../../../../secrets.json";
 import MarketContract from "../../../Contracts/Market.json";
 import NFTContract from "../../../Contracts/CustomNFT.json";
 import ERC721 from "../../../Contracts/ERC721.json";
+import ERC20 from '../../../Contracts/ERC20.json'
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import axios from "axios";
@@ -186,6 +187,48 @@ const actions = {
       console.log(error)
     }
 
+  },
+  async makeOffer({ }, payload) {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const signerAddress = await signer.getAddress()
+    const WETH_ADDRESS = "0xc778417E063141139Fce010982780140Aa0cD5Ab";
+
+    let _price = ethers.utils.parseUnits(payload.price, "ether");
+
+    let WETHContract = new ethers.Contract(
+      WETH_ADDRESS,
+      ERC20.abi,
+      signer
+    );
+
+    let marketContract = new ethers.Contract(
+      Secrets.MARKET_CONTRACT_ADDRESS,
+      MarketContract.abi,
+      signer
+    );
+
+    try {
+      /**
+       * If WETH allowance is not enough, approve the MarketContract for WETH allowance
+       */
+      const wethAllowanceOfMarket = await WETHContract.allowance(signerAddress, Secrets.MARKET_CONTRACT_ADDRESS)
+
+      if (wethAllowanceOfMarket < payload.price) {
+        let transaction = await WETHContract.approve(Secrets.MARKET_CONTRACT_ADDRESS, _price);
+        await transaction.wait();
+      }
+
+      const transaction = await marketContract.placeBid(payload.tokenAddress, payload.tokenId, _price)
+      await transaction.wait()
+
+      return true
+    } catch (error) {
+      console.log(error)
+      return false
+    }
   },
   async getItemFromContract({ }, _tokenId) {
     const web3Modal = new Web3Modal();

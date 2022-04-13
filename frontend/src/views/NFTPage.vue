@@ -7,6 +7,7 @@ import CustomButton from "../components/shared/Buttons/CustomButton";
 import TraitsCard from "../components/shared/DropdownCards/TraitsCard";
 import SellAsset from "../components/SellAsset.vue";
 import PurchaseAsset from "../components/PurchaseAsset.vue";
+import MakeOffer from "../components/MakeOffer.vue";
 
 import { mapActions, mapGetters } from "vuex";
 import { Toast } from "../SweetAlert";
@@ -24,6 +25,7 @@ export default {
     appTraitsCard: TraitsCard,
     appSellAsset: SellAsset,
     appPurchaseAsset: PurchaseAsset,
+    appMakeOffer: MakeOffer,
   },
   data() {
     return {
@@ -121,6 +123,9 @@ export default {
     togglePurchaseWindow() {
       this.isBuyNowClicked = !this.isBuyNowClicked;
     },
+    toggleMakeOfferWindow() {
+      this.isMakeOfferClicked = !this.isMakeOfferClicked;
+    },
   },
   async created() {
     // Fetched the nft metadata at the beforeEnter route. Just assign to local state here.
@@ -146,6 +151,10 @@ export default {
 
   <div class="overlay" v-if="isBuyNowClicked"> 
    <appPurchaseAsset id="appPurchaseAsset" :nft="this.nft" @closed="togglePurchaseWindow"/>
+  </div>
+
+  <div class="overlay" v-if="isMakeOfferClicked"> 
+   <appMakeOffer id="appMakeOffer" :nft="this.nft" @closed="toggleMakeOfferWindow"/>
   </div>
 
     <div v-if="!isLoading && isOwner" class="sell-cancel-bar flex__row flex__jc-c" style="">
@@ -191,9 +200,9 @@ export default {
           :isForSale="isForSale" 
           :price="getPriceInEth" 
           @buyNowClicked="togglePurchaseWindow" 
-          :makeOfferClicked="this.isMakeOfferClicked=true" 
+          @makeOfferClicked="toggleMakeOfferWindow" 
           :disablePurchaseButton="!isForSale || isOwner" 
-          :disableOfferButton="!isOwner"/>
+          :disableOfferButton="isOwner"/>
         </div>
       </div>
     </div>
@@ -365,6 +374,17 @@ a {
 }
 
 #appPurchaseAsset {
+  position: absolute;
+
+  top: 50%;
+  right: 50%;
+  transform: translate(50%, -50%);
+
+  height: 25rem;
+  width: 40%;
+}
+
+#appMakeOffer {
   position: absolute;
 
   top: 50%;
