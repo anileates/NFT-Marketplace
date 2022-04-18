@@ -8,11 +8,13 @@ import TraitsCard from "../components/shared/DropdownCards/TraitsCard";
 import SellAsset from "../components/SellAsset.vue";
 import PurchaseAsset from "../components/PurchaseAsset.vue";
 import MakeOffer from "../components/MakeOffer.vue";
+import OffersCard from "../components/shared/DropdownCards/OffersCard.vue";
 
 import { mapActions, mapGetters } from "vuex";
 import { Toast } from "../SweetAlert";
 import { ethers } from "ethers";
 import { confirmCancelListing } from "../SweetAlert";
+import router from "../router/index"
 
 export default {
   name: "NFTPage",
@@ -26,6 +28,7 @@ export default {
     appSellAsset: SellAsset,
     appPurchaseAsset: PurchaseAsset,
     appMakeOffer: MakeOffer,
+    appOffersCard: OffersCard,
   },
   data() {
     return {
@@ -37,6 +40,7 @@ export default {
         metadata: {},
         saleInfo: {},
       },
+      offers: [],
     };
   },
   computed: {
@@ -84,7 +88,7 @@ export default {
       } else {
         return false;
       }
-    },
+    }
   },
   methods: {
     ...mapActions({
@@ -92,6 +96,7 @@ export default {
       getListedItem: "getListedItem",
       createSale: "createSale",
       cancelListing: "cancelListing",
+      getPastEventsOfToken: "getPastEventsOfToken",
     }),
     async putOnSale() {
       this.toggleSellWindow();
@@ -135,6 +140,11 @@ export default {
       tokenId: this.nft.token_id,
       nftContractAddress: this.nft.token_address,
     });
+
+    // Get offers for this NFT
+    const nftContractAddress = this.$route.params.tokenAddress;
+    const tokenId = this.$route.params.tokenId;
+    this.offers = await this.getPastEventsOfToken({ nftContractAddress, tokenId });
 
     this.isLoading = false;
   },
@@ -204,6 +214,10 @@ export default {
           :disablePurchaseButton="!isForSale || isOwner" 
           :disableOfferButton="isOwner"/>
         </div>
+
+        <div class="offers-card">
+          <appOffersCard :offers="this.offers" :isOwner="isOwner" />
+          </div> 
       </div>
     </div>
   </div>
@@ -393,5 +407,9 @@ a {
 
   height: 25rem;
   width: 40%;
+}
+
+.offers-card {
+  margin-top: 1rem;
 }
 </style>

@@ -62,7 +62,6 @@ export default {
 
   .body {
     width: 100%;
-    padding: 0.3rem 0;
     background-color: rgb(251, 253, 255);
 
     border-top: 1px solid rgb(229, 232, 235);
