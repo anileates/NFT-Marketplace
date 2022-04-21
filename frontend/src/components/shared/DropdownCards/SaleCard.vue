@@ -26,6 +26,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    hasOffered: {
+      type: Boolean,
+      required: true
+    }
   },
   methods: {
     buyNow() {
@@ -34,6 +38,9 @@ export default {
     makeOffer() {
       this.$emit("makeOfferClicked");
     },
+    cancelOffer() {
+      this.$emit('cancelOfferClicked')
+    }    
   },
   data() {
     return {};
@@ -68,11 +75,17 @@ app-dropdown-card(:collapseByDefault="false")
             :disableButton="this.disablePurchaseButton",
           )
             i.fas.fa-wallet(style="color: white")
-        .btn-wrapper
+        .btn-wrapper(v-if="!hasOffered")
           app-custom-button(
             buttonText="Make Offer",
             @click="makeOffer()",
             :disableButton="this.disableOfferButton",
+          )
+            i.fas.fa-tag(style="color: white")
+        .btn-wrapper(v-else)
+          app-custom-button(
+            buttonText="Cancel Offer",
+            @click="cancelOffer()",
           )
             i.fas.fa-tag(style="color: white")
 </template>

@@ -14,7 +14,7 @@ import { mapActions, mapGetters } from "vuex";
 import { Toast } from "../SweetAlert";
 import { ethers } from "ethers";
 import { confirmCancelListing } from "../SweetAlert";
-import router from "../router/index"
+import router from "../router/index";
 
 export default {
   name: "NFTPage",
@@ -88,6 +88,22 @@ export default {
       } else {
         return false;
       }
+    },
+    hasOffered() {
+      const ethAddress = this.getCurrentUser.ethAddress;
+      for (let i = 0; i < this.offers.length; i++) {
+        if (this.offers[i].bidder.toLowerCase() == ethAddress) return { offerId: this.offers[i].bidId };
+      }
+
+      return false;
+    },
+    getOfferId () {
+      if(!this.hasOffered) return false
+      
+      const ethAddress = this.getCurrentUser.ethAddress;
+      for (let i = 0; i < this.offers.length; i++) {
+        if (this.offers[i].bidder.toLowerCase() == ethAddress) ;
+      }
     }
   },
   methods: {
@@ -97,6 +113,7 @@ export default {
       createSale: "createSale",
       cancelListing: "cancelListing",
       getPastEventsOfToken: "getPastEventsOfToken",
+      cancelOffer: "cancelOffer"
     }),
     async putOnSale() {
       this.toggleSellWindow();
@@ -122,6 +139,24 @@ export default {
         await router.push("/");
       }
     },
+    async _cancelOffer() {
+      const res = await this.cancelOffer({ bidId: this.hasOffered.offerId})
+      if(res) {
+        Toast.fire({
+          icon: "success",
+          title: "Offer Cancelled Succesfully!",
+        })
+
+        await router.push('/')
+      } else {
+        Toast.fire({
+          icon: "error",
+          title: "Something went wrong!😞 Please try again later.",
+        })
+
+        await router.push('/')
+      }
+    },
     toggleSellWindow() {
       this.isSellClicked = !this.isSellClicked;
     },
@@ -144,7 +179,10 @@ export default {
     // Get offers for this NFT
     const nftContractAddress = this.$route.params.tokenAddress;
     const tokenId = this.$route.params.tokenId;
-    this.offers = await this.getPastEventsOfToken({ nftContractAddress, tokenId });
+    this.offers = await this.getPastEventsOfToken({
+      nftContractAddress,
+      tokenId,
+    });
 
     this.isLoading = false;
   },
@@ -211,8 +249,10 @@ export default {
           :price="getPriceInEth" 
           @buyNowClicked="togglePurchaseWindow" 
           @makeOfferClicked="toggleMakeOfferWindow" 
+          @cancelOfferClicked="_cancelOffer"
           :disablePurchaseButton="!isForSale || isOwner" 
-          :disableOfferButton="isOwner"/>
+          :disableOfferButton="isOwner"
+          :hasOffered="hasOffered" />
         </div>
 
         <div class="offers-card">

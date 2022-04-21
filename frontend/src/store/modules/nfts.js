@@ -263,6 +263,29 @@ const actions = {
       return false
     }
   },
+  async cancelOffer ({}, payload) {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect()
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const signerAddress = await signer.getAddress()
+
+    let marketContract = new ethers.Contract(
+      Secrets.MARKET_CONTRACT_ADDRESS,
+      MarketContract.abi,
+      signer
+    );
+
+    try {
+      let transaction = await marketContract.cancelBid(payload.bidId.toString())
+      await transaction.wait()
+
+      return true
+    } catch (error) {
+      console.log(error)
+      return false
+    }
+  },
   async getItemFromContract({ }, _tokenId) {
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
@@ -335,21 +358,6 @@ const actions = {
       }
     }
   },
-
-  /**
-   * Test method - This method can be used to manually fetch tokenUri.
-   */
-  async getTokenUri({ }, tokenId) {
-    const options = {
-      address: '0x6D6b277478d23222a81e6De208bf332abb9fd697',
-      token_id: '4',
-      chain: 'rinkeby'
-    };
-
-    const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
-    console.log(tokenIdMetadata)
-    return tokenIdMetadata;
-  },
   async getPastEventsOfToken({ }, payload) {
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
@@ -365,7 +373,8 @@ const actions = {
     // Get offers using past events of contract
     const filter = marketContract.filters.BidPlaced(null, null, payload.nftContractAddress, parseInt(payload.tokenId))
     const res = await marketContract.queryFilter(filter)
-
+    
+    console.log(res)
     // Make the result human readable
     let formattedRes = [];
     for (let i = 0; i < res.length; i++) {
@@ -378,8 +387,10 @@ const actions = {
       formattedRes.push(_item)
     }
     
+    console.log(formattedRes)
     return formattedRes;
-  }
+  },
+
 }
 
 export default {
