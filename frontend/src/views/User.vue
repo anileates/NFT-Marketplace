@@ -20,40 +20,25 @@
 
   .showroom.flex__row.flex__jc-c
     .card-layout
-      .card
-        app-nft-card
-      .card
-        app-nft-card
-      .card
-        app-nft-card
-      .card
-        app-nft-card
-      .card
-        app-nft-card
-      .card
-        app-nft-card
-      .card
-        app-nft-card
-      .card
-        app-nft-card
-      .card
+      .card(v-for="nft in nfts")
         app-nft-card
 </template>
 
 <script>
 import Avatar from "../components/shared/Avatar";
 import NftCard from "../components/shared/NftCard";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "UserPage",
   components: {
     appAvatar: Avatar,
-    appNftCard: NftCard
+    appNftCard: NftCard,
   },
   data() {
     return {
       url: "https:///i.pinimg.com/736x/02/70/6c/02706c93c5f630d1e1ae987c15ae7f53.jpg",
+      nfts: {},
     };
   },
   computed: {
@@ -65,8 +50,15 @@ export default {
       };
     },
   },
-  methods: {},
-  created() {},
+  methods: {
+    ...mapActions({
+      getNFTsOfUser: "getNFTsOfUser",
+      getListedItem: "getListedItem",
+      getListedItemsOfUser: "getListedItemsOfUser"
+    }),
+  },
+  async created() {
+  },
 };
 </script>
 
@@ -122,9 +114,9 @@ export default {
     width: 88rem;
 
     display: flex;
-    flex__direction: row;
+    flex-direction: row;
     justify-content: flex__start;
-    flex__wrap: wrap;
+    flex-wrap: wrap;
 
     .card {
       margin: 0.5rem 1rem;
