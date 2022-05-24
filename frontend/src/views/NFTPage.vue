@@ -9,6 +9,7 @@ import SellAsset from "../components/SellAsset.vue";
 import PurchaseAsset from "../components/PurchaseAsset.vue";
 import MakeOffer from "../components/MakeOffer.vue";
 import OffersCard from "../components/shared/DropdownCards/OffersCard.vue";
+import ActivityCard from "../components/shared/DropdownCards/ActivityCard.vue"
 
 import { mapActions, mapGetters } from "vuex";
 import { Toast } from "../SweetAlert";
@@ -29,6 +30,7 @@ export default {
     appPurchaseAsset: PurchaseAsset,
     appMakeOffer: MakeOffer,
     appOffersCard: OffersCard,
+    appActivityCard: ActivityCard
   },
   data() {
     return {
@@ -41,6 +43,7 @@ export default {
         saleInfo: {},
       },
       offers: [],
+      itemActivity: {}
     };
   },
   computed: {
@@ -91,20 +94,37 @@ export default {
     },
     hasOffered() {
       const ethAddress = this.getCurrentUser.ethAddress;
-      for (let i = 0; i < this.offers.length; i++) {
-        if (this.offers[i].bidder.toLowerCase() == ethAddress) return { offerId: this.offers[i].bidId };
+      for (let i = 0; i < this.getFormattedOffers.length; i++) {
+        if (this.getFormattedOffers[i].bidder.toLowerCase() == ethAddress)
+          return { offerId: this.getFormattedOffers[i].bidId };
       }
 
       return false;
     },
-    getOfferId () {
-      if(!this.hasOffered) return false
-      
+    getOfferId() {
+      if (!this.hasOffered) return false;
+
       const ethAddress = this.getCurrentUser.ethAddress;
-      for (let i = 0; i < this.offers.length; i++) {
-        if (this.offers[i].bidder.toLowerCase() == ethAddress) ;
+      for (let i = 0; i < this.getFormattedOffers.length; i++) {
+        if (this.getFormattedOffers[i].bidder.toLowerCase() == ethAddress);
       }
-    }
+    },
+    getFormattedOffers () {
+      // Make the result human readable
+      const res = this.offers
+      let formattedResOfOffers = [];
+      for (let i = 0; i < res.length; i++) {
+        let _item = {};
+        _item.tokenId = res[i].args.tokenId.toString();
+        _item.price = ethers.utils.formatUnits(res[i].args.price, "ether");
+        _item.bidder = res[i].args.bidder;
+        _item.bidId = res[i].args.bidId.toString();
+
+        formattedResOfOffers.push(_item);
+      }
+
+      return formattedResOfOffers
+    },
   },
   methods: {
     ...mapActions({
@@ -112,8 +132,9 @@ export default {
       getListedItem: "getListedItem",
       createSale: "createSale",
       cancelListing: "cancelListing",
-      getPastEventsOfToken: "getPastEventsOfToken",
-      cancelOffer: "cancelOffer"
+      getOffersOfToken: "getOffersOfToken",
+      cancelOffer: "cancelOffer",
+      getItemActivity: "getItemActivity"
     }),
     async putOnSale() {
       this.toggleSellWindow();
@@ -140,21 +161,21 @@ export default {
       }
     },
     async _cancelOffer() {
-      const res = await this.cancelOffer({ bidId: this.hasOffered.offerId})
-      if(res) {
+      const res = await this.cancelOffer({ bidId: this.hasOffered.offerId });
+      if (res) {
         Toast.fire({
           icon: "success",
           title: "Offer Cancelled Succesfully!",
-        })
+        });
 
-        await router.push('/')
+        await router.push("/");
       } else {
         Toast.fire({
           icon: "error",
           title: "Something went wrong!😞 Please try again later.",
-        })
+        });
 
-        await router.push('/')
+        await router.push("/");
       }
     },
     toggleSellWindow() {
@@ -171,18 +192,22 @@ export default {
     // Fetched the nft metadata at the beforeEnter route. Just assign to local state here.
     this.nft = this.$route.params.nft;
     this.nft.metadata = JSON.parse(this.$route.params.nft.metadata);
+
+    const nftContractAddress = this.$route.params.tokenAddress;
+    const tokenId = this.$route.params.tokenId;
+
     this.nft.saleInfo = await this.getListedItem({
-      tokenId: this.nft.token_id,
-      nftContractAddress: this.nft.token_address,
+      nftContractAddress,
+      tokenId
     });
 
     // Get offers for this NFT
-    const nftContractAddress = this.$route.params.tokenAddress;
-    const tokenId = this.$route.params.tokenId;
-    this.offers = await this.getPastEventsOfToken({
+    this.offers = await this.getOffersOfToken({
       nftContractAddress,
       tokenId,
     });
+
+    this.itemActivity = await this.getItemActivity({ nftContractAddress, tokenId })
 
     this.isLoading = false;
   },
@@ -193,15 +218,15 @@ export default {
   <div class="nft-page-container flex__col flex__ai-c flex__jc-c">
     <h1 v-show="isLoading">Loading.........</h1>
 
-  <div class="overlay" v-if="isSellClicked"> 
+  <div class="overlay" v-if="isSellClicked">
    <appSellAsset id="appSellAsset" :nft="this.nft" @closed="toggleSellWindow" />
   </div>
 
-  <div class="overlay" v-if="isBuyNowClicked"> 
+  <div class="overlay" v-if="isBuyNowClicked">
    <appPurchaseAsset id="appPurchaseAsset" :nft="this.nft" @closed="togglePurchaseWindow"/>
   </div>
 
-  <div class="overlay" v-if="isMakeOfferClicked"> 
+  <div class="overlay" v-if="isMakeOfferClicked">
    <appMakeOffer id="appMakeOffer" :nft="this.nft" @closed="toggleMakeOfferWindow"/>
   </div>
 
@@ -216,7 +241,7 @@ export default {
         </div>
       </div>
     </div>
-    
+
     <div v-if="!isLoading" class="center-box flex__row flex__jc-sb">
       <div class="left-box flex__col flex__ai-c flex__jc-sb">
         <div class="image-wrapper"><img style="width: 100%; height: 100%; object-fit: contain"
@@ -244,21 +269,25 @@ export default {
             }}</a></div>
         </div>
         <div class="sale-information">
-          <app-sale-card 
-          :isForSale="isForSale" 
-          :price="getPriceInEth" 
-          @buyNowClicked="togglePurchaseWindow" 
-          @makeOfferClicked="toggleMakeOfferWindow" 
+          <app-sale-card
+          :isForSale="isForSale"
+          :price="getPriceInEth"
+          @buyNowClicked="togglePurchaseWindow"
+          @makeOfferClicked="toggleMakeOfferWindow"
           @cancelOfferClicked="_cancelOffer"
-          :disablePurchaseButton="!isForSale || isOwner" 
+          :disablePurchaseButton="!isForSale || isOwner"
           :disableOfferButton="isOwner"
           :hasOffered="hasOffered" />
         </div>
 
         <div class="offers-card">
-          <appOffersCard :offers="this.offers" :isOwner="isOwner" />
-          </div> 
+          <appOffersCard :offers="getFormattedOffers" :isOwner="isOwner" />
+          </div>
       </div>
+    </div>
+
+    <div class="activity" style="width: 80%">
+      <appActivityCard :activity="itemActivity" />
     </div>
   </div>
 </template>
@@ -297,7 +326,7 @@ export default {
 
 .center-box {
   width: 82%;
-  height: 100%;
+  // height: 100%;
   padding-top: 2rem;
 
   .left-box {

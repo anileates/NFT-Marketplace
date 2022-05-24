@@ -64,7 +64,7 @@ export default {
 app-dropdown-card(:isCollapsible="true", :collapseByDefault="false")
   template(v-slot:dropdownCardHeader @click="btnClck")
     .header-wrapper.flex__row.flex__ai-c.flex__jc-fs
-      i.fa-line-columns.fa-light
+      i.fa-solid.fa-hand
       p Offers
   template(v-slot:dropdownCardBody)
     .body-wrapper.flex__col.flex__jc-c.flex__ai-c(v-if="offers && offers.length > 0")

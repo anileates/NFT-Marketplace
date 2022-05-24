@@ -5,6 +5,7 @@ import router from './router'
 import store from './store'
 import VueSweetalert2 from 'vue-sweetalert2';
 import { ethers } from "ethers";
+import Web3Modal from "web3modal";
 
 /* Moralis init code */
 const serverUrl = process.env.VUE_APP_SERVER_URL
@@ -35,6 +36,18 @@ app.config.globalProperties.$filters = {
         } else {
             return null;
         }
+    },
+    async blockNumberToDate(blockNumber) {
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+
+        const timestamp = (await provider.getBlock(blockNumber)).timestamp
+        const date = new Date(timestamp)
+        const month = date.toLocaleString('en', { month: 'short' })
+        const day = date.getDate()
+
+        return month + " " + day
     }
 }
 
