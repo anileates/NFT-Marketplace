@@ -5,49 +5,82 @@
     .cc-page-content.flex__col.flex__ai-fs.flex__jc-sb
       .section.flex__col.flex__ai-fs.flex__jc-sa
         label.section-header Logo Image
-        label.hint This image will also be used for navigation
+        label.hint This image will also be used for navigation.
         .image-box-logo
-          app-avatar(:imgUrl="sadfasdf", @uploaded="changeAvatar")
+          app-avatar(@uploaded="uploadLogo")
 
       .section.flex__col.flex__ai-fs.flex__jc-sa
         label.section-header Banner Image
         label.hint This image will appear at the top of your collection page.
         .image-box-banner
-          app-avatar(:imgUrl="sadfasdf", @uploaded="changeAvatar")
+          app-avatar(@uploaded="uploadBanner")
 
       .section.flex__col.flex__ai-fs.flex__jc-sa
         label.section-header Collection Name *
         label.hint
-        appInputBox(placeholder="Name Of Your Collection")
+        appInputBox#collection-name(placeholder="Name Of Your Collection")
+
+      .section.flex__col.flex__ai-fs.flex__jc-sa
+        label.section-header Collection Symbol *
+        label.hint Symbol can be used for navigation either on-chain or on our platform.
+        appInputBox#symbol(placeholder="E.g. MyNFT")
 
       .section.flex__col.flex__ai-fs.flex__jc-sa
         label.section-header Description
         label.hint Allowed Max. 1000 characters
-        appInputBox(value="" maxlength="1000")
+        appInputBox#description(value="", maxlength="1000")
 
       .section.flex__col.flex__ai-fs.flex__jc-sa
         label.section-header Creator Earnings
         label.hint Collect a fee when a user re-sells an item you originally created. (Percentage (%))
-        appInputBox#username(value="" placeholder="e.g. 2.5")
+        appInputBox#creator-earning(value="", placeholder="e.g. 2.5")
 
       .btn-wrapper
-        appCustomButton(buttonText="Create", @click="cancelSale")
+        appCustomButton(buttonText="Create", @click="saveCollectionInfo")
 </template>
 
 <script>
 import Avatar from "../components/shared/Avatar.vue";
 import InputBox from "../components/shared/InputBox.vue";
 import CustomButton from "../components/shared/Buttons/CustomButton.vue";
+import { mapActions } from "vuex";
 
 export default {
   name: "CreateCollection",
   data() {
-    return {};
+    return {
+      collection: {},
+    };
   },
   components: {
     appAvatar: Avatar,
     appInputBox: InputBox,
     appCustomButton: CustomButton,
+  },
+  methods: {
+    ...mapActions(["createCollection"]),
+    async saveCollectionInfo() {
+      this.collection.name = document.getElementById("collection-name").value;
+      this.collection.symbol = document.getElementById("symbol").value;
+      this.collection.description = document.getElementById("description").value;
+      this.collection.creatorEarning = parseInt(document.getElementById("creator-earning").value)
+
+      const res = await this.createCollection(this.collection)
+      if (res) {
+        Toast.fire({
+          icon: "success",
+          title: "Your collection has been created!",
+        });
+      }
+    },
+    uploadLogo(file) {
+      const moralisFile = new Moralis.File("logo.jpg", file);
+      this.collection.logo = moralisFile
+    },
+    uploadBanner(file) {
+      const moralisFile = new Moralis.File("banner.jpg", file);
+      this.collection.banner = moralisFile
+    },
   },
 };
 </script>
@@ -116,5 +149,4 @@ h2 {
   height: 3rem;
   margin-right: 0.5rem;
 }
-
 </style>

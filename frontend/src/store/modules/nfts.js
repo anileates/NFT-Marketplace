@@ -1,8 +1,9 @@
 import Secrets from "../../../../secrets.json";
 import MarketContract from "../../../Contracts/Market.json";
 import NFTContract from "../../../Contracts/CustomNFT.json";
+import CollectionFactory from "../../../Contracts/CollectionFactory.json";
 import ERC721 from "../../../Contracts/ERC721.json";
-import ERC20 from '../../../Contracts/ERC20.json'
+import ERC20 from '../../../Contracts/ERC20.json';
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import axios from "axios";
@@ -444,6 +445,43 @@ const actions = {
 
     const res = { listings, offers, sales, transfers }
     return res
+  },
+  async createCollection({ }, payload) {
+    const { name, symbol } = payload
+    
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect()
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const signerAddress = await signer.getAddress()
+
+    let collectionFactoryContract = new ethers.Contract(
+      Secrets.COLLECTION_FACTORY_ADDRESS,
+      CollectionFactory.abi,
+      signer
+    );
+
+    try {
+      // First, create collection on-chain.
+      let transaction = await collectionFactoryContract.createCollection(name, symbol, { value: "20000000000000000" });
+      const res = await transaction.wait();
+      
+      // Append address of the created collection
+      payload.contractAddress = res.logs[0].address
+
+      // Save collection infos to the Moralis DB
+      let Collection = Moralis.Object.extend("Collection");
+      let newCollection = new Collection()
+      for (let [key, value] of Object.entries(payload)) {
+        newCollection.set(key, value)
+      }
+
+      await newCollection.save()
+      return true
+    } catch (error) {
+      console.log(error)
+      return false
+    }
   }
 }
 

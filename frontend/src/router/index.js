@@ -6,6 +6,7 @@ import User from "../views/User";
 import NotFound from "../views/NotFound";
 import NFTPage from "../views/NFTPage";
 import CreateItemPage from "../views/CreateItemPage";
+import CreateCollectionPage from "../views/CreateCollectionPage";
 import InternalErrorPage from "../views/InternalErrorPage";
 
 const routes = [
@@ -99,6 +100,13 @@ const routes = [
         component: CreateItemPage,
         meta: {
             title: `Create Asset`
+        }
+    },
+    {
+        path: '/create-collection',
+        component: CreateCollectionPage,
+        meta: {
+            title: 'Create Collection'
         }
     },
     {
