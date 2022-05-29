@@ -9,7 +9,7 @@ import CustomCheckbox from "../Buttons/CustomCheckbox.vue";
 export default {
   name: "ButtonWithCheckbox",
   components: {
-    appCustomCheckbox: CustomCheckbox
+    appCustomCheckbox: CustomCheckbox,
   },
   props: {
     buttonText: {
@@ -17,18 +17,40 @@ export default {
       required: true,
       default: "No text",
     },
+    isChecked: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
-      isClicked: false
-    }
+      isClicked: false,
+      _isChecked: null,
+    };
   },
   methods: {
     buttonClicked() {
-      this.isClicked = !this.isClicked;
+      /**
+       * Button can be checked by default. 
+       * And on the first click it must change properly
+       */
+      this.isClicked = this._isChecked ? this.isClicked = false : this.isClicked = !this.isClicked;
+      this._isChecked = false;
+
       this.$emit("buttonCboxClicked");
-    }
-  }
+    },
+  },
+  created() {
+    // `_isChecked` internal representation of isChecked prop
+    // Assign at created hook
+    this._isChecked = this.isChecked;
+  },
+  computed: {
+    checked() {
+      return this.isClicked || this._isChecked;
+    },
+  },
 };
 </script>
 
@@ -36,14 +58,14 @@ export default {
 button.flex__row.flex__jc-sb.flex__ai-c(@click="buttonClicked")
   p {{ buttonText }}
   .customCheckboxWrapper
-    appCustomCheckbox(:checked="isClicked" )
+    appCustomCheckbox(:checked="checked")
 </template>
 
 
 <style lang="scss" scoped>
 button {
   background-color: transparent;
-  padding: 12px 16px;
+  padding: 12px 12px;
   width: 100%;
   border: none;
   border-radius: 10px;
