@@ -1,39 +1,44 @@
 <template lang="pug">
 a(href="/collection-item-1234")
   .card-container
-      .image-section
-      .info-section.flex__col.flex__jc-fs
-        .title-line.flex__row.flex__jc-sb.flex__ai-c
-          a(href="/collection-3123") Ninja Squad Official
-          .wrapper
-            a Price
-        .value-line.flex__row.flex__jc-sb.flex__ai-c
-          a(href="/collection-item-1234") Ninja #4515
-          .price-label.flex__row.flex__jc-sb.flex__ai-c
-            img(src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg")
-            p 0.44
-
+    .image-section
+      img(:src="imgUrl")
+    .info-section.flex__col.flex__jc-fs
+      .title-line.flex__row.flex__jc-sb.flex__ai-c
+        a(href="/collection-3123") Ninja Squad Official
+        .wrapper
+          a Price
+      .value-line.flex__row.flex__jc-sb.flex__ai-c
+        a(href="/collection-item-1234") Ninja #4515
+        .price-label.flex__row.flex__jc-sb.flex__ai-c
+          img(
+            src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg"
+          )
+          p 0.44
 </template>
 
 <script>
 export default {
-  name: 'NftCard',
+  name: "NftCard",
+  props: {
+    imgUrl: null,
+  },
   data() {
-    return {}
-  }
-}
+    return {};
+  },
+};
 </script>
 
 <style scoped lang="scss">
 .card-container {
   height: 100%;
-  width: 100%;
-  border-radius: 1rem;
+  font-size: 1.6rem;
 
+  border-radius: 10px;
   border: 1px solid rgb(229, 232, 235);
 
   cursor: pointer;
-
+  transition: .2s;
   &:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   }
@@ -41,29 +46,36 @@ export default {
 
 .image-section {
   height: 73%;
-  width: 100%;
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
 
-  background-color: orange;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+
+    border-radius: inherit;
+
+  }
 }
 
 .info-section {
   height: 27%;
-  padding-top: 1rem;
-  //border: 2px solid rgb(229, 232, 235);
+  margin: 0 0.625em;
+  margin-top: 0.625em;
 
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 
   .title-line {
     width: 100%;
-    padding: 0 1rem;
 
-    font-size: 0.8rem;
+    font-size: 1.2rem;
+
     font-weight: 500;
     color: rgb(112, 122, 131) !important;
-    line-height: 1rem;
+    line-height: 1.6rem;
 
     a {
       text-decoration: none;
@@ -76,14 +88,13 @@ export default {
   }
 
   .value-line {
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 2rem;
+
     width: 100%;
-    padding: 0 1rem;
 
     color: rgb(53, 56, 64);
-    font-weight: 600;
-    font-size: 0.8rem;
-    letter-spacing: 0.2px;
-    line-height: 1.3rem;
 
     a {
       text-decoration: none;
@@ -98,11 +109,11 @@ export default {
 
 .price-label {
   img {
-    width: 0.6rem;
+    width: 2rem;
   }
 
   p {
-    margin-left: 0.35rem;
+    margin-left: 0.6em;
   }
 }
 
