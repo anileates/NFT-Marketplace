@@ -39,12 +39,14 @@
         p.value 2.0K
         p.key total volume
 
+    .mobile-filter.flex__row.flex__jc-c.flex__ai-c(@click="toggleFilterBar")
+      .wrapper 
+        span Show Filters
+        i.fa-solid.fa-bars
+
   .showroom-container.flex__row.flex__jc-fs.flex__ai-fs
     transition(name="slide")
-      .filters-bar(
-        v-show="!isFilterBarHidden",
-        :class={ hidefilterBar: isFilterBarHidden }
-      )
+      .filters-bar(v-show="!isFilterBarHidden")
         .header.flex__row.flex__jc-sb.flex__ai-c
           p Filters
           .filter-icon-wrapper(@click="toggleFilterBar")
@@ -53,22 +55,44 @@
         appListingStatusFilter
         appOrderByFilter
     .cards-layout
+      .card
+        appNftCard(
+          imgUrl="https://lh3.googleusercontent.com/suoUcdQY2bFEnUEip-iaSQc8PgKk79oHw5AKuBmD0vGhkAF7aP4xrJH1db94oVWgK_Au8-Z4OALSHuT9EsRMrfM4nV_9z_L5e8Cx=w600"
+        )
+      .card
+        appNftCard(
+          imgUrl="https://lh3.googleusercontent.com/suoUcdQY2bFEnUEip-iaSQc8PgKk79oHw5AKuBmD0vGhkAF7aP4xrJH1db94oVWgK_Au8-Z4OALSHuT9EsRMrfM4nV_9z_L5e8Cx=w600"
+        )
+      .card
+        appNftCard(
+          imgUrl="https://lh3.googleusercontent.com/suoUcdQY2bFEnUEip-iaSQc8PgKk79oHw5AKuBmD0vGhkAF7aP4xrJH1db94oVWgK_Au8-Z4OALSHuT9EsRMrfM4nV_9z_L5e8Cx=w600"
+        )
+      .card
+        appNftCard(
+          imgUrl="https://lh3.googleusercontent.com/suoUcdQY2bFEnUEip-iaSQc8PgKk79oHw5AKuBmD0vGhkAF7aP4xrJH1db94oVWgK_Au8-Z4OALSHuT9EsRMrfM4nV_9z_L5e8Cx=w600"
+        )
+      .card
+        appNftCard(
+          imgUrl="https://lh3.googleusercontent.com/suoUcdQY2bFEnUEip-iaSQc8PgKk79oHw5AKuBmD0vGhkAF7aP4xrJH1db94oVWgK_Au8-Z4OALSHuT9EsRMrfM4nV_9z_L5e8Cx=w600"
+        )
 </template>
 
 <script>
 import ListingStatusFilter from "../components/shared/Filters/ListingStatusFilter.vue";
 import OrderByFilter from "../components/shared/Filters/OrderByFilter.vue";
-
+import NftCard from "../components/shared/NftCard.vue";
 export default {
   name: "CollectionPage",
   components: {
     appListingStatusFilter: ListingStatusFilter,
     appOrderByFilter: OrderByFilter,
+    appNftCard: NftCard,
   },
   data() {
     return {
       hidden: true,
       isFilterBarHidden: false,
+      isMobile: null,
     };
   },
   methods: {
@@ -78,6 +102,21 @@ export default {
     toggleFilterBar() {
       this.isFilterBarHidden = !this.isFilterBarHidden;
     },
+    resizeHandler(e) {
+      if (screen.width <= 768) {
+        this.isFilterBarHidden = true;
+      }
+    },
+  },
+  created() {
+    if (screen.width <= 768) {
+      this.isMobile = true;
+      this.isFilterBarHidden = true;
+    } else {
+      this.isMobile = false;
+    }
+
+    window.addEventListener("resize", this.resizeHandler);
   },
 };
 </script>
@@ -183,14 +222,15 @@ export default {
 
 .showroom-container {
   .filters-bar {
-    width: 33.6rem;
+    width: 32rem;
+    min-width: 25rem;
     margin-left: -1.2rem;
     transition: 0.5s;
 
     .header {
       font-size: 2rem;
       padding: 0.4em 0.6em;
-      padding-right: 0px;
+      padding-right: 0;
 
       font-weight: 600;
 
@@ -216,7 +256,18 @@ export default {
   }
 
   .cards-layout {
-    background-color: purple;
+    margin-left: 1rem;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+
+    .card {
+      margin: 1rem 0.5rem;
+      width: 21.5rem;
+      height: 33rem;
+    }
   }
 }
 
@@ -283,16 +334,118 @@ h1 {
 }
 /*********************************************/
 
-@media all and (min-width: 1600px) {
+/******** Small Screens (Mobile Phones) ********/
+@media all and (max-width: 480px) {
+  .showroom-container {
+    margin-bottom: 3rem;
+
+    .cards-layout {
+      margin-left: 0px;
+      .card {
+        width: 45%;
+      }
+    }
+  }
+}
+
+@media all and (max-width: 768px) {
   .padding-1x {
-    padding: 0 64px;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: justify;
+
+    .description {
+      padding: 0 1rem;
+    }
+  }
+
+  .logo-container {
+    margin-top: -14rem;
+  }
+
+  .about-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .filter-icon-wrapper {
+    display: none;
+  }
+
+  .showroom-container {
+    margin-bottom: 3rem;
+
+    .cards-layout {
+      margin-left: 0px;
+
+      .cards-layout {
+      margin-left: 0px;
+      .card {
+        width: 45%;
+      }
+    }
+    }
+  }
+
+  .statistics-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+
+    width: 100%;
+    padding: 0 1rem;
+    margin-left: -1rem;
+
+    .stat-box {
+      padding-right: 0px !important;
+    }
+  }
+
+  .mobile-filter {
+    // background-color: blue;
+    width: 90%;
+    margin-top: 1rem;
+    border-radius: 3rem;
+    border: 3px solid rgb(229, 232, 235);
+    font-size: 2rem;
+
+    padding: 0.5rem 2rem;
+
+    .wrapper {
+      span {
+        margin-right: 1rem;
+      }
+    }
+  }
+
+  .filters-bar {
+    position: absolute;
+    background-color: #fff;
+    height: 100vh;
+    width: 90% !important;
+    border: 3px solid rgb(229, 232, 235);
+
+    margin-top: -3rem;
   }
 }
 
 @media all and (min-width: 769px) {
+  .mobile-filter {
+    display: none;
+  }
   .description {
     margin-bottom: 32px;
     max-width: 60%;
+  }
+}
+
+@media all and (min-width: 1600px) {
+  .padding-1x {
+    padding: 0 14rem;
   }
 }
 </style>

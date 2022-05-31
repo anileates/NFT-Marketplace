@@ -31,39 +31,35 @@ export default {
 
 <style scoped lang="scss">
 .card-container {
-  height: 100%;
   font-size: 1.6rem;
+  padding-bottom: 3em;
 
   border-radius: 10px;
   border: 1px solid rgb(229, 232, 235);
 
   cursor: pointer;
-  transition: .2s;
+  transition: 0.2s;
   &:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   }
 }
 
 .image-section {
-  height: 73%;
 
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 
   img {
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: fill;
 
     border-radius: inherit;
-
   }
 }
 
 .info-section {
-  height: 27%;
   margin: 0 0.625em;
-  margin-top: 0.625em;
 
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -78,6 +74,10 @@ export default {
     line-height: 1.6rem;
 
     a {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
       text-decoration: none;
       color: rgb(112, 122, 131);
 
@@ -97,6 +97,10 @@ export default {
     color: rgb(53, 56, 64);
 
     a {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
       text-decoration: none;
       color: rgb(53, 56, 64);
 
