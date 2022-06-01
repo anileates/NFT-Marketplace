@@ -1,12 +1,14 @@
 <template lang="pug">
 .searchBox-container
-  .flex__row.flex__jc-c.flex__ai-c(style="height: 100%")
+  .flex__row.flex__jc-fs.flex__ai-c(style="height: 100%")
     i.fas.fa-search(@click="search")
     input(placeholder="Search user, collection or NFT", v-model="searchText")
   .dropdown-results(v-if="showResult")
     ul.flex__col.flex__ai-c.flex__jc-sb(v-if="users.length != 0")
       li(v-for="user in users")
-        app-search-result-item(:userItem="{ imageUrl: user.attributes.avatar._url, title: user.attributes.username}")
+        app-search-result-item(
+          :userItem="{ imageUrl: user.attributes.avatar._url, title: user.attributes.username }"
+        )
     ul.flex__col.flex__ai-c.flex__jc-sb(v-if="items.length != 0")
       li(v-for="item in items")
         app-search-result-item(:assetItem="convertItemToProp(item)")
@@ -65,6 +67,7 @@ export default {
 <style scoped lang="scss">
 .searchBox-container {
   background-color: white;
+  min-width: 31rem;
 
   border: 1px solid rgba(197, 197, 197, 0.5);
   border-radius: 0.5rem;
@@ -73,17 +76,21 @@ export default {
   width: 100%;
   height: 100%;
 
+  padding-left: 1em;
+
   &:focus-within {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   }
 }
 
 input {
-  height: 80%;
+  // height: 80%;
   width: 90%;
+  // background-color: red;
+  // float: left;
   border: none;
-  font-size: 1rem;
-  padding: 1rem;
+  font-size: 1.6rem;
+  padding: 0 0.8em;
   outline: none;
 }
 
@@ -109,7 +116,7 @@ i {
 
   ul {
     list-style-type: none;
-    flex__wrap: wrap;
+    flex-wrap: wrap;
   }
 
   li {
