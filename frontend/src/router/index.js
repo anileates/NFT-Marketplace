@@ -8,6 +8,7 @@ import NFTPage from "../views/NFTPage";
 import CreateItemPage from "../views/CreateItemPage";
 import CreateCollectionPage from "../views/CreateCollectionPage";
 import InternalErrorPage from "../views/InternalErrorPage";
+import CollectionPage from "../views/CollectionPage";
 
 const routes = [
     { path: '/', component: Homepage, meta: { title: 'Home' } },
@@ -108,6 +109,10 @@ const routes = [
         meta: {
             title: 'Create Collection'
         }
+    },
+    {
+        path: '/collections/:tokenAddress',
+        component: CollectionPage,
     },
     {
         path: '/not-found', component: NotFound,

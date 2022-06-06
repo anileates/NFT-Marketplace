@@ -1,23 +1,23 @@
 <template lang="pug">
 .banner-container
-  img(src="../../ninja-banner.jpg")
+  img(:src="collection.banner._url")
 .padding-1x
   .logo-container
-    img(src="../../ninja-logo.jpg")
+    img(:src="collection.logo._url")
 
   .about-container
-    h1 Ninja Squad Official
+    h1 {{ collection.name }}
     .creator
       span By&nbsp;
-      span.creator-address Ninja Squad (0xASD123asdASsa)
+      span.creator-address {{ collection.address }}
 
-    p.description Sit velit pariatur aliqua reprehenderit quis amet eu dolor ullamco non ipsum excepteur
+    p.description {{ getPreviewOfDescription }}
       span(v-show="hidden") ...
       span#seeMore(v-if="hidden", @click="toggleDescription")
         br 
         span See more&nbsp;
           i.fa-solid.fa-chevron-down.fa-sm
-      span#moreText(v-else) &nbsp;Voluptate velit amet velit adipisicing dolor excepteur culpa esse amet. Voluptate do eiusmod pariatur nostrud. Commodo sit pariatur laboris laboris occaecat pariatur occaecat id Lorem sunt elit. Exercitation laborum occaecat dolor laboris. Velit elit nisi tempor mollit incididunt cupidatat ut irure dolore cillum ex culpa. Nostrud dolor aliquip labore non id pariatur.&nbsp;
+      span#moreText(v-else) &nbsp;{{ getRestOfDescription }} &nbsp;
         br 
         br 
         span#seeLess(@click="toggleDescription") Show Less&nbsp;
@@ -31,12 +31,18 @@
         p.key items
       .stat-box
         p.value 3.2K
+          span
+            img.eth(src="../../ethereum.svg")
         p.key owners
       .stat-box
-        p.value 0.23
+        p.value {{ collection.floorPrice }}
+          span
+            img.eth(src="../../ethereum.svg")
         p.key floor price
       .stat-box
-        p.value 2.0K
+        p.value {{ collection.volume }}
+          span
+            img.eth(src="../../ethereum.svg")
         p.key total volume
 
     .mobile-filter.flex__row.flex__jc-c.flex__ai-c(@click="toggleFilterBar")
@@ -55,32 +61,26 @@
         appListingStatusFilter
         appOrderByFilter
     .cards-layout
-      .card
+      .card(v-for="nft in nfts")
         appNftCard(
-          imgUrl="https://lh3.googleusercontent.com/suoUcdQY2bFEnUEip-iaSQc8PgKk79oHw5AKuBmD0vGhkAF7aP4xrJH1db94oVWgK_Au8-Z4OALSHuT9EsRMrfM4nV_9z_L5e8Cx=w600"
-        )
-      .card
-        appNftCard(
-          imgUrl="https://lh3.googleusercontent.com/suoUcdQY2bFEnUEip-iaSQc8PgKk79oHw5AKuBmD0vGhkAF7aP4xrJH1db94oVWgK_Au8-Z4OALSHuT9EsRMrfM4nV_9z_L5e8Cx=w600"
-        )
-      .card
-        appNftCard(
-          imgUrl="https://lh3.googleusercontent.com/suoUcdQY2bFEnUEip-iaSQc8PgKk79oHw5AKuBmD0vGhkAF7aP4xrJH1db94oVWgK_Au8-Z4OALSHuT9EsRMrfM4nV_9z_L5e8Cx=w600"
-        )
-      .card
-        appNftCard(
-          imgUrl="https://lh3.googleusercontent.com/suoUcdQY2bFEnUEip-iaSQc8PgKk79oHw5AKuBmD0vGhkAF7aP4xrJH1db94oVWgK_Au8-Z4OALSHuT9EsRMrfM4nV_9z_L5e8Cx=w600"
-        )
-      .card
-        appNftCard(
-          imgUrl="https://lh3.googleusercontent.com/suoUcdQY2bFEnUEip-iaSQc8PgKk79oHw5AKuBmD0vGhkAF7aP4xrJH1db94oVWgK_Au8-Z4OALSHuT9EsRMrfM4nV_9z_L5e8Cx=w600"
+          :contractAddress="nft.token_address",
+          :tokenId="nft.token_id",
+          :name="nft.metadata.name || nft.name + ` #` + nft.token_id",
+          :collectionName="nft.name",
+          :imgUrl="nft.metadata.image",
+          :price="nft.saleInfo && nft.saleInfo.price"
         )
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import ListingStatusFilter from "../components/shared/Filters/ListingStatusFilter.vue";
 import OrderByFilter from "../components/shared/Filters/OrderByFilter.vue";
 import NftCard from "../components/shared/NftCard.vue";
+
+import { ethers } from "ethers";
+import Web3Modal from "web3modal";
+
 export default {
   name: "CollectionPage",
   components: {
@@ -93,9 +93,16 @@ export default {
       hidden: true,
       isFilterBarHidden: false,
       isMobile: null,
+      collection: {},
+      nfts: [],
     };
   },
   methods: {
+    ...mapActions({
+      getNFTsOfCollection: "getNFTsOfCollection",
+      getOnsaleNFTs: "getOnsaleNFTs",
+      getCollectionInformations: "getCollectionInformations",
+    }),
     toggleDescription() {
       this.hidden = !this.hidden;
     },
@@ -107,8 +114,72 @@ export default {
         this.isFilterBarHidden = true;
       }
     },
+    getPriceInEth(price) {
+      return ethers.utils.formatUnits(price.toString(), "ether");
+    },
   },
-  created() {
+  computed: {
+    getPreviewOfDescription() {
+      return this.collection.description.split(" ").slice(0, 10).join(" ");
+    },
+    getRestOfDescription() {
+      return this.collection.description
+        .split(" ")
+        .slice(10, this.collection.description.length)
+        .join(" ");
+    },
+  },
+  async created() {
+    const nftContractAddress = this.$route.params.tokenAddress;
+    const tokenId = this.$route.params.tokenId;
+
+    this.nfts = await this.getNFTsOfCollection({
+      token_address: nftContractAddress,
+      chain: "rinkeby",
+    });
+    this.collection.name = this.nfts[0].name;
+    this.collection.address = this.nfts[0].token_address;
+
+    // Set page title
+    document.title = this.collection.name + " | Marketplace"
+
+    // Fetch the nfts on sale on our MarketContract
+    let res = await this.getOnsaleNFTs({
+      contractAddress: nftContractAddress,
+    });
+
+    // Parse every single NFT into a new array and format hex. type data
+    let newItem = {};
+    let prices = [];
+    for (let i = 0; i < res.length; i++) {
+      let item = res[i];
+
+      newItem.listingId = parseInt(item.listingId);
+      newItem.nftContractAdd = item.nftContractAdd;
+      newItem.ownerAdd = item.ownerAdd;
+      newItem.price = this.getPriceInEth(item.price.toString());
+      newItem.tokenId = parseInt(item.tokenId);
+
+      // Add prices to the array to find floor price in the end
+      prices.push(this.getPriceInEth(item.price.toString()));
+
+      // Find the nft in the nfts array and append the on-chain data to the nft
+      for (let i = 0; i < this.nfts.length; i++) {
+        if (this.nfts[i].token_id == newItem.tokenId) {
+          this.nfts[i].saleInfo = {};
+          Object.assign(this.nfts[i].saleInfo, newItem);
+        }
+      }
+    }
+
+    // Remove 0 prices to avoid a bug while finding minimum
+    prices = prices.filter(item => (item != 0 || item != 0.0));
+
+    // Adjust the collection informations
+    this.collection.floorPrice = Math.min(...prices);
+    let offChainInfo = await this.getCollectionInformations();
+    Object.assign(this.collection, offChainInfo);
+
     if (screen.width <= 768) {
       this.isMobile = true;
       this.isFilterBarHidden = true;
@@ -265,7 +336,7 @@ export default {
 
     .card {
       margin: 1rem 0.5rem;
-      width: 21.5rem;
+      width: 20rem;
       height: 33rem;
     }
   }
@@ -311,6 +382,11 @@ h1 {
   animation: slide-out 0.4s ease-out forwards;
   transition: opacity 0.4s;
   opacity: 0;
+}
+
+img.eth {
+  width: 1.2rem;
+  margin-left: 0.5rem;
 }
 
 @keyframes slide-out {
@@ -383,11 +459,11 @@ h1 {
       margin-left: 0px;
 
       .cards-layout {
-      margin-left: 0px;
-      .card {
-        width: 45%;
+        margin-left: 0px;
+        .card {
+          width: 45%;
+        }
       }
-    }
     }
   }
 

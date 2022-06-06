@@ -32,6 +32,10 @@ export default {
   box-sizing: border-box;
 }
 
+:root {
+  font-size: 62.5%;
+}
+
 /******** Flex Classes ********/
 
 .flex {

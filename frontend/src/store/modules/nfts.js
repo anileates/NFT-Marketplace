@@ -162,6 +162,20 @@ const actions = {
       )
 
       await transaction.wait();
+
+      // Update volume data in Moralis DB
+      let Collection = Moralis.Object.extend("Collection");
+      const query = new Moralis.Query(Collection);
+      query.equalTo("contractAddress", payload.tokenAddress);
+
+      let results = await query.find();
+      let collection = results[0]
+
+      let newVolume = parseInt(collection.attributes.volume) + _price
+
+      collection.set("volume", newVolume)
+      await collection.save()
+
       return true
     } catch (error) {
       console.log(error)
@@ -187,7 +201,6 @@ const actions = {
     } catch (error) {
       console.log(error)
     }
-
   },
   async makeOffer({ }, payload) {
     const web3Modal = new Web3Modal();
@@ -250,6 +263,8 @@ const actions = {
       // Check if MarketContract is approved. If not, approve the contract.
       const isApproved = await nftContract.isApprovedForAll(signerAddress, Secrets.MARKET_CONTRACT_ADDRESS);
       const approvedAddress = await nftContract.getApproved(payload.tokenId)
+
+      // If the address is not approved, approve it first.
       if (!isApproved && approvedAddress != signerAddress) {
         let transaction = await nftContract.setApprovalForAll(Secrets.MARKET_CONTRACT_ADDRESS, true);
         await transaction.wait();
@@ -257,6 +272,19 @@ const actions = {
 
       let transaction = await marketContract.acceptBid(payload.bidId)
       await transaction.wait()
+
+      // Update volume data in Moralis DB
+      let Collection = Moralis.Object.extend("Collection");
+      const query = new Moralis.Query(Collection);
+      query.equalTo("contractAddress", payload.nftContractAddress);
+  
+      let results = await query.find();
+      let collection = results[0]
+  
+      let newVolume = parseInt(collection.attributes.volume) + payload.price
+  
+      collection.set("volume", newVolume)
+      await collection.save()
 
       return true
     } catch (error) {
@@ -448,7 +476,7 @@ const actions = {
   },
   async createCollection({ }, payload) {
     const { name, symbol } = payload
-    
+
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect()
     const provider = new ethers.providers.Web3Provider(connection);
@@ -465,7 +493,7 @@ const actions = {
       // First, create collection on-chain.
       let transaction = await collectionFactoryContract.createCollection(name, symbol, { value: "20000000000000000" });
       const res = await transaction.wait();
-      
+
       // Append address of the created collection
       payload.contractAddress = res.logs[0].address
 
@@ -482,7 +510,86 @@ const actions = {
       console.log(error)
       return false
     }
-  }
+  },
+  /**
+   * Get NFTs of a specific collection.
+   * Generally used this method at `Colleciton Page` to fetch nfts.
+   * 
+   * - Requires a contract address. This address cannot be zero address.
+   * - Requires a `limit` option to filter amount of results. 
+   * - @param chain is optional and only for dev. reasons
+   */
+  async getNFTsOfCollection({ }, payload) {
+    const options = {
+      address: payload.token_address,
+      chain: payload.chain || 'eth',
+    };
+
+
+    try {
+      let NFTs = await Moralis.Web3API.token.getAllTokenIds(options);
+
+      // Sometimes NFT metadatas is missing on the Moralis side.
+      // We need to fetch manually in this case
+      for (let i = 0; i < NFTs.result.length; i++) {
+        if (!NFTs.result[i].metadata) {
+          let result = await axios.get(NFTs.result[i].token_uri)
+          NFTs.result[i].metadata = JSON.stringify(result.data)
+        }
+
+        NFTs.result[i].metadata = JSON.parse(NFTs.result[i].metadata)
+      }
+
+      return NFTs.result;
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  /**
+   * This method fetchs listed NFTs of a collection from our `Market Contract`.
+   * 
+   * - Requires a contract address. This address cannot be zero address 
+   * Returns
+   */
+  async getOnsaleNFTs({ }, payload) {
+    const { contractAddress } = payload
+
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect()
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const signerAddress = await signer.getAddress()
+
+    let marketContract = new ethers.Contract(
+      Secrets.MARKET_CONTRACT_ADDRESS,
+      MarketContract.abi,
+      signer
+    );
+
+    try {
+      const listedItems = await marketContract.getListedItemsOfContract(contractAddress)
+      console.log(listedItems)
+
+      return listedItems
+    } catch (error) {
+      console.log(error)
+      return false
+    }
+  },
+  /**
+   * This method gets item count, owner count, total volume, logo, banner, description of a collection
+   */
+  async getCollectionInformations({ }, payload) {
+    let collection = {}
+    let Collection = Moralis.Object.extend("Collection");
+    const query = new Moralis.Query(Collection);
+    query.equalTo("contractAddress", "0x028f91C7905E4c3181E8160Ea60784074D977Ae4");
+
+    let results = await query.find();
+    collection = { ...results[0].attributes }
+
+    return collection
+  },
 }
 
 export default {

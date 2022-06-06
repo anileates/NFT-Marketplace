@@ -37,11 +37,11 @@ export default {
   },
   methods: {
     ...mapActions({ acceptOffer: "acceptOffer" }),
-    async _acceptOffer(bidId) {
+    async _acceptOffer(bidId, price) {
       const nftContractAddress = this.$route.params.tokenAddress;
       const tokenId = this.$route.params.tokenId;
       
-      const res = await this.acceptOffer({ nftContractAddress, tokenId, bidId })
+      const res = await this.acceptOffer({ nftContractAddress, tokenId, bidId, price })
       if(res) {
         Toast.fire({
           icon: "success",
@@ -87,7 +87,7 @@ app-dropdown-card(:isCollapsible="true", :collapseByDefault="false")
           .col.col-from
             span {{ $filters.minimizeEthAddress(offer.bidder) }}
           .col.col-actions
-            button(@click="_acceptOffer(offer.bidId)" v-show="isOwner").accept-bid Accept
+            button(@click="_acceptOffer(offer.bidId, offer.price)" v-show="isOwner").accept-bid Accept
     .no-offer-body.flex__col.flex__ai-c.flex__jc-c(v-else)
       i.fa-solid.fa-money-check-dollar.fa-5x
       span No offers yet
