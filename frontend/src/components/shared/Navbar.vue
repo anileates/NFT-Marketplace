@@ -3,17 +3,23 @@ nav
   .navbar.padding-1x(:class="doublePadding")
     .navbar-left.flex__row.flex__ai-c.flex__jc-sa(v-show="!showSearchbox")
       router-link(to="/") LOGO IS HERE
-    
+
     transition(name="slide") 
       .navbar-middle.flex__row.flex__ai-c(v-if="!isMobile || showSearchbox")
         .searchbox-wrapper
           app-search-box
-      
+
     .navbar-items.flex__col.flex__jc-c(v-show="isLarge")
       ul.flex__row.flex__jc-sa
-        .list-item-wrapper
-          router-link(to="/create-new-item")
+        .list-item-wrapper(@mouseover="hovered = true" @mouseleave="hovered = false")
+          li
             a Create
+          .dropdown-menu(:class="{ visible: hovered }")
+            ul.flex__col.flex__jc-fs.flex__ai-fs
+              li
+                a(href="/create-new-item") Create Item
+              li
+                a(href="/create-collection") Create Collection
         .list-item-wrapper
           li(@click="login")
             a Sign In
@@ -23,7 +29,7 @@ nav
         .list-item-wrapper
           li
             a Profile
-        .list-item-wrapper
+        .list-item-wrapper.animated-border
           router-link(to="/settings", tag="li")
             a Settings
 
@@ -33,11 +39,12 @@ nav
       .mobile-search-icon-wrapper.flex__row.flex__jc-c.flex__ai-c(
         v-show="isMobile",
         @click="toggleSearchBox"
-        
       )
         i.fas.fa-search.fa-xl
-       
-      .hamburger-menu-button-wrapper.flex__row.flex__jc-c.flex__ai-c(v-show="!(isMobile && showSearchbox)")
+
+      .hamburger-menu-button-wrapper.flex__row.flex__jc-c.flex__ai-c(
+        v-show="!(isMobile && showSearchbox)"
+      )
         i.fa-solid.fa-bars.fa-xl
 </template>
 
@@ -57,6 +64,8 @@ export default {
       isMobile: null,
       isSmall: null,
       showSearchbox: false,
+      showMenu: false,
+      hovered: false
     };
   },
   methods: {
@@ -111,10 +120,10 @@ export default {
   computed: {
     doublePadding() {
       return {
-        doublePadding: this.isMobile && this.showSearchbox
-      }
-    }
-  }
+        doublePadding: this.isMobile && this.showSearchbox,
+      };
+    },
+  },
 };
 </script>
 
@@ -174,14 +183,54 @@ ul {
   user-select: none; /* Likely future */
 
   .list-item-wrapper {
-    padding: 1rem 0;
+    .dropdown-menu {
+      visibility: hidden;
+      background-color: #fff;
+      position: absolute;
+      color: black;
 
-    transition: 0.2s;
-    &:hover {
-      cursor: pointer;
-      border-bottom: 5px solid turquoise;
-      margin-top: -0.5rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+      border-radius: 5px;
+
+      margin-top: 1rem;
+      margin-left: -1rem;
+
+      ul {
+        li {
+          padding: 1.5rem 2rem;
+          width: 100%;
+          font-size: 1.5rem;
+
+          border-bottom: 1px solid rgb(229, 232, 235);
+
+          &:hover {
+            transition: .2s;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+            border-radius: 5px;
+          }
+        }
+
+        li:nth-child(2) {
+          border: 0;
+        }
+      }
     }
+
+    padding: 1rem 0;
+  }
+}
+
+.visible {
+  visibility: visible !important;
+}
+
+.animated-border {
+  transition: 0.2s;
+  &:hover {
+    cursor: pointer;
+    border-bottom: 5px solid turquoise;
+    margin-top: -0.5rem;
   }
 }
 
