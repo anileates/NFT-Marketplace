@@ -7,6 +7,11 @@ export default {
   components: {
     appFilter: Filter,
     appButtonWithCheckbox: ButtonWithCheckbox
+  },
+  methods: {
+    buynowClicked () {
+      this.$emit('buynowSelected')
+    }
   }
 }
 </script>
@@ -14,7 +19,7 @@ export default {
 <template lang="pug">
 appFilter(filterName="Status")
   template(v-slot:filter-content)
-    appButtonWithCheckbox.custom-font(buttonText="Buy Now")
+    appButtonWithCheckbox.custom-font(@click="buynowClicked" buttonText="Buy Now")
     appButtonWithCheckbox.custom-font(buttonText="On Auction (coming soon...)" disabled)
 </template>
 

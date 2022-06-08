@@ -58,17 +58,18 @@
           .filter-icon-wrapper(@click="toggleFilterBar")
             i.fa-solid.fa-bars.flex__row.flex__jc-c.flex__ai-c
         .border
-        appListingStatusFilter
-        appOrderByFilter
+        appListingStatusFilter(@buynowSelected="_buynowSelected")
+        appOrderByFilter(@orderSelected="sortNFTs")
     .cards-layout
-      .card(v-for="nft in nfts")
+      .card(v-for="nft in sortedNFTs")
         appNftCard(
+          v-if="(buynowSelected && nft.saleInfo) || !buynowSelected",
           :contractAddress="nft.token_address",
           :tokenId="nft.token_id",
           :name="nft.metadata.name || nft.name + ` #` + nft.token_id",
           :collectionName="nft.name",
           :imgUrl="nft.metadata.image",
-          :price="nft.saleInfo && nft.saleInfo.price"
+          :price="nft.saleInfo && parseInt(nft.saleInfo.price)"
         )
 </template>
 
@@ -95,6 +96,8 @@ export default {
       isMobile: null,
       collection: {},
       nfts: [],
+      buynowSelected: false,
+      sortType: "ASC"
     };
   },
   methods: {
@@ -117,6 +120,12 @@ export default {
     getPriceInEth(price) {
       return ethers.utils.formatUnits(price.toString(), "ether");
     },
+    _buynowSelected() {
+      this.buynowSelected = !this.buynowSelected;
+    },
+    sortNFTs(type) {
+      this.sortType = type;
+    },
   },
   computed: {
     getPreviewOfDescription() {
@@ -127,6 +136,25 @@ export default {
         .split(" ")
         .slice(10, this.collection.description.length)
         .join(" ");
+    },
+    /**
+     * Sort the NFTs by price 
+     */
+    sortedNFTs() {
+      // We need not to change the original `this.nfts` array. Otherwise there will be a bug
+      // So parse `this.nfts` into a new array
+      let _nfts = [...this.nfts]
+      
+      if(this.sortType == "ASC"){
+        return _nfts.sort((a, b) =>  {
+          if(a.saleInfo && b.saleInfo && b.saleInfo.price - a.saleInfo.price) return 1; 
+        })
+      } 
+      if(this.sortType == "DESC") {
+        return _nfts.sort((a, b) =>  {
+          if(a.saleInfo && b.saleInfo && b.saleInfo.price - a.saleInfo.price) return -1;
+        })
+      }
     },
   },
   async created() {
@@ -141,7 +169,7 @@ export default {
     this.collection.address = this.nfts[0].token_address;
 
     // Set page title
-    document.title = this.collection.name + " | Marketplace"
+    document.title = this.collection.name + " | Marketplace";
 
     // Fetch the nfts on sale on our MarketContract
     let res = await this.getOnsaleNFTs({
@@ -173,7 +201,7 @@ export default {
     }
 
     // Remove 0 prices to avoid a bug while finding minimum
-    prices = prices.filter(item => (item != 0 || item != 0.0));
+    prices = prices.filter((item) => item != 0 || item != 0.0);
 
     // Adjust the collection informations
     this.collection.floorPrice = Math.min(...prices);
