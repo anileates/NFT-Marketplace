@@ -52,13 +52,27 @@ const actions = {
     try {
       const added = await client.add(data);
       const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-
+      
       /* next connect to contract and mint the item */
-      let contract = new ethers.Contract(
-        Secrets.NFT_CONTRACT_ADDRESS,
-        NFTContract.abi,
-        signer
-      );
+      let contract;
+      if (payload.collectionAddress) {
+        // If a contractAddress has given, that means we need to use CustomNFT contract which.
+        // CustomNFT contracts belong to another user
+        // TODO CustomNFTcontract does not exist in this project folder. Add later
+        contract = new ethers.Contract(
+          payload.collectionAddress,
+          CustomNFTcontract.abi,
+          signer
+        );
+      } else {
+        // If a contract address has not given, that means user wants to create a single NFT on our platform.
+        // So we can mint directly at our contract
+        contract = new ethers.Contract(
+          Secrets.NFT_CONTRACT_ADDRESS,
+          NFTContract.abi,
+          signer
+        );
+      }
 
       let transaction = await contract.mintToken(url);
       let tx = await transaction.wait();
@@ -277,12 +291,12 @@ const actions = {
       let Collection = Moralis.Object.extend("Collection");
       const query = new Moralis.Query(Collection);
       query.equalTo("contractAddress", payload.nftContractAddress);
-  
+
       let results = await query.find();
       let collection = results[0]
-  
+
       let newVolume = parseInt(collection.attributes.volume) + payload.price
-  
+
       collection.set("volume", newVolume)
       await collection.save()
 
@@ -503,6 +517,8 @@ const actions = {
       for (let [key, value] of Object.entries(payload)) {
         newCollection.set(key, value)
       }
+
+      newCollection.set("creator", signerAddress)
 
       await newCollection.save()
       return true

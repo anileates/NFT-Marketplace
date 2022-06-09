@@ -45,6 +45,11 @@
             img.eth(src="../../ethereum.svg")
         p.key total volume
 
+      a(href="/create-new-item")
+        button.add-item-button 
+          i.fa-solid.fa-plus
+          span ADD ITEM
+
     .mobile-filter.flex__row.flex__jc-c.flex__ai-c(@click="toggleFilterBar")
       .wrapper 
         span Show Filters
@@ -97,7 +102,7 @@ export default {
       collection: {},
       nfts: [],
       buynowSelected: false,
-      sortType: "ASC"
+      sortType: "ASC",
     };
   },
   methods: {
@@ -138,22 +143,24 @@ export default {
         .join(" ");
     },
     /**
-     * Sort the NFTs by price 
+     * Sort the NFTs by price
      */
     sortedNFTs() {
       // We need not to change the original `this.nfts` array. Otherwise there will be a bug
       // So parse `this.nfts` into a new array
-      let _nfts = [...this.nfts]
-      
-      if(this.sortType == "ASC"){
-        return _nfts.sort((a, b) =>  {
-          if(a.saleInfo && b.saleInfo && b.saleInfo.price - a.saleInfo.price) return 1; 
-        })
-      } 
-      if(this.sortType == "DESC") {
-        return _nfts.sort((a, b) =>  {
-          if(a.saleInfo && b.saleInfo && b.saleInfo.price - a.saleInfo.price) return -1;
-        })
+      let _nfts = [...this.nfts];
+
+      if (this.sortType == "ASC") {
+        return _nfts.sort((a, b) => {
+          if (a.saleInfo && b.saleInfo && b.saleInfo.price - a.saleInfo.price)
+            return 1;
+        });
+      }
+      if (this.sortType == "DESC") {
+        return _nfts.sort((a, b) => {
+          if (a.saleInfo && b.saleInfo && b.saleInfo.price - a.saleInfo.price)
+            return -1;
+        });
       }
     },
   },
@@ -415,6 +422,51 @@ h1 {
 img.eth {
   width: 1.2rem;
   margin-left: 0.5rem;
+}
+
+.add-item-button {
+  background-color: transparent;
+
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+
+  padding: 1.2rem;
+  margin-left: 2rem;
+
+  transition: color 0.4s linear;
+  border: 2px solid black;
+
+  &:hover {
+    color: #fff;
+    border: 1px solid black;
+    cursor: pointer;
+  }
+
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: -1;
+    transition: transform 1s;
+    transform-origin: 0 0;
+    transition-timing-function: cubic-bezier(0.5, 1.6, 0.4, 0.7);
+
+    transform: scaleX(0);
+  }
+
+  &:hover::before {
+    transform: scaleX(1);
+  }
+
+  i {
+    margin-right: 1rem;
+  }
 }
 
 @keyframes slide-out {

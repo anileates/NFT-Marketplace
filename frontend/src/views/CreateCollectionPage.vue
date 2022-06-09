@@ -64,7 +64,7 @@ export default {
       this.collection.symbol = document.getElementById("symbol").value;
       this.collection.description = document.getElementById("description").value;
       this.collection.creatorEarning = parseInt(document.getElementById("creator-earning").value)
-
+      
       const res = await this.createCollection(this.collection)
       if (res) {
         Toast.fire({

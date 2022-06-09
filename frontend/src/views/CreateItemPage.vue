@@ -11,9 +11,18 @@
         .info.flex__col.flex__ai-fs.flex__jc-sa
           label Asset Description*
           appInputBox#assetDescription(placeholder="Asset Description")
-        //- .info.flex__col.flex__ai-fs.flex__jc-sa
-        //-   label Asset Price*
-        //-   appInputBox#assetPrice(placeholder="Asset Price")
+
+        .info.flex__col.flex__ai-fs.flex__jc-sa
+          label Collection*
+          select(id="collection" name="collection")
+            option(disabled selected) Please choose an collection
+            option(value="") New Collection
+            option(v-for="collection in getCollecionsOfUser" :value="collection") {{ collection }} 
+
+          label.hint 
+            span Choose which collection this item will be belong.
+            br
+            span Choose "New Collection" to create without a collection.
         button(@click="createNFT") Create Asset
 
       .image-section.flex__col.flex__ai-c.flex__jc-fs
@@ -26,9 +35,9 @@
 <script>
 import InputBox from "../components/shared/InputBox.vue";
 import Avatar from "../components/shared/Avatar.vue";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import { Toast } from "../SweetAlert";
-import router from "../router/index"
+import router from "../router/index";
 
 export default {
   name: "CreateItemPage",
@@ -62,6 +71,9 @@ export default {
       this.asset.description =
         document.getElementById("assetDescription").value;
 
+      this.asset.collectionAddress = document.getElementById('collection').value
+      console.log(this.asset.collectionAddress)
+
       if (!this.asset.name || !this.asset.description || !this.file) {
         return Toast.fire({
           icon: "error",
@@ -74,17 +86,21 @@ export default {
         file: this.file,
         name: this.asset.name,
         description: this.asset.description,
+        collectionAddress: this.asset.collectionAddress 
       });
 
       if (result) {
-         Toast.fire({
+        Toast.fire({
           icon: "success",
           title: "Congratz! You minted a stunning NFT 🎉",
         });
 
-        return await router.push('/')
+        return await router.push("/");
       }
     },
+  },
+  computed: {
+    ...mapGetters(["getCollecionsOfUser"]),
   },
 };
 </script>
@@ -110,8 +126,15 @@ label {
   margin-bottom: 0.5rem;
 }
 
+.hint {
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+
+  color: rgb(112, 122, 131);
+}
+
 .info {
-  height: 4rem;
+  // height: 4rem;
   margin-bottom: 1rem;
 
   input {
@@ -141,6 +164,16 @@ label {
     width: 20rem;
     border-radius: 5%;
   }
+}
+
+select {
+  width: 26rem;
+  border: 1px solid #c5c5c5;
+  border-radius: 0.5rem;
+
+  font-size: 1rem;
+  padding: 0.5rem;
+  outline: none;
 }
 
 button {
