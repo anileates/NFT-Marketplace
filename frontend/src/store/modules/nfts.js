@@ -52,7 +52,7 @@ const actions = {
     try {
       const added = await client.add(data);
       const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-      
+
       /* next connect to contract and mint the item */
       let contract;
       if (payload.collectionAddress) {
@@ -606,6 +606,36 @@ const actions = {
 
     return collection
   },
+  async getCollectionOwnerCount({ }, payload) {
+    const options = { address: payload.contractAddress, chain: "rinkeby" };
+    const res = await Moralis.Web3API.token.getNFTOwners(options);
+
+    let owners = []
+    for (let i = 0; i < res.result.length; i++) {
+      if (!owners.includes(res.result[i].owner_of)) owners.push(res.result[i].owner_of)
+    }
+
+    return owners
+  },
+  async getTokenCountOfCollection({ }, payload) {
+    const { nftContractAddress } = payload
+    console.log(nftContractAddress)
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    let nftContract = new ethers.Contract(
+      nftContractAddress,
+      ERC721.abi,
+      signer
+    );
+
+    const transferFilter = nftContract.filters.Transfer("0x0000000000000000000000000000000000000000", null, null)
+    const mints = await nftContract.queryFilter(transferFilter)
+
+    return mints.length
+  }
 }
 
 export default {

@@ -27,12 +27,10 @@
       .filter-icon-wrapper(@click="toggleFilterBar")
         i.fa-solid.fa-bars.flex__row.flex__jc-c.flex__ai-c.fa-xl
       .stat-box
-        p.value 8.9K
+        p.value {{ collection.itemCount }}
         p.key items
       .stat-box
-        p.value 3.2K
-          span
-            img.eth(src="../../ethereum.svg")
+        p.value {{ collection.owners.length }}
         p.key owners
       .stat-box
         p.value {{ collection.floorPrice }}
@@ -110,6 +108,8 @@ export default {
       getNFTsOfCollection: "getNFTsOfCollection",
       getOnsaleNFTs: "getOnsaleNFTs",
       getCollectionInformations: "getCollectionInformations",
+      getCollectionOwnerCount: "getCollectionOwnerCount",
+      getTokenCountOfCollection: "getTokenCountOfCollection"
     }),
     toggleDescription() {
       this.hidden = !this.hidden;
@@ -166,7 +166,6 @@ export default {
   },
   async created() {
     const nftContractAddress = this.$route.params.tokenAddress;
-    const tokenId = this.$route.params.tokenId;
 
     this.nfts = await this.getNFTsOfCollection({
       token_address: nftContractAddress,
@@ -214,6 +213,10 @@ export default {
     this.collection.floorPrice = Math.min(...prices);
     let offChainInfo = await this.getCollectionInformations();
     Object.assign(this.collection, offChainInfo);
+
+    // Get item count and owner count 
+    this.collection.owners = await this.getCollectionOwnerCount({ contractAddress: nftContractAddress })
+    this.collection.itemCount = await this.getTokenCountOfCollection({ nftContractAddress })
 
     if (screen.width <= 768) {
       this.isMobile = true;
