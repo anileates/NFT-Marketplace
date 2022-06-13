@@ -38,10 +38,10 @@ export default {
   methods: {
     ...mapActions({ acceptOffer: "acceptOffer" }),
     async _acceptOffer(bidId, price) {
-      const nftContractAddress = this.$route.params.tokenAddress;
+      const contractAddress = this.$route.params.tokenAddress;
       const tokenId = this.$route.params.tokenId;
       
-      const res = await this.acceptOffer({ nftContractAddress, tokenId, bidId, price })
+      const res = await this.acceptOffer({ contractAddress, tokenId, bidId, price })
       if(res) {
         Toast.fire({
           icon: "success",
@@ -107,9 +107,9 @@ a:visited {
 
 .header-wrapper {
   color: black;
-  font-size: 1rem;
+  font-size: 1.6rem;
   font-weight: 600;
-  letter-spacing: 0.03rem;
+  letter-spacing: 0.05rem;
 
   i {
     color: black;
@@ -117,8 +117,8 @@ a:visited {
 }
 
 .body-wrapper {
-  font-size: 0.875rem;
-  line-height: 1.3125rem;
+  font-size: 1.4rem;
+  line-height: 1.6rem;
 }
 
 #tableHeader {
@@ -136,7 +136,7 @@ a:visited {
   text-align: left;
 
   .row {
-    height: 4rem;
+    height: 6.4rem;
     border-bottom: 1px solid rgb(229, 232, 235);
   }
 
@@ -146,7 +146,7 @@ a:visited {
 }
 
 .wrapper {
-  padding: 0 1rem;
+  padding: 0 1.6rem;
 }
 
 .col {
@@ -159,37 +159,37 @@ a:visited {
 
 .col-price {
   width: 30%;
-  font-size: 1rem;
+  font-size: 1.6rem;
 
   img.weth {
-    width: 1rem;
-    margin-right: 1rem;
+    width: 1.6rem;
+    margin-right: 1.6rem;
   }
 
   span.amount {
     font-weight: 600;
-    margin-right: 0.3rem;
+    margin-right: 0.5rem;
   }
 }
 
 .col-from {
   width: 40%;
-  font-size: 1rem;
+  font-size: 1.6rem;
 }
 
 .col-actions {
   width: 30%;
-  font-size: 1rem;
+  font-size: 1.6rem;
 }
 
 button.accept-bid {
   background-color: #fff;
   border: 1px solid red;
 
-  height: 2.5rem;
+  height: 4rem;
   width: 40%;
 
-  border-radius: 0.3rem;
+  border-radius: 0.5rem;
   color: red;
 
   &:hover {
@@ -202,11 +202,11 @@ button.accept-bid {
 }
 
 .no-offer-body {
-  padding: 1rem;
+  padding: 1.6rem;
   color: #ccd1e4;
 
   i {
-    margin-bottom: 0.5rem
+    margin-bottom: 0.8rem
   }
 }
 </style>

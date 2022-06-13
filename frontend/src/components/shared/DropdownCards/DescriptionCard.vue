@@ -16,7 +16,6 @@ export default {
   }
 }
 
-// TODO add max-height for descripiton card and overflow auto
 </script>
 
 <template lang="pug">
@@ -34,7 +33,7 @@ app-dropdown-card(:isCollapsible="false")
 <style scoped lang="scss">
 .header-wrapper {
   color: black;
-  font-size: 1rem;
+  font-size: 1.6rem;
   font-weight: 600;
   letter-spacing: 0.03rem;
 
@@ -44,9 +43,9 @@ app-dropdown-card(:isCollapsible="false")
 }
 
 .body-wrapper {
-  font-size: 0.875rem;
-  padding: 1rem 2rem;
-  line-height: 1.3125rem;
+  font-size: 1.4rem;
+  padding: 1.6rem 3.2rem;
+  line-height: 2.1rem;
 }
 
 .creator {

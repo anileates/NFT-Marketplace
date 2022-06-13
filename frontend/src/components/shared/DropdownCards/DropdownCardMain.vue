@@ -43,19 +43,20 @@ export default {
 <style lang="scss">
 .dropdown-card {
   width: 100%;
-  min-width: 28rem;
-  border-radius: 1rem;
+  // min-width: 28rem;
+  font-size: 1.6rem;
+  border-radius: 1.6rem;
   border: 2px solid rgb(229, 232, 235);
   transition: height 5s;
 
   .header {
     width: 100%;
     height: 28%;
-    min-height: 4rem;
-    padding: 0 1rem;
+
+    padding: 1em 1em;
 
     i {
-      margin-right: 0.5rem;
+      margin-right: 1rem;
       color: rgb(112, 122, 131);
     }
   }

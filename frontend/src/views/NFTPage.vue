@@ -9,7 +9,7 @@ import SellAsset from "../components/SellAsset.vue";
 import PurchaseAsset from "../components/PurchaseAsset.vue";
 import MakeOffer from "../components/MakeOffer.vue";
 import OffersCard from "../components/shared/DropdownCards/OffersCard.vue";
-import ActivityCard from "../components/shared/DropdownCards/ActivityCard.vue"
+import ActivityCard from "../components/shared/DropdownCards/ActivityCard.vue";
 
 import { mapActions, mapGetters } from "vuex";
 import { Toast } from "../SweetAlert";
@@ -30,7 +30,7 @@ export default {
     appPurchaseAsset: PurchaseAsset,
     appMakeOffer: MakeOffer,
     appOffersCard: OffersCard,
-    appActivityCard: ActivityCard
+    appActivityCard: ActivityCard,
   },
   data() {
     return {
@@ -43,7 +43,7 @@ export default {
         saleInfo: {},
       },
       offers: [],
-      itemActivity: {}
+      itemActivity: {},
     };
   },
   computed: {
@@ -52,7 +52,7 @@ export default {
       return `/collections/${this.nft.token_address}`;
     },
     getProfileRedirectUrl() {
-      return `/users/${this.nft.owner_of}`;
+      return `/users/${this.nft.owner}`;
     },
     isForSale() {
       if (this.nft.saleInfo) return true;
@@ -60,25 +60,25 @@ export default {
     },
     getOwner() {
       if (!this.isForSale) {
-        return this.nft.owner_of;
+        return this.nft.owner;
       } else {
         return this.nft.saleInfo.ownerAdd;
       }
     },
     getPriceInEth() {
-      if (this.nft.saleInfo) {
+      if (this.nft.saleInfo.price) {
         return ethers.utils.formatUnits(
           this.nft.saleInfo.price.toString(),
           "ether"
         );
       } else {
-        return null;
+        return "--";
       }
     },
     isOwner() {
       if (
         !this.isForSale &&
-        this.nft.owner_of.toLowerCase() ==
+        this.nft.owner.toLowerCase() ==
           this.getCurrentUser.ethAddress.toLowerCase()
       ) {
         return true;
@@ -109,9 +109,9 @@ export default {
         if (this.getFormattedOffers[i].bidder.toLowerCase() == ethAddress);
       }
     },
-    getFormattedOffers () {
+    getFormattedOffers() {
       // Make the result human readable
-      const res = this.offers
+      const res = this.offers;
       let formattedResOfOffers = [];
       for (let i = 0; i < res.length; i++) {
         let _item = {};
@@ -123,7 +123,7 @@ export default {
         formattedResOfOffers.push(_item);
       }
 
-      return formattedResOfOffers
+      return formattedResOfOffers;
     },
   },
   methods: {
@@ -134,7 +134,7 @@ export default {
       cancelListing: "cancelListing",
       getOffersOfToken: "getOffersOfToken",
       cancelOffer: "cancelOffer",
-      getItemActivity: "getItemActivity"
+      getItemActivity: "getItemActivity",
     }),
     async putOnSale() {
       this.toggleSellWindow();
@@ -189,25 +189,29 @@ export default {
     },
   },
   async created() {
-    // Fetched the nft metadata at the beforeEnter route. Just assign to local state here.
-    this.nft = this.$route.params.nft;
-    this.nft.metadata = JSON.parse(this.$route.params.nft.metadata);
-
-    const nftContractAddress = this.$route.params.tokenAddress;
+    const contractAddress = this.$route.params.tokenAddress;
     const tokenId = this.$route.params.tokenId;
 
+    this.nft = await this.fetchNFT({
+      contractAddress,
+      tokenId,
+    });
+
     this.nft.saleInfo = await this.getListedItem({
-      nftContractAddress,
-      tokenId
+      contractAddress,
+      tokenId,
     });
 
     // Get offers for this NFT
     this.offers = await this.getOffersOfToken({
-      nftContractAddress,
+      contractAddress,
       tokenId,
     });
 
-    this.itemActivity = await this.getItemActivity({ nftContractAddress, tokenId })
+    this.itemActivity = await this.getItemActivity({
+      contractAddress,
+      tokenId,
+    });
 
     this.isLoading = false;
   },
@@ -230,7 +234,7 @@ export default {
    <appMakeOffer id="appMakeOffer" :nft="this.nft" @closed="toggleMakeOfferWindow"/>
   </div>
 
-    <div v-if="!isLoading && isOwner" class="sell-cancel-bar flex__row flex__jc-c" style="">
+    <div v-if="!isLoading && isOwner" class="padding sell-cancel-bar flex__row flex__jc-c" style="">
       <div class="inner" style="">
         <div class="btn-wrapper flex__row flex__jc-sb" >
           <app-custom-button buttonText="Cancel Listing" @click="cancelSale" :disableButton="!isForSale"/>
@@ -242,33 +246,36 @@ export default {
       </div>
     </div>
 
-    <div v-if="!isLoading" class="center-box flex__row flex__jc-sb">
+    <div class="padding">
+    <div v-if="!isLoading" class="center-box flex__row flex__jc-c">
       <div class="left-box flex__col flex__ai-c flex__jc-sb">
         <div class="image-wrapper"><img style="width: 100%; height: 100%; object-fit: contain"
                                         :src="this.nft.metadata.image"/></div>
         <div class="detailed-information-section" style="margin-top: 1rem">
           <app-description-card :description="nft.metadata.description" />
           <app-details-card :nft="this.nft" />
-          <app-traits-card :attributes="nft.metadata.attributes" />
+          <app-traits-card :attributes="nft.attributes" />
         </div>
       </div>
+      
       <div class="right-box">
         <div class="info-preview flex__col flex__ai-sb flex__jc-sa">
           <div class="first-line flex__row flex__ai-c flex__jc-sb"><a :href="getCollectionRedirectUrl">{{
-              nft.name
+              nft.metadata.name
             }}</a>
             <div class="actions">
               <button><i class="fas fa-redo-alt fa-lg"></i></button>
               <button><i class="fas fa-share-alt fa-lg"></i></button>
             </div>
           </div>
-
+  
           <h1>{{ nft.metadata.name }}</h1>
           <div class="third-line"><span>Owned by</span><a class="owner-of" :href="getProfileRedirectUrl">{{
               getOwner
             }}</a></div>
         </div>
-        <div class="sale-information">
+
+        <!-- <div class="sale-information">
           <app-sale-card
           :isForSale="isForSale"
           :price="getPriceInEth"
@@ -278,7 +285,7 @@ export default {
           :disablePurchaseButton="!isForSale || isOwner"
           :disableOfferButton="isOwner"
           :hasOffered="hasOffered" />
-        </div>
+        </div> -->
 
         <div class="offers-card">
           <appOffersCard :offers="getFormattedOffers" :isOwner="isOwner" />
@@ -286,26 +293,34 @@ export default {
       </div>
     </div>
 
-    <div class="activity" style="width: 80%">
-      <appActivityCard :activity="itemActivity" />
+
     </div>
+
+    <!-- <div class="activity" style="width: 80%">
+      <appActivityCard :activity="itemActivity" />
+    </div> -->
   </div>
 </template>
 
 <style scoped lang="scss">
 .nft-page-container {
-  width: 100%;
+  // background-color: gray;
+  // width: 100%;
   margin-bottom: 5rem;
+  min-width: 73rem;
+
 }
 
 .sell-cancel-bar {
   width: 100%;
-  height: 4.2rem;
+  // height: 4.2rem;
   background-color: aliceblue;
 
   .inner {
-    width: 82%;
-    height: 100%;
+    width: 131rem;
+    // background-color: green;
+    // height: 100%;
+
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -313,37 +328,51 @@ export default {
   }
 
   .btn-wrapper {
-    width: 10rem;
-    height: 3rem;
-    margin-right: 0.5rem;
+    width: 16rem;
+    height: 4.5rem;
+
+    &:nth-child(1) {
+      margin-right: 0.5rem;
+    }
+    // margin-right: 0.5rem;
+    margin: 0.8rem 0;
   }
 }
 
-.center-box-wrapper {
+// .center-box-wrapper {
+//   background-color: green;
+//   width: 100%;
+//   height: 100%;
+// }
+
+.padding {
+  // background-color: orange;
   width: 100%;
-  height: 100%;
+  padding: 0 10rem;
 }
 
 .center-box {
-  width: 82%;
+  // background-color: gray;
+  // width: 130rem;
   // height: 100%;
   padding-top: 2rem;
 
   .left-box {
-    //background-color: green;
-    width: 42%;
+    // background-color: green;
+    width: 50rem;
     height: 100%;
 
     .image-wrapper {
-      //background-color: orange;
+      // background-color: orange;  
+      // height: 34.5rem;
       width: 100%;
-      height: 34.5rem;
       border-radius: 0.6rem;
     }
 
     .detailed-information-section {
+      // background-color: greenyellow;
       width: 100%;
-      height: 30.3125rem;
+      height: 48.5rem;
 
       & > .dropdown-card {
         border-radius: 0;
@@ -363,22 +392,26 @@ export default {
   }
 
   .right-box {
-    width: 58%;
+    // background: green;
+    width: 80rem;
     height: 100%;
-    padding-left: 1rem;
+    margin-left: 1.6rem;
 
     .info-preview {
       width: 100%;
-      height: 10rem;
+      height: 12rem;
       padding: 0 0 1rem 0;
 
       h1 {
-        font-size: 1.875rem;
+        font-size: 3rem;
         color: rgb(53, 56, 64);
       }
 
+      .first-line {
+        font-size: 1.6rem;
+      }
       .third-line {
-        font-size: 0.90625rem;
+        font-size: 1.5rem;
         color: rgb(112, 122, 131);
         line-height: 1.5;
         margin-top: 1rem;
@@ -387,7 +420,7 @@ export default {
 
     .sale-information {
       width: 100%;
-      height: 15rem;
+      height: 24rem;
     }
   }
 }
@@ -424,7 +457,7 @@ a {
     }
 
     i {
-      margin: 1rem;
+      margin: 1.6rem;
     }
   }
 }
@@ -452,7 +485,7 @@ a {
   right: 50%;
   transform: translate(50%, -50%);
 
-  height: 25rem;
+  height: 40rem;
   width: 40%;
 }
 
@@ -463,7 +496,7 @@ a {
   right: 50%;
   transform: translate(50%, -50%);
 
-  height: 25rem;
+  height: 40rem;
   width: 40%;
 }
 
@@ -474,7 +507,7 @@ a {
   right: 50%;
   transform: translate(50%, -50%);
 
-  height: 25rem;
+  height: 40rem;
   width: 40%;
 }
 

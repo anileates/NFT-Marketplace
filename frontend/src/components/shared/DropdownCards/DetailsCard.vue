@@ -32,7 +32,7 @@ app-dropdown-card(:isCollapsible="true", :collapseByDefault="true")
     .body-wrapper.flex__col.flex__ai-fs
       .token-info-line
         p.title Contract Address
-        a.value(:href="getContractEtherScanAddress") {{ $filters.minimizeEthAddress(this.nft.token_address) }}
+        a.value(:href="getContractEtherScanAddress") {{ $filters.minimizeEthAddress(this.nft.token_address || this.nft.contractAddress) }}
       .token-info-line
         p.title Token ID
         p.value {{ this.nft.token_id }}
@@ -58,7 +58,7 @@ a:visited {
 
 .header-wrapper {
   color: black;
-  font-size: 1rem;
+  font-size: 1.6rem;
   font-weight: 600;
   letter-spacing: 0.03rem;
 
@@ -68,13 +68,13 @@ a:visited {
 }
 
 .body-wrapper {
-  font-size: 0.875rem;
-  padding: 1rem 2rem;
-  line-height: 1.3125rem;
+  font-size: 1.4rem;
+  padding: 1.6rem 3.2rem;
+  line-height: 2.1rem;
 }
 
 .creator {
-  font-size: 1rem;
+  font-size: 1.6rem;
   color: rgb(138, 147, 155);
 }
 
@@ -84,17 +84,17 @@ a:visited {
   justify-content: space-between;
 
   width: 100%;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 
   .title {
-    font-size: 0.9375rem;
+    font-size: 1.5rem;
     color: rgb(53, 56, 64);
-    line-height: 1.40625rem;
+    line-height: 2.25rem;
   }
 
   .value {
-    font-size: 0.9375rem;
-    line-height: 1.3125rem;
+    font-size: 1.5rem;
+    line-height: 2.1rem;
     font-weight: 500;
     color: rgb(112, 122, 131);
   }

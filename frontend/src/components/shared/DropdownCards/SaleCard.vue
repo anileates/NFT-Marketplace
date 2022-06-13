@@ -94,9 +94,9 @@ app-dropdown-card(:collapseByDefault="false")
 .body-wrapper {
   width: 100%;
   height: 100%;
-  min-height: 10rem;
+  min-height: 1.6rem;
 
-  padding: 0 1rem;
+  padding: 0 1.6rem;
 }
 
 .header-wrapper > * {
@@ -107,38 +107,38 @@ app-dropdown-card(:collapseByDefault="false")
   p {
     color: rgb(112, 122, 131);
 
-    font-size: 0.9025rem;
-    line-height: 1.3rem;
-    margin-bottom: -1rem;
+    font-size: 14.5rem;
+    line-height: 2rem;
+    margin-bottom: -1.6rem;
   }
 }
 
 .price-wrapper {
-  margin-top: -1rem;
+  margin-top: -1.6rem;
 
   img {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.6rem;
+    height: 1.6rem;
   }
 
   .eth-price {
     color: rgb(53, 56, 64);
 
-    font-size: 1.875rem;
+    font-size: 3rem;
     font-weight: 600;
-    line-height: 2.8125rem;
+    line-height: 3rem;
 
-    margin-left: 0.5625rem;
+    margin-left: 1rem;
   }
 
   .fiat-equivalent-wrapper {
     color: rgb(112, 122, 131);
-    font-size: 0.9375rem;
+    font-size: 1.5rem;
     font-weight: 400;
-    line-height: 1.40625rem;
+    line-height: 2.25rem;
 
-    margin-top: 0.625rem;
-    margin-left: 0.5rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
   }
 }
 
@@ -147,10 +147,10 @@ app-dropdown-card(:collapseByDefault="false")
 }
 
 .btn-wrapper {
-  width: 13.125rem;
-  height: 3rem;
+  width: 3rem;
+  height: 4.8rem;
 
-  margin-right: 0.5rem;
-  margin-top: -1rem;
+  margin-right: 1rem;
+  margin-top: -1.6rem;
 }
 </style>

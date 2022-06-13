@@ -131,32 +131,31 @@ a:visited {
 }
 
 .body-wrapper {
-  font-size: 0.875rem;
-  line-height: 1.3125rem;
+  font-size: 1.4rem;
+  line-height: 2.1rem;
 }
 
 #tableHeader {
   width: 100%;
   height: 100%;
   background-color: #fff;
-  font-size: 1rem;
+  font-size: 1.6rem;
 
   border-bottom: 1px solid rgb(229, 232, 235);
   text-align: left;
 
   .wrapper {
-    padding: 0 1rem;
+    padding: 0 1.6rem;
   }
 }
 
 #tableBody {
   width: 100%;
-  /* height: 100%; */
   text-align: left;
 
   .row {
-    height: 4rem;
-    padding: 0 1rem;
+    height: 6.4rem;
+    padding: 0 1.6rem;
     border-bottom: 1px solid rgb(229, 232, 235);
   }
 
@@ -171,7 +170,7 @@ a:visited {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  font-size: 1rem;
+  font-size: 1.6rem;
 
   &-1x {
     @extend .col;
@@ -206,25 +205,16 @@ img.weth {
 
 span.amount {
   font-weight: 600;
-  margin-right: 0.3rem;
-  font-size: 1rem;
+  margin-right: 4.8rem;
+  font-size: 1.6rem;
 }
 
 .no-offer-body {
-  padding: 1rem;
+  padding: 1.6rem;
   color: #ccd1e4;
 
   i {
-    margin-bottom: 0.5rem
+    margin-bottom: 0.8rem
   }
 }
-
-// .no-offer-body {
-//   padding: 1rem;
-//   color: #ccd1e4;
-//
-//   i {
-//     margin-bottom: 0.5rem
-//   }
-// }
 </style>

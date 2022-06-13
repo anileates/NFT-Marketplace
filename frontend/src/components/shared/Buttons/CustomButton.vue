@@ -34,7 +34,7 @@ button(:class="{ disable: disableButton }" @click="$emit('buttonClicked')")
 button {
   height: 100%;
   width: 100%;
-  font-size: 1rem;
+  font-size: 1.6rem;
   font-weight: 600;
   letter-spacing: 0.06rem;
 
