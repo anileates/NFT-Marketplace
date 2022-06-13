@@ -1,7 +1,8 @@
 import Secrets from "../../../../secrets.json";
 import MarketContract from "../../../Contracts/Market.json";
-import NFTContract from "../../../Contracts/CustomNFT.json";
+import NFTContract from "../../../Contracts/MyNFT.json";
 import CollectionFactory from "../../../Contracts/CollectionFactory.json";
+import CustomNFT from "../../../Contracts/CustomNFT.json";
 import ERC721 from "../../../Contracts/ERC721.json";
 import ERC20 from '../../../Contracts/ERC20.json';
 import { ethers } from "ethers";
@@ -56,12 +57,11 @@ const actions = {
       /* next connect to contract and mint the item */
       let contract;
       if (payload.collectionAddress) {
-        // If a contractAddress has given, that means we need to use CustomNFT contract which.
+        // If a contractAddress has given, that means we need to use CustomNFT contract
         // CustomNFT contracts belong to another user
-        // TODO CustomNFTcontract does not exist in this project folder. Add later
         contract = new ethers.Contract(
           payload.collectionAddress,
-          CustomNFTcontract.abi,
+          CustomNFT.abi,
           signer
         );
       } else {
@@ -197,24 +197,48 @@ const actions = {
     }
   },
   async fetchNFT({ }, payload) {
-    const options = {
-      address: payload.token_address,
-      token_id: payload.token_id,
-      chain: payload.chain || 'eth'
-    };
+    console.log(payload)
+    const { contractAddress, tokenId } = payload
 
-    let tokenData = await Moralis.Web3API.token.getTokenIdMetadata(options);
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    let nftContract = new ethers.Contract(
+      contractAddress,
+      ERC721.abi,
+      signer
+    );
 
     try {
-      if (!tokenData.metadata) {
-        let result = await axios.get(tokenData.token_uri)
-        tokenData.metadata = JSON.stringify(result.data)
-      }
+      const tokenUri = await nftContract.tokenURI(tokenId);
+      const owner = await nftContract.ownerOf(tokenId);
+      const metadata = await axios.get(tokenUri);
 
-      return tokenData;
+      return { metadata: metadata.data, owner, contractAddress };
     } catch (error) {
-      console.log(error)
+
     }
+
+    // const options = {
+    //   address: payload.token_address,
+    //   token_id: payload.token_id,
+    //   chain: payload.chain || 'eth'
+    // };
+
+    // let tokenData = await Moralis.Web3API.token.getTokenIdMetadata(options);
+
+    // try {
+    //   if (!tokenData.metadata) {
+    //     let result = await axios.get(tokenData.token_uri)
+    //     tokenData.metadata = JSON.stringify(result.data)
+    //   }
+
+    //   return tokenData;
+    // } catch (error) {
+    //   console.log(error)
+    // }
   },
   async makeOffer({ }, payload) {
     const web3Modal = new Web3Modal();
@@ -271,7 +295,7 @@ const actions = {
       signer
     );
 
-    let nftContract = new ethers.Contract(payload.nftContractAddress, ERC721.abi, signer);
+    let nftContract = new ethers.Contract(payload.contractAddress, ERC721.abi, signer);
 
     try {
       // Check if MarketContract is approved. If not, approve the contract.
@@ -290,7 +314,7 @@ const actions = {
       // Update volume data in Moralis DB
       let Collection = Moralis.Object.extend("Collection");
       const query = new Moralis.Query(Collection);
-      query.equalTo("contractAddress", payload.nftContractAddress);
+      query.equalTo("contractAddress", payload.contractAddress);
 
       let results = await query.find();
       let collection = results[0]
@@ -376,7 +400,7 @@ const actions = {
     return item2;
   },
   async getListedItem({ }, payload) {
-    const { nftContractAddress, tokenId } = payload
+    const { contractAddress, tokenId } = payload
 
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
@@ -391,7 +415,7 @@ const actions = {
 
     let item;
     try {
-      item = await marketContract._getListedItem(nftContractAddress, tokenId)
+      item = await marketContract._getListedItem(contractAddress, tokenId)
       return item
     } catch (error) {
       if (error.message.includes('Listing not found')) {
@@ -402,7 +426,7 @@ const actions = {
     }
   },
   async getTransfersOfToken({ }, payload) {
-    const { nftContractAddress, tokenId } = payload
+    const { contractAddress, tokenId } = payload
 
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
@@ -410,7 +434,7 @@ const actions = {
     const signer = provider.getSigner();
 
     let nftContract = new ethers.Contract(
-      nftContractAddress,
+      contractAddress,
       ERC721.abi,
       signer
     );
@@ -421,7 +445,7 @@ const actions = {
     return transfers
   },
   async getListingsOfToken({ }, payload) {
-    const { nftContractAddress, tokenId } = payload
+    const { contractAddress, tokenId } = payload
 
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
@@ -434,13 +458,13 @@ const actions = {
       signer
     );
 
-    const listingFilter = marketContract.filters.ListingCreated(null, null, nftContractAddress, parseInt(tokenId))
+    const listingFilter = marketContract.filters.ListingCreated(null, null, contractAddress, parseInt(tokenId))
     const listings = await marketContract.queryFilter(listingFilter)
 
     return listings
   },
   async getSalesOfToken({ }, payload) {
-    const { nftContractAddress, tokenId } = payload
+    const { contractAddress, tokenId } = payload
 
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
@@ -453,13 +477,13 @@ const actions = {
       signer
     );
 
-    const saleFilter = marketContract.filters.ItemSold(null, null, null, nftContractAddress, parseInt(tokenId), null)
+    const saleFilter = marketContract.filters.ItemSold(null, null, null, contractAddress, parseInt(tokenId), null)
     const sales = await marketContract.queryFilter(saleFilter)
 
     return sales
   },
   async getOffersOfToken({ }, payload) {
-    const { nftContractAddress, tokenId } = payload
+    const { contractAddress, tokenId } = payload
 
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
@@ -472,18 +496,18 @@ const actions = {
       signer
     );
 
-    const offersFilter = marketContract.filters.BidPlaced(null, null, nftContractAddress, parseInt(tokenId))
+    const offersFilter = marketContract.filters.BidPlaced(null, null, contractAddress, parseInt(tokenId))
     const offers = await marketContract.queryFilter(offersFilter)
 
     return offers
   },
   async getItemActivity({ dispatch }, payload) {
-    const { nftContractAddress, tokenId } = payload
+    const { contractAddress, tokenId } = payload
 
-    const transfers = await dispatch('getTransfersOfToken', { nftContractAddress, tokenId: parseInt(tokenId) })
-    const listings = await dispatch('getListingsOfToken', { nftContractAddress, tokenId: parseInt(tokenId) })
-    const sales = await dispatch('getSalesOfToken', { nftContractAddress, tokenId: parseInt(tokenId) })
-    const offers = await dispatch('getOffersOfToken', { nftContractAddress, tokenId: parseInt(tokenId) })
+    const transfers = await dispatch('getTransfersOfToken', { contractAddress, tokenId: parseInt(tokenId) })
+    const listings = await dispatch('getListingsOfToken', { contractAddress, tokenId: parseInt(tokenId) })
+    const sales = await dispatch('getSalesOfToken', { contractAddress, tokenId: parseInt(tokenId) })
+    const offers = await dispatch('getOffersOfToken', { contractAddress, tokenId: parseInt(tokenId) })
 
     const res = { listings, offers, sales, transfers }
     return res
@@ -520,6 +544,13 @@ const actions = {
 
       newCollection.set("creator", signerAddress)
 
+      let user = Moralis.User.current();
+      let userCollections = user.attributes.collections;
+      userCollections.push(payload.contractAddress)
+
+      user.set("collections", userCollections)
+      await user.save()
+
       await newCollection.save()
       return true
     } catch (error) {
@@ -540,7 +571,6 @@ const actions = {
       address: payload.token_address,
       chain: payload.chain || 'eth',
     };
-
 
     try {
       let NFTs = await Moralis.Web3API.token.getAllTokenIds(options);
@@ -567,7 +597,7 @@ const actions = {
    * - Requires a contract address. This address cannot be zero address 
    * Returns
    */
-  async getOnsaleNFTs({ }, payload) {
+  async fetchOnsaleNFTs({ }, payload) {
     const { contractAddress } = payload
 
     const web3Modal = new Web3Modal();
@@ -584,7 +614,6 @@ const actions = {
 
     try {
       const listedItems = await marketContract.getListedItemsOfContract(contractAddress)
-      console.log(listedItems)
 
       return listedItems
     } catch (error) {
@@ -599,7 +628,7 @@ const actions = {
     let collection = {}
     let Collection = Moralis.Object.extend("Collection");
     const query = new Moralis.Query(Collection);
-    query.equalTo("contractAddress", "0x028f91C7905E4c3181E8160Ea60784074D977Ae4");
+    query.equalTo("contractAddress", payload.contractAddress);
 
     let results = await query.find();
     collection = { ...results[0].attributes }
@@ -618,15 +647,14 @@ const actions = {
     return owners
   },
   async getTokenCountOfCollection({ }, payload) {
-    const { nftContractAddress } = payload
-    console.log(nftContractAddress)
+    const { contractAddress } = payload
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
     const signer = provider.getSigner();
 
     let nftContract = new ethers.Contract(
-      nftContractAddress,
+      contractAddress,
       ERC721.abi,
       signer
     );
@@ -635,6 +663,97 @@ const actions = {
     const mints = await nftContract.queryFilter(transferFilter)
 
     return mints.length
+  },
+  /**
+   * This is just a test method 
+   */
+  async getOwnerCountOfCollection({ }, payload) {
+    const { contractAddress } = payload
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    let nftContract = new ethers.Contract(
+      contractAddress,
+      ERC721.abi,
+      signer
+    );
+
+    const transferFilter = nftContract.filters.Transfer("0x0000000000000000000000000000000000000000", null, null)
+    const tokens = await nftContract.queryFilter(transferFilter)
+    const tokenCount = tokens.length;
+
+    // Iterate over tokens and store owner addresses in an array
+    let owners = []
+    for (let i = 0; i < tokenCount; i++) {
+      // First, find the all transfers of the token 
+      // from null` to `null` so we get all the transfers of `tokenId` 
+      const transferFilter = nftContract.filters.Transfer(null, null, parseInt(tokens[i].args.tokenId))
+      const tokenTransfers = await nftContract.queryFilter(transferFilter)
+
+      // `args.to` of the last element gives the current owner of issued token
+      let lastTransfer = tokenTransfers[tokenTransfers.length - 1]
+      let currentOwner = lastTransfer.args.to
+
+      // If the address already found before, don't add it...
+      if (!owners.includes(currentOwner)) {
+        owners.push(currentOwner)
+      }
+    }
+
+    return owners.length
+  },
+  /**
+   * TEST FUNCTION
+   */
+  async getTokenUrl({ }, payload) {
+    const { contractAddress } = payload
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    let nftContract = new ethers.Contract(
+      contractAddress,
+      ERC721.abi,
+      signer
+    );
+
+    const res = await nftContract.tokenURI(2)
+  },
+  async fetchAllTokens({ }, payload) {
+    const { contractAddress } = payload
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    let nftContract = new ethers.Contract(
+      contractAddress,
+      ERC721.abi,
+      signer
+    );
+
+    // First find the mint count which is equalt to token count in case issued collection is not burnable
+    const transferFilter = nftContract.filters.Transfer("0x0000000000000000000000000000000000000000", null, null)
+    const tokens = await nftContract.queryFilter(transferFilter)
+    const tokenCount = tokens.length;
+
+    // Iterate over tokens and store URIs in an array
+    let metadatas = []
+    for (let i = 0; i < tokenCount; i++) {
+      const tokenUri = await nftContract.tokenURI(i + 1);
+      const metadata = await axios.get(tokenUri);
+
+      let token = {};
+      token.tokenId = i + 1;
+      Object.assign(token, metadata.data)
+
+      metadatas.push(token)
+    }
+
+    return metadatas
   }
 }
 

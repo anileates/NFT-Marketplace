@@ -9,7 +9,7 @@
     h1 {{ collection.name }}
     .creator
       span By&nbsp;
-      span.creator-address {{ collection.address }}
+      span.creator-address {{ collection.creator }}
 
     p.description {{ getPreviewOfDescription }}
       span(v-show="hidden") ...
@@ -27,10 +27,10 @@
       .filter-icon-wrapper(@click="toggleFilterBar")
         i.fa-solid.fa-bars.flex__row.flex__jc-c.flex__ai-c.fa-xl
       .stat-box
-        p.value {{ collection.itemCount }}
+        p.value {{ collection.tokenCount }}
         p.key items
       .stat-box
-        p.value {{ collection.owners.length }}
+        p.value {{ collection.ownerCount }}
         p.key owners
       .stat-box
         p.value {{ collection.floorPrice }}
@@ -69,9 +69,9 @@
           v-if="(buynowSelected && nft.saleInfo) || !buynowSelected",
           :contractAddress="nft.token_address",
           :tokenId="nft.token_id",
-          :name="nft.metadata.name || nft.name + ` #` + nft.token_id",
+          :name="nft.name + ` #` + nft.tokenId",
           :collectionName="nft.name",
-          :imgUrl="nft.metadata.image",
+          :imgUrl="nft.image",
           :price="nft.saleInfo && parseInt(nft.saleInfo.price)"
         )
 </template>
@@ -105,11 +105,11 @@ export default {
   },
   methods: {
     ...mapActions({
-      getNFTsOfCollection: "getNFTsOfCollection",
-      getOnsaleNFTs: "getOnsaleNFTs",
       getCollectionInformations: "getCollectionInformations",
-      getCollectionOwnerCount: "getCollectionOwnerCount",
-      getTokenCountOfCollection: "getTokenCountOfCollection"
+      getOwnerCountOfCollection: "getOwnerCountOfCollection",
+      getTokenCountOfCollection: "getTokenCountOfCollection",
+      fetchAllTokens: "fetchAllTokens",
+      fetchOnsaleNFTs: "fetchOnsaleNFTs",
     }),
     toggleDescription() {
       this.hidden = !this.hidden;
@@ -130,6 +130,59 @@ export default {
     },
     sortNFTs(type) {
       this.sortType = type;
+    },
+    setPageTitle() {
+      document.title = this.collection.name + " | Marketplace";
+    },
+    /**
+     * This method get the sale information of the listed items
+     * And format their data as human-readeble
+     * Then finds the nft in `nfts` array and append sale informations.
+     */
+    async getOnSaleNFTs(contractAddress) {
+      let listedItems = await this.fetchOnsaleNFTs({ contractAddress });
+
+      // This `prices` array will be used to find the floor price
+      let prices = [];
+      // Iterate & format the data
+      for (let item in listedItems) {
+        let formattedItem = {};
+
+        formattedItem.listingId = parseInt(item.listingId);
+        formattedItem.tokenId = parseInt(item.tokenId);
+        formattedItem.contractAddress = item.contractAddress;
+        formattedItem.ownerAddress = item.ownerAdd;
+        formattedItem.price = this.getPriceInEth(item.price.toString());
+
+        if (item.price.toString() != 0 && item.price.toString() != 0.0)
+          prices.push(this.getPriceInEth(item.price.toString()));
+
+        // Find the nft in the nfts array and append the on-chain data to the nft
+        for (let nft in this.nfts) {
+          if (nft.tokenId == formattedItem.tokenId) {
+            nft.saleInfo = {};
+            Object.assign(nft.saleInfo, formattedItem);
+          }
+        }
+      }
+
+      this.findFloorPrice(prices);
+    },
+    findFloorPrice(prices) {
+      this.collection.floorPrice = Math.min(...prices);
+    },
+    async getCollecitonOffChainInfos(contractAddress) {
+      this.collection = await this.getCollectionInformations({
+        contractAddress,
+      });
+    },
+    async getTokenAndOwnerCount(contractAddress) {
+      this.collection.tokenCount = await this.getTokenCountOfCollection({
+        contractAddress,
+      });
+      this.collection.ownerCount = await this.getOwnerCountOfCollection({
+        contractAddress,
+      });
     },
   },
   computed: {
@@ -165,67 +218,22 @@ export default {
     },
   },
   async created() {
-    const nftContractAddress = this.$route.params.tokenAddress;
-
-    this.nfts = await this.getNFTsOfCollection({
-      token_address: nftContractAddress,
-      chain: "rinkeby",
-    });
-    this.collection.name = this.nfts[0].name;
-    this.collection.address = this.nfts[0].token_address;
-
-    // Set page title
-    document.title = this.collection.name + " | Marketplace";
-
-    // Fetch the nfts on sale on our MarketContract
-    let res = await this.getOnsaleNFTs({
-      contractAddress: nftContractAddress,
-    });
-
-    // Parse every single NFT into a new array and format hex. type data
-    let newItem = {};
-    let prices = [];
-    for (let i = 0; i < res.length; i++) {
-      let item = res[i];
-
-      newItem.listingId = parseInt(item.listingId);
-      newItem.nftContractAdd = item.nftContractAdd;
-      newItem.ownerAdd = item.ownerAdd;
-      newItem.price = this.getPriceInEth(item.price.toString());
-      newItem.tokenId = parseInt(item.tokenId);
-
-      // Add prices to the array to find floor price in the end
-      prices.push(this.getPriceInEth(item.price.toString()));
-
-      // Find the nft in the nfts array and append the on-chain data to the nft
-      for (let i = 0; i < this.nfts.length; i++) {
-        if (this.nfts[i].token_id == newItem.tokenId) {
-          this.nfts[i].saleInfo = {};
-          Object.assign(this.nfts[i].saleInfo, newItem);
-        }
-      }
-    }
-
-    // Remove 0 prices to avoid a bug while finding minimum
-    prices = prices.filter((item) => item != 0 || item != 0.0);
-
-    // Adjust the collection informations
-    this.collection.floorPrice = Math.min(...prices);
-    let offChainInfo = await this.getCollectionInformations();
-    Object.assign(this.collection, offChainInfo);
-
-    // Get item count and owner count 
-    this.collection.owners = await this.getCollectionOwnerCount({ contractAddress: nftContractAddress })
-    this.collection.itemCount = await this.getTokenCountOfCollection({ nftContractAddress })
-
-    if (screen.width <= 768) {
-      this.isMobile = true;
-      this.isFilterBarHidden = true;
-    } else {
-      this.isMobile = false;
-    }
-
     window.addEventListener("resize", this.resizeHandler);
+
+    const contractAddress = this.$route.params.tokenAddress;
+
+    await this.getCollecitonOffChainInfos(contractAddress);
+    await this.getTokenAndOwnerCount(contractAddress);
+
+    this.setPageTitle();
+
+    // Fetch all the nfts of the collection
+    this.nfts = await this.fetchAllTokens({
+      contractAddress: contractAddress,
+    });
+
+    // Fetch on sale nfts from our market contract
+    this.getOnSaleNFTs(contractAddress);
   },
 };
 </script>
