@@ -1,8 +1,7 @@
 import Secrets from "../../../../secrets.json";
 import MarketContract from "../../../Contracts/Market.json";
 import Web3Modal from "web3modal";
-import axios from "axios";
-import { create as ipfsHttpClient } from "ipfs-http-client";
+import axios from 'axios';
 import { ethers } from "ethers";
 
 const state = {
@@ -39,16 +38,35 @@ const actions = {
         commit('SET_FOUND_USER', results[0])
     },
     async getNFTsOfUser({ }, payload) {
-        // get testnet NFTs for user
-        const testnetNFTs = await Moralis.Web3API.account.getNFTs({ chain: "rinkeby", address: payload.walletAddress });
-
-        // get polygon NFTs for address
         const options = {
-            chain: "eth",
-            address: payload.walletAddress,
+            chain: "goerli",
+            address: payload.walletAddress || null
         };
-        const etherNFTs = await Moralis.Web3API.account.getNFTs(options);
-        return { etherNFTs, testnetNFTs }
+
+        try {
+            const testnetNFTs = await Moralis.Web3API.account.getNFTs(options);
+
+            // Sometimes NFT metadatas is missing on the Moralis side.
+            // We need to fetch manually in this case
+            for (let i = 0; i < testnetNFTs.result.length; i++) {
+                
+                if (!testnetNFTs.result[i].metadata) {
+                    if(!testnetNFTs.result[i].token_uri) {
+                        testnetNFTs.result.splice(i, 1)
+                    }
+
+                    let result = await axios.get(testnetNFTs.result[i].token_uri)
+                    testnetNFTs.result[i].metadata = JSON.stringify(result.data)
+                }
+
+                testnetNFTs.result[i].metadata = JSON.parse(testnetNFTs.result[i].metadata)
+            }
+
+            return testnetNFTs.result
+        } catch (error) {
+            console.log(error)
+        }
+
     },
     async getListedItemsOfUser({ }, payload) {
         const { walletAddress } = payload
@@ -66,6 +84,7 @@ const actions = {
 
         try {
             const res = await marketContract.getItemsOf(walletAddress);
+            return res
         } catch (err) {
             console.log(err)
         }

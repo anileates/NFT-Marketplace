@@ -52,7 +52,7 @@ export default {
       return `/collections/${this.nft.token_address}`;
     },
     getProfileRedirectUrl() {
-      return `/users/${this.nft.owner}`;
+      return `/users/${this.nft.owner_of}`;
     },
     isForSale() {
       if (this.nft.saleInfo) return true;
@@ -60,25 +60,23 @@ export default {
     },
     getOwner() {
       if (!this.isForSale) {
-        return this.nft.owner;
+        return this.nft.owner_of;
       } else {
         return this.nft.saleInfo.ownerAdd;
       }
     },
     getPriceInEth() {
-      if (this.nft.saleInfo.price) {
-        return ethers.utils.formatUnits(
-          this.nft.saleInfo.price.toString(),
-          "ether"
-        );
-      } else {
-        return "--";
-      }
+      if (!this.nft.saleInfo) return "--";
+
+      return ethers.utils.formatUnits(
+        this.nft.saleInfo.price.toString(),
+        "ether"
+      );
     },
     isOwner() {
       if (
         !this.isForSale &&
-        this.nft.owner.toLowerCase() ==
+        this.nft.owner_of.toLowerCase() ==
           this.getCurrentUser.ethAddress.toLowerCase()
       ) {
         return true;
@@ -195,6 +193,7 @@ export default {
     this.nft = await this.fetchNFT({
       contractAddress,
       tokenId,
+      chain: "goerli",
     });
 
     this.nft.saleInfo = await this.getListedItem({
@@ -275,7 +274,7 @@ export default {
             }}</a></div>
         </div>
 
-        <!-- <div class="sale-information">
+        <div class="sale-information">
           <app-sale-card
           :isForSale="isForSale"
           :price="getPriceInEth"
@@ -285,7 +284,7 @@ export default {
           :disablePurchaseButton="!isForSale || isOwner"
           :disableOfferButton="isOwner"
           :hasOffered="hasOffered" />
-        </div> -->
+        </div>
 
         <div class="offers-card">
           <appOffersCard :offers="getFormattedOffers" :isOwner="isOwner" />
@@ -304,23 +303,16 @@ export default {
 
 <style scoped lang="scss">
 .nft-page-container {
-  // background-color: gray;
-  // width: 100%;
   margin-bottom: 5rem;
   min-width: 73rem;
-
 }
 
 .sell-cancel-bar {
   width: 100%;
-  // height: 4.2rem;
   background-color: aliceblue;
 
   .inner {
     width: 131rem;
-    // background-color: green;
-    // height: 100%;
-
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -334,43 +326,29 @@ export default {
     &:nth-child(1) {
       margin-right: 0.5rem;
     }
-    // margin-right: 0.5rem;
     margin: 0.8rem 0;
   }
 }
 
-// .center-box-wrapper {
-//   background-color: green;
-//   width: 100%;
-//   height: 100%;
-// }
 
 .padding {
-  // background-color: orange;
   width: 100%;
   padding: 0 10rem;
 }
 
 .center-box {
-  // background-color: gray;
-  // width: 130rem;
-  // height: 100%;
   padding-top: 2rem;
 
   .left-box {
-    // background-color: green;
     width: 50rem;
     height: 100%;
 
     .image-wrapper {
-      // background-color: orange;  
-      // height: 34.5rem;
       width: 100%;
       border-radius: 0.6rem;
     }
 
     .detailed-information-section {
-      // background-color: greenyellow;
       width: 100%;
       height: 48.5rem;
 
@@ -392,7 +370,6 @@ export default {
   }
 
   .right-box {
-    // background: green;
     width: 80rem;
     height: 100%;
     margin-left: 1.6rem;
@@ -485,8 +462,8 @@ a {
   right: 50%;
   transform: translate(50%, -50%);
 
-  height: 40rem;
-  width: 40%;
+  // height: 40rem;
+  width: 70rem;
 }
 
 #appPurchaseAsset {
@@ -496,8 +473,7 @@ a {
   right: 50%;
   transform: translate(50%, -50%);
 
-  height: 40rem;
-  width: 40%;
+  width: 70rem;
 }
 
 #appMakeOffer {
@@ -507,8 +483,7 @@ a {
   right: 50%;
   transform: translate(50%, -50%);
 
-  height: 40rem;
-  width: 40%;
+  width: 70rem;
 }
 
 .offers-card {

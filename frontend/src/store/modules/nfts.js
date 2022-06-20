@@ -123,7 +123,7 @@ const actions = {
         tokenAddress,
         tokenId,
         _price,
-        { value: "10000000000000000" }
+        { value: "100000000000" }
       )
 
       let tx = await transaction.wait();
@@ -197,48 +197,26 @@ const actions = {
     }
   },
   async fetchNFT({ }, payload) {
-    console.log(payload)
-    const { contractAddress, tokenId } = payload
+    const { contractAddress, tokenId  } = payload
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.providers.Web3Provider(connection);
-    const signer = provider.getSigner();
+    const options = {
+      address: contractAddress,
+      token_id: tokenId ,
+      chain: payload.chain || 'eth'
+    };
 
-    let nftContract = new ethers.Contract(
-      contractAddress,
-      ERC721.abi,
-      signer
-    );
-
+    let tokenData = await Moralis.Web3API.token.getTokenIdMetadata(options);
     try {
-      const tokenUri = await nftContract.tokenURI(tokenId);
-      const owner = await nftContract.ownerOf(tokenId);
-      const metadata = await axios.get(tokenUri);
-
-      return { metadata: metadata.data, owner, contractAddress };
+      tokenData.metadata = JSON.parse(tokenData.metadata)
+      if (!tokenData.metadata) {
+        let result = await axios.get(tokenData.token_uri)
+        tokenData.metadata = result.data
+      }
+      
+      return tokenData;
     } catch (error) {
-
+      console.log(error)
     }
-
-    // const options = {
-    //   address: payload.token_address,
-    //   token_id: payload.token_id,
-    //   chain: payload.chain || 'eth'
-    // };
-
-    // let tokenData = await Moralis.Web3API.token.getTokenIdMetadata(options);
-
-    // try {
-    //   if (!tokenData.metadata) {
-    //     let result = await axios.get(tokenData.token_uri)
-    //     tokenData.metadata = JSON.stringify(result.data)
-    //   }
-
-    //   return tokenData;
-    // } catch (error) {
-    //   console.log(error)
-    // }
   },
   async makeOffer({ }, payload) {
     const web3Modal = new Web3Modal();
@@ -424,7 +402,7 @@ const actions = {
         console.log(error)
       }
     }
-  },
+},
   async getTransfersOfToken({ }, payload) {
     const { contractAddress, tokenId } = payload
 
@@ -529,7 +507,7 @@ const actions = {
 
     try {
       // First, create collection on-chain.
-      let transaction = await collectionFactoryContract.createCollection(name, symbol, { value: "20000000000000000" });
+      let transaction = await collectionFactoryContract.createCollection(name, symbol, { value: "1000000000000" });
       const res = await transaction.wait();
 
       // Append address of the created collection
@@ -545,13 +523,13 @@ const actions = {
       newCollection.set("creator", signerAddress)
 
       let user = Moralis.User.current();
-      let userCollections = user.attributes.collections;
+      let userCollections = user.attributes.collections || [];
       userCollections.push(payload.contractAddress)
 
       user.set("collections", userCollections)
       await user.save()
-
       await newCollection.save()
+
       return true
     } catch (error) {
       console.log(error)
@@ -636,7 +614,7 @@ const actions = {
     return collection
   },
   async getCollectionOwnerCount({ }, payload) {
-    const options = { address: payload.contractAddress, chain: "rinkeby" };
+    const options = { address: payload.contractAddress, chain: "goerli" };
     const res = await Moralis.Web3API.token.getNFTOwners(options);
 
     let owners = []
@@ -747,6 +725,7 @@ const actions = {
       const metadata = await axios.get(tokenUri);
 
       let token = {};
+      token.contractAddress = contractAddress;
       token.tokenId = i + 1;
       Object.assign(token, metadata.data)
 
@@ -754,7 +733,7 @@ const actions = {
     }
 
     return metadatas
-  }
+  },
 }
 
 export default {
