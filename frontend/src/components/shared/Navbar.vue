@@ -27,7 +27,7 @@ nav
           li(@click="_logout")
             a Sign Out
         .list-item-wrapper
-          li
+          router-link(:to="getProfileRedirectUrl")
             a Profile
         .list-item-wrapper.animated-border
           router-link(to="/settings", tag="li")
@@ -50,7 +50,7 @@ nav
 
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import SearchBox from "./SearchBox";
 
 export default {
@@ -118,6 +118,10 @@ export default {
     window.addEventListener("resize", this.resizeHandler);
   },
   computed: {
+        ...mapGetters({ user: "getCurrentUser" }),
+    getProfileRedirectUrl() {
+      return `/users/${this.user.username}`
+    },
     doublePadding() {
       return {
         doublePadding: this.isMobile && this.showSearchbox,

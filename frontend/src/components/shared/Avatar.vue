@@ -1,14 +1,14 @@
 <template lang="pug">
 .avatar-container(@mouseover="isHover = true", @mouseleave="isHover = false")
   .hover.flex__col.flex__ai-c.flex__jc-c(
-    v-show="(isEditable && isHover) || (!imgUrl && isEditable) ",
+    v-show="isEditable && ((!imgUrl && !_imgUrl) || isHover) ",
     @click="triggerInput"
   )
-    input(ref="inputImageUpload", type="file", @change="uploadImage")
+    input(ref="inputImageUpload", type="file", @change="onFileChange")
     i.far.fa-edit(v-if="imgUrl")
     i.far.fa-edit(v-else)
     span
-  img#image(:src="imgUrl", v-show="imgUrl || isUploaded")
+  img(:src="imgUrl || _imgUrl", v-show="imgUrl || isUploaded")
 </template>
 
 <script>
@@ -28,28 +28,22 @@ export default {
   data() {
     return {
       isHover: false,
-      isUploaded: false
+      isUploaded: false,
+      _imgUrl: ""
     };
   },
   methods: {
     triggerInput() {
       this.$refs.inputImageUpload.click();
     },
-    uploadImage() {
-      if (this.$refs.inputImageUpload.files.length > 0) {
-        const file = this.$refs.inputImageUpload.files[0];
+    onFileChange(e) {
+      var files = e.target.files || e.dataTransfer.files;
+      const file = files[0];
+      this._imgUrl = URL.createObjectURL(files[0]);
+      this.isUploaded = true;
 
-        let image = document.getElementById("image");
-        image.src = URL.createObjectURL(this.$refs.inputImageUpload.files[0]);
-        this.isUploaded = true;
-
-        this.$emit("uploaded", file);
-      }
+      this.$emit("uploaded", file);
     },
-    // There is a webpack issue. So, dynamic img url does not work without require() statement in the 'src'
-    // getImgUrl(pic){
-    //   return require('../../../assets/'+pic)
-    // }
   },
 };
 </script>

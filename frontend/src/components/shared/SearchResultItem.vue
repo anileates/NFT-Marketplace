@@ -108,9 +108,11 @@ a {
 }
 
 .search-result-item {
+  font-size: 1.6rem;
+
   width: 100%;
   height: 100%;
-  padding: 0 1rem;
+  padding: 0 1.6rem;
 
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -125,8 +127,8 @@ a {
   }
 
   .avatar-wrapper {
-    width: 2rem;
-    height: 2rem;
+    width: 3.2rem;
+    height: 3.2rem;
 
     background-color: black;
 
@@ -137,7 +139,7 @@ a {
 
 
 .itemType {
-  font-size: 0.8rem;
+  font-size: 1.3rem;
   margin-left: 0.5rem;
   margin-top: 0.1rem;
 

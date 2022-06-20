@@ -1,8 +1,12 @@
 <template lang="pug">
-.searchBox-container
-  .flex__row.flex__jc-fs.flex__ai-c(style="height: 100%")
-    i.fas.fa-search(@click="search")
-    input(placeholder="Search user, collection or NFT", v-model="searchText")
+.searchBox-container#searchBoxContainer
+  #searchBox.flex__row.flex__jc-fs.flex__ai-c(style="height: 100%")
+    i.fas.fa-search
+    input(
+      placeholder="Search user, collection or NFT",
+      v-model="searchText",
+      @keydown.enter="search",
+    )
   .dropdown-results(v-if="showResult")
     ul.flex__col.flex__ai-c.flex__jc-sb(v-if="users.length != 0")
       li(v-for="user in users")
@@ -12,9 +16,7 @@
     ul.flex__col.flex__ai-c.flex__jc-sb(v-if="items.length != 0")
       li(v-for="item in items")
         app-search-result-item(:assetItem="convertItemToProp(item)")
-    p.flex__col.flex__jc-sb(v-else)(
-      style="color: black; padding: 0.5rem 1rem; font-size: 0.8rem"
-    ) No items found...
+    p.not-found.flex__col.flex__jc-sb(v-else) No items found...
 </template>
 
 <script>
@@ -60,6 +62,12 @@ export default {
       };
     },
   },
+  created() {
+    window.addEventListener("click", (e) => {
+      if (!document.getElementById("searchBoxContainer").contains(e.target)) this.showResult = false;
+      else this.showResult = true
+    });
+  },
   computed: {},
 };
 </script>
@@ -76,7 +84,9 @@ export default {
   width: 100%;
   height: 100%;
 
-  padding-left: 1em;
+  #searchBox {
+    padding-left: 1.6rem;
+  }
 
   &:focus-within {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
@@ -100,7 +110,7 @@ i {
 
 .dropdown-results {
   width: 100%;
-  max-height: 40rem;
+  // max-height: 40rem;
   overflow: auto;
   overflow-x: hidden;
   position: relative;
@@ -123,7 +133,7 @@ i {
     color: black;
 
     width: 100%;
-    height: 3.5625rem;
+    height: 5rem;
     border: 1px solid rgba(197, 197, 197, 0.5);
 
     &:first-child {
@@ -136,5 +146,11 @@ i {
       border-bottom-right-radius: 0.5rem;
     }
   }
+}
+
+.not-found {
+  font-size: 1.6rem;
+  color: black; 
+  padding: 0.5rem 2rem;
 }
 </style>
