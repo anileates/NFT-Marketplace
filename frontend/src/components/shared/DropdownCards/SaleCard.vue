@@ -61,7 +61,7 @@ app-dropdown-card(:collapseByDefault="false")
         p Current Price
       .price-wrapper.flex__row.flex__ai-c.flex__jc-fs
         img(
-          src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg"
+          src="../../../../ethereum.svg"
         )
         span.eth-price(v-if="isForSale") {{ price }}
         span.eth-price(v-else) --
@@ -95,8 +95,9 @@ app-dropdown-card(:collapseByDefault="false")
   width: 100%;
   height: 100%;
   min-height: 1.6rem;
+  // height:  15rem;
 
-  padding: 0 1.6rem;
+  padding: 1rem 1.6rem;
 }
 
 .header-wrapper > * {
@@ -107,18 +108,17 @@ app-dropdown-card(:collapseByDefault="false")
   p {
     color: rgb(112, 122, 131);
 
-    font-size: 14.5rem;
-    line-height: 2rem;
-    margin-bottom: -1.6rem;
+    font-size: 1.5rem;
+    line-height: 3.2rem;
   }
 }
 
 .price-wrapper {
-  margin-top: -1.6rem;
+  // margin-top: -1.6rem;
 
   img {
-    width: 1.6rem;
-    height: 1.6rem;
+    width: 2.5rem;
+    height: 2.5rem;
   }
 
   .eth-price {
@@ -128,7 +128,7 @@ app-dropdown-card(:collapseByDefault="false")
     font-weight: 600;
     line-height: 3rem;
 
-    margin-left: 1rem;
+    margin-left: 0.5rem;
   }
 
   .fiat-equivalent-wrapper {
@@ -138,7 +138,7 @@ app-dropdown-card(:collapseByDefault="false")
     line-height: 2.25rem;
 
     margin-top: 1rem;
-    margin-left: 1rem;
+    margin-left: 1.6rem;
   }
 }
 
@@ -147,10 +147,10 @@ app-dropdown-card(:collapseByDefault="false")
 }
 
 .btn-wrapper {
-  width: 3rem;
+  width: 20rem;
   height: 4.8rem;
 
-  margin-right: 1rem;
-  margin-top: -1.6rem;
+  margin: 1.6rem 0;
+  margin-right: 1.6rem;
 }
 </style>

@@ -36,6 +36,10 @@ export default {
   font-size: 62.5%;
 }
 
+.swal2-popup {
+  font-size: 1.6rem !important;
+}
+
 /******** Flex Classes ********/
 
 .flex {

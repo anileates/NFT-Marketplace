@@ -7,13 +7,13 @@
         label.section-header Logo Image
         label.hint This image will also be used for navigation.
         .image-box-logo
-          app-avatar(@uploaded="uploadLogo")
+          app-avatar#logo(@uploaded="uploadLogo")
 
       .section.flex__col.flex__ai-fs.flex__jc-sa
         label.section-header Banner Image
         label.hint This image will appear at the top of your collection page.
         .image-box-banner
-          app-avatar(@uploaded="uploadBanner")
+          app-avatar#banner(@uploaded="uploadBanner")
 
       .section.flex__col.flex__ai-fs.flex__jc-sa
         label.section-header Collection Name *
@@ -44,6 +44,8 @@ import Avatar from "../components/shared/Avatar.vue";
 import InputBox from "../components/shared/InputBox.vue";
 import CustomButton from "../components/shared/Buttons/CustomButton.vue";
 import { mapActions } from "vuex";
+import { Toast } from "../SweetAlert";
+import router from "../router/index";
 
 export default {
   name: "CreateCollection",
@@ -71,6 +73,8 @@ export default {
           icon: "success",
           title: "Your collection has been created!",
         });
+
+        return await router.push("/")
       }
     },
     uploadLogo(file) {
@@ -88,39 +92,40 @@ export default {
 <style lang="scss" scoped>
 .create-collection-container {
   width: 100%;
-  padding-bottom: 3rem;
+  font-size: 1.6rem;
+  padding-bottom: 4.8rem;
 }
 
 .cc-page {
-  width: 48rem;
+  width: 75rem;
   height: 100%;
 
   &-content {
-    margin-top: 2rem;
+    margin-top: 3.2rem;
   }
 }
 
 h2 {
-  font-size: 2.5rem;
+  font-size: 4rem;
 }
 
 .section {
-  margin-bottom: 2rem;
+  margin-bottom: 3.2rem;
   width: 100%;
 
   &-header {
     font-weight: 600;
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.3rem;
   }
 
   .hint {
-    font-size: 0.8rem;
-    margin-bottom: 0.2rem;
+    font-size: 1.3rem;
+    margin-bottom: 0.3rem;
     color: rgb(112, 122, 131);
   }
 
   input {
-    height: 2.5rem;
+    height: 4rem;
     width: 100%;
   }
 }
@@ -131,22 +136,22 @@ h2 {
 
   &-logo {
     @extend .image-box;
-    height: 12rem;
-    width: 12rem;
+    height: 20rem;
+    width: 20rem;
     border-radius: 50%;
   }
 
   &-banner {
     @extend .image-box;
-    height: 14rem;
-    width: 40rem;
+    height: 22rem;
+    width: 75rem;
     border-radius: 10px;
   }
 }
 
 .btn-wrapper {
-  width: 8rem;
-  height: 3rem;
-  margin-right: 0.5rem;
+  width: 12.8rem;
+  height: 4.8rem;
+  margin-right: 1rem;
 }
 </style>

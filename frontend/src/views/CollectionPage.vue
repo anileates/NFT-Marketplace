@@ -1,4 +1,4 @@
-<template lang="pug">
+1<template lang="pug">
 .banner-container
   img(:src="collection.banner._url")
 .padding-1x
@@ -67,8 +67,8 @@
       .card(v-for="nft in sortedNFTs")
         appNftCard(
           v-if="(buynowSelected && nft.saleInfo) || !buynowSelected",
-          :contractAddress="nft.token_address",
-          :tokenId="nft.token_id",
+          :contractAddress="nft.contractAddress",
+          :tokenId="nft.tokenId",
           :name="nft.name + ` #` + nft.tokenId",
           :collectionName="nft.name",
           :imgUrl="nft.image",
@@ -273,7 +273,7 @@ export default {
     width: 100%;
     height: 100%;
     border-radius: inherit;
-    object-fit: fill;
+    object-fit: cover;
   }
 }
 
@@ -548,12 +548,8 @@ img.eth {
 
     .cards-layout {
       margin-left: 0px;
-
-      .cards-layout {
-        margin-left: 0px;
-        .card {
-          width: 45%;
-        }
+      .card {
+        width: 45%;
       }
     }
   }

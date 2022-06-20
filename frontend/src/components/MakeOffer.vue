@@ -17,11 +17,10 @@
           h4 # {{ nft.token_id }}
     hr
     .section-price
-      .header
-        span.header Price
+      span.header Price
       .content.flex__row.flex__jc-fs.flex__ai-c
         img(
-          src="https://openseauserdata.com/files/accae6b6fb3888cbff27a013729c22dc.svg"
+          src="../../weth.svg"
         )
         appInputBox#price(
           placeholder="Amount",
@@ -140,27 +139,28 @@ export default {
 
 <style lang="scss" scoped>
 .sell-card {
-  width: 100%;
-  height: 100%;
-  min-height: 30rem;
+  font-size: 1.6rem;
+  // width: 100%;
+  // height: 100%;
+  // min-height: 30rem;
 
   background-color: rgb(251, 253, 255);
   border: 2px solid rgb(229, 232, 235);
-  border-radius: 0.5rem;
+  border-radius: 1rem;
 
   &__header {
-    height: 12%;
+    // height: 12%;
     border-bottom: 2px solid rgb(229, 232, 235);
-    padding: 0 0;
+    padding: 1rem 1rem;
   }
 
   &__body {
-    padding: 1rem 2rem;
+    padding: 1.6em 3.2em;
   }
 
   &__footer {
     border-top: 2px solid rgb(229, 232, 235);
-    padding: 1rem 2rem;
+    padding: 1.6rem 3.2rem;
   }
 }
 
@@ -169,57 +169,57 @@ export default {
 
   .img-wrapper {
     background-color: red;
-    width: 10rem;
-    height: 10rem;
+    width: 16rem;
+    height: 16rem;
 
-    border-radius: 1rem;
-
-    margin-right: 1rem;
+    border-radius: 1.5rem;
+    margin-right: 1.5rem;
 
     img {
       width: 100%;
       height: 100%;
 
       border-radius: inherit;
+      object-fit: cover;
     }
   }
 
   .item-header {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
   }
 
   .item-details {
-    padding-left: 1rem;
+    padding-left: 1.6rem;
   }
 
   .details {
-    line-height: 1.8rem;
-    padding-top: 0.8rem;
+    line-height: 3em;
+    padding-top: 1.2rem;
   }
 }
 
 .section-price {
-  padding-top: 0.5rem;
+  padding-top: 1rem;
 
   .header {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
   }
 
   img {
-    width: 2rem;
-    height: 2rem;
+    width: 3.2rem;
+    height: 3.2rem;
 
-    margin-right: 0.5rem;
+    margin-right: 1rem;
   }
 }
 
 .btn-wrapper {
-  width: 10rem;
-  height: 3rem;
+  width: 16rem;
+  height: 4.8rem;
 }
 
 input {
-  height: 3rem;
+  height: 4.8rem;
 }
 
 hr {
@@ -240,10 +240,10 @@ span.header {
 
 .cross-wrapper {
   position: fixed;
-  right: 0px;
+  right: 5px;
 
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 4rem;
+  height: 4rem;
 
   &:hover {
     cursor: pointer;

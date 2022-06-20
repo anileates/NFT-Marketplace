@@ -23,9 +23,9 @@ input {
   height: 100%;
   width: 100%;
   border: 1px solid #C5C5C5;
-  font-size: 1rem;
-  padding: 1rem;
-  border-radius: 0.5rem;
+  font-size: 1.6rem;
+  padding: 1.6rem;
+  border-radius: 0.8rem;
   outline: none;
   transition: box-shadow .4s;
 

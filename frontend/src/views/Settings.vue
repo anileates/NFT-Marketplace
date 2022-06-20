@@ -80,7 +80,7 @@ export default {
               :isReadOnly="true"
             )
             i.far.fa-clipboard.fa-1x(
-              style="position: absolute; margin-left: 24.8rem; cursor: pointer",
+              style="position: absolute; margin-left: 42.5rem; cursor: pointer",
               @click="copyWalletAddress"
             )
         button(@click="saveUserInfo") Save
@@ -105,7 +105,8 @@ export default {
 <style lang="scss" scoped>
 .settings-page {
   &-body {
-    width: 48rem;
+    // background-color: red;
+    width: 80rem;
     height: 100%;
   }
 
@@ -115,31 +116,34 @@ export default {
 }
 
 h2 {
-  font-size: 2.5rem;
+  font-size: 4rem;
 }
 
 .image-section {
-  height: 26rem;
-  margin-right: 2rem;
+  height: 42rem;
+  margin-right: 3.2rem;
 }
 
 label {
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  // margin-bottom: 1rem;
 }
 
 .info {
-  height: 4rem;
-  margin-bottom: 1rem;
+  // height: 4.8rem;
+  margin-bottom: 1.6rem;
+
+  font-size: 1.6rem;
 
   input {
-    height: 2.5rem;
-    width: 26rem;
+    height: 4rem;
+    width: 45rem;
   }
 }
 
 .section {
-  margin-bottom: 0.5rem;
+  font-size: 1.6rem;
+  margin-bottom: 1.6rem;
 }
 
 .image-box {
@@ -148,31 +152,31 @@ label {
 
   &-profile {
     @extend .image-box;
-    height: 10rem;
-    width: 10rem;
+    height: 16rem;
+    width: 16rem;
     border-radius: 50%;
   }
 
   &-cover {
     @extend .image-box;
-    height: 8rem;
-    width: 14rem;
+    height: 12.8rem;
+    width: 22.4rem;
     border-radius: 5%;
   }
 }
 
 button {
-  width: 5rem;
-  height: 3rem;
+  width: 8rem;
+  height: 4.8rem;
   cursor: pointer;
   background-color: #2081e2;
   color: #fff;
-  font-size: 1rem;
+  font-size: 1.6rem;
   font-weight: 600;
   border-radius: 10px;
   border: none;
   float: bottom;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 </style>
 

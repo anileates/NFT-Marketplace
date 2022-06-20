@@ -72,7 +72,6 @@ export default {
         document.getElementById("assetDescription").value;
 
       this.asset.collectionAddress = document.getElementById('collection').value
-      console.log(this.asset.collectionAddress)
 
       if (!this.asset.name || !this.asset.description || !this.file) {
         return Toast.fire({
@@ -108,50 +107,53 @@ export default {
 <style lang="scss" scoped>
 .create-item-page {
   &-body {
-    width: 60rem;
+    width: 90rem;
     height: 100%;
   }
 
   &-content {
-    margin-top: 2rem;
+    margin-top: 3.2rem;
   }
 }
 
 h2 {
-  font-size: 2.5rem;
+  font-size: 4rem;
 }
 
 label {
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .hint {
-  font-size: 0.8rem;
-  margin-top: 0.2rem;
+  font-size: 1.3rem;
+  margin-top: 0.3rem;
 
   color: rgb(112, 122, 131);
 }
 
 .info {
   // height: 4rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.6rem;
+  font-size: 1.6rem;
 
   input {
-    height: 2.5rem;
-    width: 26rem;
+    font-size: 1.6rem;
+    height: 4rem;
+    width: 42rem;
   }
 }
 
 .section {
+  font-size: 1.6rem;
   margin-bottom: 0.5rem;
 }
 
 .image-section {
   // background-color: gray;
-  height: 26rem;
-  width: 30rem;
-  margin-right: 2rem;
+  height: 42rem;
+  width: 48rem;
+  margin-right: 3.2rem;
 }
 
 .image-box {
@@ -160,33 +162,33 @@ label {
 
   &-asset {
     @extend .image-box;
-    height: 20rem;
-    width: 20rem;
+    height: 32rem;
+    width: 32rem;
     border-radius: 5%;
   }
 }
 
 select {
-  width: 26rem;
+  width: 42rem;
   border: 1px solid #c5c5c5;
   border-radius: 0.5rem;
 
-  font-size: 1rem;
-  padding: 0.5rem;
+  font-size: 1.6rem;
+  padding: 1rem;
   outline: none;
 }
 
 button {
-  width: 8rem;
-  height: 3rem;
+  width: 12.8rem;
+  height: 4.8rem;
   cursor: pointer;
   background-color: #2081e2;
   color: #fff;
-  font-size: 1rem;
+  font-size: 1.6rem;
   font-weight: 600;
   border-radius: 10px;
   border: none;
   float: bottom;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 </style>
