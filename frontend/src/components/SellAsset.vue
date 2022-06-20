@@ -127,16 +127,12 @@ export default {
 <style lang="scss" scoped>
 .sell-card {
   font-size: 1.6rem;
-  // width: 100%;
-  // height: 100%;
-  // min-height: 30rem;
 
   background-color: rgb(251, 253, 255);
   border: 2px solid rgb(229, 232, 235);
   border-radius: 1rem;
 
   &__header {
-    // height: 12%;
     border-bottom: 2px solid rgb(229, 232, 235);
     padding: 1rem 1rem;
   }
