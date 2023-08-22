@@ -8,6 +8,7 @@ Front-end of an NFT marketplace like OpenSea. Smart contracts of the project can
 
 ### On this platform, users can:
 - Create NFTs & Collections
+- Earn commissions from the sales of NFTs they create
 - Search for all on-chain NFTs
 - See other users' profiles, NFTs & collections
 - Buy and sell NFTs
@@ -15,8 +16,6 @@ Front-end of an NFT marketplace like OpenSea. Smart contracts of the project can
 - Accept incoming offers for their NFTs
 
 ## Some screenshots from app 👇
-![Homepage](https://github.com/anileates/NFT-Marketplace/assets/49078844/28df527a-6f3e-488d-a53d-b31d5a677bdc)
-![Create Collection Full Page](https://github.com/anileates/NFT-Marketplace/assets/49078844/d6f76087-34fd-4e41-8c49-bf253f789d26)
-![create asset](https://github.com/anileates/NFT-Marketplace/assets/49078844/12ac966a-4949-451c-a9bc-d1ece2c823d1)
-![chrome-capture-2023-7-22](https://github.com/anileates/NFT-Marketplace/assets/49078844/20b08fed-5993-459a-8baa-4fde3777bdf6)
-![chrome-capture-2023-7-22 (1)](https://github.com/anileates/NFT-Marketplace/assets/49078844/43f2a5fb-db88-45c8-8307-a9b7478e465b)
+![Homepage](https://github.com/anileates/NFT-Marketplace/assets/49078844/6cc5f640-8041-4bed-9a3f-418147ccbdb1)
+![Create Collection Full Page](https://github.com/anileates/NFT-Marketplace/assets/49078844/ada2df47-a0f3-46f0-9649-44fc2b112589)
+![chrome-capture-2023-7-22](https://github.com/anileates/NFT-Marketplace/assets/49078844/0cf1cf65-1c04-448b-843b-b0f5c23d630c)
